@@ -35,18 +35,24 @@ export function renderAuth(app) {
 
         <div>
           <label class="block text-slate-300 text-xs font-semibold uppercase tracking-wider mb-2">Password</label>
-          <div class="relative">
+          <div class="relative flex items-center">
             <i data-lucide="lock" class="absolute left-3.5 top-3.5 text-slate-500 w-5 h-5"></i>
-            <input type="password" id="auth-password" required class="glass-input w-full pl-11 pr-4 py-3 rounded-xl text-sm" placeholder="••••••••">
+            <input type="password" id="auth-password" required class="glass-input w-full pl-11 pr-11 py-3 rounded-xl text-sm" placeholder="••••••••">
+            <button type="button" onclick="togglePasswordVisibility('auth-password')" class="absolute right-3.5 text-slate-500 hover:text-slate-300 transition-colors focus:outline-none" title="เปิด/ปิดการมองเห็นรหัสผ่าน">
+              <i id="eye-auth-password" data-lucide="eye" class="w-5 h-5"></i>
+            </button>
           </div>
         </div>
 
         ${showSignUp ? `
         <div>
           <label class="block text-slate-300 text-xs font-semibold uppercase tracking-wider mb-2">Confirm Password</label>
-          <div class="relative">
+          <div class="relative flex items-center">
             <i data-lucide="shield-check" class="absolute left-3.5 top-3.5 text-slate-500 w-5 h-5"></i>
-            <input type="password" id="auth-confirm" required class="glass-input w-full pl-11 pr-4 py-3 rounded-xl text-sm" placeholder="••••••••">
+            <input type="password" id="auth-confirm" required class="glass-input w-full pl-11 pr-11 py-3 rounded-xl text-sm" placeholder="••••••••">
+            <button type="button" onclick="togglePasswordVisibility('auth-confirm')" class="absolute right-3.5 text-slate-500 hover:text-slate-300 transition-colors focus:outline-none" title="เปิด/ปิดการมองเห็นรหัสผ่าน">
+              <i id="eye-auth-confirm" data-lucide="eye" class="w-5 h-5"></i>
+            </button>
           </div>
         </div>
         ` : ''}

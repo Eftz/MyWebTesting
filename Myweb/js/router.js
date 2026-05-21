@@ -91,8 +91,8 @@ export function renderPage() {
       <div>
         <!-- Profile Header -->
         <div class="flex ${AppState.sidebarCollapsed ? 'flex-col items-center justify-center' : 'items-center justify-between'} pb-6 mb-6 border-b border-slate-800/40 gap-3">
-          <div class="flex items-center gap-3 min-w-0">
-            <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-purple-600 to-pink-500 flex items-center justify-center font-bold text-lg shadow-lg text-white shrink-0">
+          <div onclick="navigate('settings')" class="profile-header-link flex items-center gap-3 min-w-0 cursor-pointer rounded-xl px-2 py-1.5 -mx-2 transition-all hover:bg-white/5" title="ตั้งค่าโปรไฟล์">
+            <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-purple-600 to-pink-500 flex items-center justify-center font-bold text-lg shadow-lg text-white shrink-0 transition-transform group-hover:scale-105">
               ${AppState.currentUser.name.charAt(0).toUpperCase()}
             </div>
             <div class="${hideTextClass} min-w-0">
@@ -127,10 +127,6 @@ export function renderPage() {
             <span class="${hideTextClass}">Healthy Basement</span>
           </button>
           
-          <button onclick="navigate('settings')" class="sidebar-link w-full flex items-center ${gapClass} px-4 py-3 rounded-xl border border-transparent text-sm font-medium text-slate-400 hover:text-slate-200 transition-all ${AppState.activePage === 'settings' ? 'active' : ''} ${centerIconClass}" title="Settings">
-            <i data-lucide="settings" class="w-5 h-5 shrink-0"></i>
-            <span class="${hideTextClass}">Settings</span>
-          </button>
         </nav>
       </div>
 
