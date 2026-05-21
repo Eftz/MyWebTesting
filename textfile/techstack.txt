@@ -1,0 +1,180 @@
+# เอกสารข้อกำหนดสถาปัตยกรรมและเทคโนโลยี (Technical Stack Document)
+
+**โครงการ:** SmartLife - ระบบจัดการธุรกรรม การวางแผน และแจ้งเตือนอเนกประสงค์
+**ประเภทระบบ:** Single Page Application (SPA) / Progressive Web App (PWA) Ready
+**สถานะ:** สถาปัตยกรรมระบบสำหรับระยะเริ่มต้นและระยะถัดไป (Active Tech Stack & Future Roadmap)
+
+---
+
+## 1. ภาพรวมสถาปัตยกรรมระบบ (System Architecture Overview)
+
+แอปพลิเคชัน SmartLife ได้รับการออกแบบภายใต้สถาปัตยกรรม **Client-side Rendered Single Page Application (SPA)**
+ซึ่งประมวลผลการทำงานทั้งหมดบนบราวเซอร์ของผู้ใช้โดยตรง เพื่อให้ได้ประสิทธิภาพในการสลับหน้าจอที่รวดเร็ว
+ไม่มีอาการหน่วงจากการโหลดหน้าใหม่ (Zero-latency Page Transitions)
+และสามารถทำงานได้ในสภาวะออฟไลน์ (Offline-First Capability)
+
+```
+[ User Browser (Client) ]
+│
+├─► UI / Render Logic (Tailwind CSS, Javascript DOM)
+├─► Data Visualization (Chart.js via Canvas API)
+├─► Local Data Persistence (Web Storage / LocalStorage)
+├─► Device Integrations (Web Notification API & Web Audio API)
+│
+▼
+(สถาปัตยกรรมระยะถัดไป / Future Stack)
+[ BaaS: Google Firebase Cloud ] ──► Firestore / Auth
+```
+
+---
+
+## 2. เทคโนโลยีฝั่งผู้ใช้งาน (Frontend Tech Stack)
+
+เครื่องมือทั้งหมดในฝั่ง Frontend ถูกเลือกโดยคำนึงถึงความเบา (Lightweight),
+ประสิทธิภาพบนอุปกรณ์พกพา (Mobile Responsiveness)
+และไม่สร้างความซับซ้อนในการติดตั้ง (No-build toolchain):
+
+### 2.1 Core Technologies
+
+* **HTML5 (Semantic & Responsive markup):**
+  ใช้โครงสร้างแท็กมาตรฐานสำหรับการทำหน้าเพจ
+  มีการกำหนด Viewport เพื่อรองรับขนาดหน้าจอที่หลากหลาย (Fluid layouts)
+
+* **CSS3 via Tailwind CSS CDN (v3.x):**
+  * ใช้แนวคิด Utility-First ในการตกแต่งหน้าจอ ช่วยลดการเขียนไฟล์ CSS แยกเฉพาะ
+  * ใช้ระบบ Grid และ Flexbox สำหรับจัดระเบียบองค์ประกอบหน้าจอให้แสดงผลได้สมบูรณ์ทั้งแนวตั้งและแนวนอน (Adaptive layouts)
+
+* **JavaScript (Vanilla ES6+):**
+  * ใช้เขียนตรรกะควบคุมแอปพลิเคชัน (Application logic), การจัดการสถานะ (State management) และการควบคุม DOM แบบ Reactive
+  * ไม่มีการเรียกใช้เฟรมเวิร์กขนาดใหญ่เพื่อควบคุมความเร็วในการประมวลผลสูงสุด
+
+### 2.2 Visualization & Interface Enhancement
+
+* **Chart.js (v4.x):**
+  ไลบรารีประสิทธิภาพสูงในการวาดกราฟแบบเรียลไทม์ผ่าน HTML5 <canvas> เพื่อแสดงผล:
+  * **Bar Chart (กราฟแท่ง):** เปรียบเทียบภาพรวม รายรับ และ รายจ่าย
+  * **Doughnut Chart (กราฟวงกลม):** แสดงผลสัดส่วนรายจ่ายแยกประเภทที่คำนวณจากสถานะการเงินจริงของผู้ใช้
+
+* **Lucide Icons:**
+  ชุดไอคอนแบบ SVG (Scalable Vector Graphics) ที่ขยายขนาดได้โดยไม่สูญเสียความคมชัด
+  มีความเร็วในการโหลดสูงและสไตล์การออกแบบที่ทันสมัยสม่ำเสมอ
+
+---
+
+## 3. การผสานระบบควบคุมระดับบราวเซอร์และอุปกรณ์ (Native Web APIs Integration)
+
+แอปพลิเคชันมีการเรียกใช้งานชุดคำสั่งพิเศษที่ติดตั้งมาพร้อมกับเว็บเบราว์เซอร์สมัยใหม่
+เพื่อเพิ่มขีดความสามารถที่คล้ายคลึงกับ Native App:
+
+* **Web Storage API (LocalStorage):**
+  * ใช้จัดเก็บข้อมูลสถานะโปรไฟล์, รายการธุรกรรม, และแผนงานแบบ Key-Value Pair
+  * ข้อมูลคงอยู่ถาวรแม้ปิดบราวเซอร์หรือทำการรีเฟรชหน้าเว็บใหม่
+
+* **Web Notification API:**
+  * ใช้ร้องขออนุญาตเพื่อส่ง Push Notifications เด้งแจ้งเตือนไปยังหน้าจอระบบปฏิบัติการ (OS-level)
+    เช่น บน Notification Center ของ Windows, macOS, Android, หรือ iOS
+  * ช่วยให้มีการแจ้งเตือนแบบเรียลไทม์แม้ผู้ใช้จะย่อหน้าต่างบราวเซอร์ลง
+
+* **Web Audio API (Synthesizer Sound):**
+  * สร้างคลื่นเสียงบี๊บสังเคราะห์เชิงคณิตศาสตร์ (OscillatorNode) ด้วยความถี่พิเศษเพื่อเป็นเสียงแจ้งเตือนอเนกประสงค์
+  * **ข้อดี:** ไม่ต้องดึงทรัพยากรเสียงภายนอก (.mp3, .wav)
+    ทำให้แอปโหลดได้รวดเร็วและไม่ติดปัญหาลิขสิทธิ์ไฟล์เสียง
+
+---
+
+## 4. โครงสร้างและการจัดการฐานข้อมูล (Data Schema - JSON)
+
+ในปัจจุบัน ข้อมูลจะถูกจัดเก็บในรูปของ JSON วัตถุใน LocalStorage
+โดยแบ่งออกเป็น 4 ข้อมูลหลัก:
+
+### 4.1 ข้อมูลผู้ใช้งานและเป้าหมาย (smart_profile)
+
+```json
+{
+  "name": "สมชาย รักดี",
+  "savingsGoal": 5000.00,
+  "waterGoal": 2000,
+  "exerciseGoal": 30
+}
+```
+
+### 4.2 ข้อมูลบันทึกสุขภาพรายวัน (smart_daily_health)
+
+```json
+{
+  "date": "2026-05-19",
+  "water": 1250,
+  "exercise": 20
+}
+```
+
+### 4.3 รายการธุรกรรม (smart_tx)
+
+```json
+[
+  {
+    "id": "1716123456789",
+    "type": "expense",
+    "amount": 150.00,
+    "category": "อาหาร",
+    "date": "2026-05-19",
+    "note": "ก๋วยเตี๋ยวกลางวัน"
+  }
+]
+```
+
+### 4.4 แผนงานและภารกิจ (smart_plans)
+
+```json
+[
+  {
+    "id": "1",
+    "task": "วิ่งออกกำลังกายสะสม",
+    "time": "17:30",
+    "energy": "ตั้งเป้าหมาย 30 นาที",
+    "completed": false,
+    "notified": false
+  }
+]
+```
+
+---
+
+## 5. แผนการขยายเทคโนโลยีในอนาคต (Future Technology Stack Roadmap)
+
+หากโครงการนี้ขยับขึ้นสู่ขั้นตอนการใช้งานเชิงพาณิชย์ หรือขยายสเกลเพื่อเพิ่มผู้ใช้
+แนะนำให้ปรับเปลี่ยนเทคโนโลยีดังต่อไปนี้:
+
+```
+┌────────────────────────────────────────────────────────────────────────┐
+│                          DEVELOPMENT ROADMAP                           │
+├───────────────────────┬───────────────────────┬────────────────────────┤
+│     Phase 1 (Now)     │     Phase 2 (Soon)    │    Phase 3 (Enterprise)│
+│  Vanilla JS + Local   │  Firebase Integration │  PWA Workbox + React   │
+└───────────────────────┴───────────────────────┴────────────────────────┘
+```
+
+### 5.1 Cloud Backend Stack (ยกระดับจาก LocalStorage)
+
+* **Database:** **Google Cloud Firestore (NoSQL)**
+  เพื่อเก็บข้อมูลแบบเรียลไทม์ ช่วยให้ซิงค์ข้อมูลข้ามแท็บเล็ต คอมพิวเตอร์ และมือถือได้
+
+* **Authentication:** **Firebase Authentication**
+  เพื่อระบบรักษาความปลอดภัยและการยืนยันตัวตนของผู้ใช้ผ่านระบบ (Email/Password, Google Sign-in)
+
+### 5.2 Progressive Web App (PWA) Stack
+
+* **Service Workers (Workbox):**
+  สำหรับบริหารจัดการทรัพยากรหน้าเว็บ ออฟไลน์แคชชิ่ง
+  และเปิดทางให้ส่งแจ้งเตือนแบบ Push Notifications แม้กระทั่งปิดแท็บเบราเซอร์ไปแล้ว
+
+* **Web App Manifest:**
+  ไฟล์สัญรูปไอคอนสำหรับติดตั้งลงบนหน้าจอมือถือและหน้าจอเดสก์ท็อปได้ทันที
+  เสมือนเป็นแอปพลิเคชันตัวหนึ่งของเครื่อง
+
+### 5.3 Modern Frontend Framework
+
+* **React + Vite / Tailwind:**
+  ขยับมาใช้โครงสร้าง Component-Based เมื่อมีการขยายตัว
+  เพื่อรองรับหน้าอื่นๆ ที่ซับซ้อนขึ้นในอนาคต
+  เช่น หน้ารายงานแบบ PDF, หน้าการบริหารแผนระยะยาว (Long-term Milestone Planner)
