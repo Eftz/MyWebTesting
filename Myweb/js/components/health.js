@@ -111,7 +111,7 @@ export function renderHealthComponent() {
             <h3 class="text-md font-bold text-orange-300 flex items-center gap-1.5">
               <i data-lucide="flame" class="w-5 h-5"></i> ปริมาณแคลอรี่ (Calories)
             </h3>
-            <p class="text-[10px] text-slate-500 mt-0.5">เป้าหมายบริโภครายวัน: ${AppState.currentUser.calGoal} Kcal</p>
+            <p class="text-[10px] text-slate-500 mt-0.5">เป้าหมาย: บริโภค ${AppState.currentUser.calGoal} Kcal | เผาผลาญ ${AppState.currentUser.burnGoal || 500} Kcal</p>
           </div>
 
           <div class="w-full space-y-6 my-4">
@@ -134,11 +134,10 @@ export function renderHealthComponent() {
                 <span class="text-slate-300 font-semibold flex items-center gap-1">
                   <i data-lucide="sparkles" class="w-3.5 h-3.5 text-pink-400"></i> เผาผลาญออก (Burned)
                 </span>
-                <span class="text-pink-300 font-bold">${AppState.health.cal_burned} Kcal</span>
+                <span class="text-pink-300 font-bold">${AppState.health.cal_burned} / ${AppState.currentUser.burnGoal || 500} Kcal</span>
               </div>
               <div class="w-full bg-slate-800 rounded-full h-3 overflow-hidden">
-                <!-- Standard comparison out of 500 Kcal average -->
-                <div class="bg-gradient-to-r from-pink-500 to-rose-400 h-full rounded-full" style="width: ${Math.min(100, (AppState.health.cal_burned / 500) * 100)}%"></div>
+                <div class="bg-gradient-to-r from-pink-500 to-rose-400 h-full rounded-full" style="width: ${Math.min(100, (AppState.health.cal_burned / (AppState.currentUser.burnGoal || 500)) * 100)}%"></div>
               </div>
             </div>
           </div>

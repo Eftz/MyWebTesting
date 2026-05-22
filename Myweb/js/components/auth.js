@@ -119,6 +119,7 @@ export function handleAuthSubmit(event, isSignUp) {
       waterGoal: 2000,
       exerciseGoal: 30,
       calGoal: 2000,
+      burnGoal: 500,
       onboarded: false
     };
 
