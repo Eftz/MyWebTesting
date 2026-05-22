@@ -30,6 +30,15 @@ function renderTodoRow(t) {
         <div class="flex flex-wrap gap-2 items-center mt-1">
           <span class="text-[9px] text-slate-500 font-mono">${t.date}</span>
           
+          <!-- Priority Badge -->
+          ${t.priority === 'high' ? `
+            <span class="text-[8px] px-1.5 py-0.5 rounded bg-rose-500/10 border border-rose-500/20 text-rose-450 font-bold shrink-0">ด่วนสูง</span>
+          ` : t.priority === 'low' ? `
+            <span class="text-[8px] px-1.5 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/20 text-emerald-450 font-bold shrink-0">ปกติ/ต่ำ</span>
+          ` : `
+            <span class="text-[8px] px-1.5 py-0.5 rounded bg-amber-500/10 border border-amber-500/20 text-amber-450 font-bold shrink-0">ปานกลาง</span>
+          `}
+          
           <!-- Consolidated Alert badge: Orange for pending, Green for alerted/completed -->
           ${t.alertTime ? (t.notified ? `
             <span class="text-[9px] px-2 py-0.5 rounded-md bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 font-mono flex items-center gap-1 shadow-sm">
@@ -222,6 +231,15 @@ export function renderTodoComponent() {
                 </div>
               </div>
 
+              <div>
+                <label class="block text-slate-400 text-xs font-semibold mb-1">ระดับความสำคัญ (Priority)</label>
+                <select id="todo-priority" class="glass-input w-full px-3 py-2 rounded-lg text-xs cursor-pointer">
+                  <option value="high">🔴 สูง (High)</option>
+                  <option value="medium" selected>🟡 กลาง (Medium)</option>
+                  <option value="low">🟢 ต่ำ (Low)</option>
+                </select>
+              </div>
+
               <div class="flex gap-2 pt-2">
                 <button type="submit" class="flex-1 py-2.5 rounded-xl text-xs font-bold text-white bg-pink-600 hover:bg-pink-500 shadow-md">
                   บันทึกงาน
@@ -279,6 +297,7 @@ export function handleTodoSubmit(event) {
   const task = document.getElementById('todo-task').value.trim();
   const date = document.getElementById('todo-date').value || AppState.getTodayString();
   const alertTime = document.getElementById('todo-alert-time').value;
+  const priority = document.getElementById('todo-priority').value || 'medium';
 
   if (idField) {
     // Edit Mode
@@ -292,6 +311,7 @@ export function handleTodoSubmit(event) {
         task,
         date,
         alertTime,
+        priority,
         notified: isTimeModified ? false : AppState.todos[index].notified
       };
       showToast('แก้ไขภารกิจเสร็จสิ้น');
@@ -303,6 +323,7 @@ export function handleTodoSubmit(event) {
       task,
       date,
       alertTime,
+      priority,
       completed: false,
       notified: false
     };
@@ -324,6 +345,10 @@ export function resetTodoForm() {
   document.getElementById('todo-form')?.reset();
   const idField = document.getElementById('todo-id');
   if (idField) idField.value = '';
+
+  if (document.getElementById('todo-priority')) {
+    document.getElementById('todo-priority').value = 'medium';
+  }
 
   // Clear search filter so the newly updated/added todo is always visible
   const searchField = document.getElementById('todo-search');
@@ -355,6 +380,10 @@ export function editTodo(id) {
   document.getElementById('todo-task').value = todo.task;
   document.getElementById('todo-date').value = todo.date;
   document.getElementById('todo-alert-time').value = todo.alertTime;
+
+  if (document.getElementById('todo-priority')) {
+    document.getElementById('todo-priority').value = todo.priority || 'medium';
+  }
 
   const title = document.getElementById('todo-form-title');
   if (title) title.innerHTML = `<i data-lucide="edit-3" class="text-amber-400"></i><span>แก้ไขแผนงานเป้าหมาย</span>`;

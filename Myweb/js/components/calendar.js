@@ -14,6 +14,7 @@ let modalTodoId = '';
 let modalTodoTask = '';
 let modalTodoDate = '';
 let modalTodoAlertTime = '';
+let modalTodoPriority = 'medium';
 
 // Day View local state
 let isDayViewOpen = false;
@@ -73,6 +74,7 @@ window.openCalendarModal = function (dateStr = '', todoId = '') {
       modalTodoTask = todo.task;
       modalTodoDate = todo.date;
       modalTodoAlertTime = todo.alertTime || '';
+      modalTodoPriority = todo.priority || 'medium';
     }
   } else {
     // Add mode
@@ -81,6 +83,7 @@ window.openCalendarModal = function (dateStr = '', todoId = '') {
 
     const now = new Date();
     modalTodoAlertTime = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+    modalTodoPriority = 'medium';
   }
   renderPage();
 };
@@ -91,6 +94,7 @@ window.closeCalendarModal = function () {
   modalTodoTask = '';
   modalTodoDate = '';
   modalTodoAlertTime = '';
+  modalTodoPriority = 'medium';
   renderPage();
 };
 
@@ -100,6 +104,7 @@ window.handleCalendarSubmit = function (event) {
   const task = document.getElementById('cal-todo-task').value.trim();
   const date = document.getElementById('cal-todo-date').value || AppState.getTodayString();
   const alertTime = document.getElementById('cal-todo-alert-time').value;
+  const priority = document.getElementById('cal-todo-priority').value || 'medium';
 
   if (modalTodoId) {
     // Edit Mode
@@ -113,6 +118,7 @@ window.handleCalendarSubmit = function (event) {
         task,
         date,
         alertTime,
+        priority,
         notified: isTimeModified ? false : AppState.todos[index].notified
       };
       showToast('แก้ไขแผนงานในปฏิทินสำเร็จ');
@@ -124,6 +130,7 @@ window.handleCalendarSubmit = function (event) {
       task,
       date,
       alertTime,
+      priority,
       completed: false,
       notified: false
     };
@@ -208,6 +215,21 @@ window.addDayViewTodo = function () {
   isDayViewOpen = false;
   window.openCalendarModal(selectedDayDate);
 };
+
+const priorityColorMap = {
+  high: 'event-pink',
+  medium: 'event-purple',
+  low: 'event-green'
+};
+
+function getPriorityValue(priority) {
+  switch (priority) {
+    case 'high': return 3;
+    case 'medium': return 2;
+    case 'low': return 1;
+    default: return 2;
+  }
+}
 
 export function renderCalendarComponent() {
   const monthNames = [
@@ -413,6 +435,9 @@ export function renderCalendarComponent() {
       return matchesDate && matchesSearch;
     });
 
+    // Sort events by priority (higher priority first)
+    dayTodos.sort((a, b) => getPriorityValue(b.priority) - getPriorityValue(a.priority));
+
     const isToday = cell.dateStr === todayStr;
 
     // Custom CSS classes
@@ -430,7 +455,7 @@ export function renderCalendarComponent() {
                   <!-- Events container -->
                   <div class="w-full flex-1 flex flex-col justify-start overflow-hidden pr-0.5 space-y-1">
                     ${dayTodos.slice(0, 3).map((todo, todoIdx) => {
-      const colorClass = pillColorClasses[todoIdx % 5];
+      const colorClass = priorityColorMap[todo.priority] || 'event-purple';
       return `
                         <div class="event-pill ${colorClass} ${todo.completed ? 'event-completed' : ''}" 
                              onclick="event.stopPropagation(); openDayView('${cell.dateStr}')"
@@ -506,6 +531,15 @@ export function renderCalendarComponent() {
                 </div>
               </div>
 
+              <div>
+                <label class="block text-slate-400 text-xs font-semibold mb-1">ระดับความสำคัญ (Priority)</label>
+                <select id="cal-todo-priority" class="glass-input w-full px-3 py-2 rounded-lg text-xs cursor-pointer">
+                  <option value="high" ${modalTodoPriority === 'high' ? 'selected' : ''}>🔴 สูง (High)</option>
+                  <option value="medium" ${modalTodoPriority === 'medium' ? 'selected' : ''}>🟡 กลาง (Medium)</option>
+                  <option value="low" ${modalTodoPriority === 'low' ? 'selected' : ''}>🟢 ต่ำ (Low)</option>
+                </select>
+              </div>
+
               <div class="flex gap-2 pt-2">
                 <button type="submit" class="flex-1 py-2.5 rounded-xl text-xs font-bold text-white bg-purple-600 hover:bg-purple-500 shadow-md">
                   บันทึกกิจกรรม
@@ -556,8 +590,11 @@ export function renderCalendarComponent() {
                   `;
         }
 
-        return dayTodos.map((todo, idx) => {
-          const colorClass = pillColorClasses[idx % 5];
+        // Sort events by priority (higher priority first)
+        dayTodos.sort((a, b) => getPriorityValue(b.priority) - getPriorityValue(a.priority));
+
+        return dayTodos.map((todo) => {
+          const colorClass = priorityColorMap[todo.priority] || 'event-purple';
           return `
                     <div class="flex items-center gap-3 p-3 rounded-xl bg-slate-900/60 border border-slate-800/40 hover:bg-slate-800/40 transition-all cursor-pointer group"
                          onclick="editDayViewTodo('${todo.id}')">
@@ -570,9 +607,19 @@ export function renderCalendarComponent() {
 
                       <!-- Task Text -->
                       <div class="flex-1 min-w-0">
-                        <p class="text-xs font-semibold ${todo.completed ? 'line-through text-slate-500' : 'text-slate-200'} truncate group-hover:text-purple-400 transition-colors">
-                          ${todo.task}
-                        </p>
+                        <div class="flex flex-wrap items-center gap-2">
+                          <p class="text-xs font-semibold ${todo.completed ? 'line-through text-slate-500' : 'text-slate-200'} truncate group-hover:text-purple-400 transition-colors">
+                            ${todo.task}
+                          </p>
+                          <!-- Priority Badge -->
+                          ${todo.priority === 'high' ? `
+                            <span class="text-[8px] px-1.5 py-0.5 rounded bg-rose-500/10 border border-rose-500/20 text-rose-450 font-bold shrink-0">ด่วนสูง</span>
+                          ` : todo.priority === 'low' ? `
+                            <span class="text-[8px] px-1.5 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/20 text-emerald-450 font-bold shrink-0">ปกติ/ต่ำ</span>
+                          ` : `
+                            <span class="text-[8px] px-1.5 py-0.5 rounded bg-amber-500/10 border border-amber-500/20 text-amber-450 font-bold shrink-0">ปานกลาง</span>
+                          `}
+                        </div>
                         ${todo.alertTime ? `
                           <span class="text-[9px] text-slate-500 font-mono flex items-center gap-1 mt-0.5">
                             <i data-lucide="clock" class="w-3 h-3"></i> เตือนเวลา ${todo.alertTime} น.
