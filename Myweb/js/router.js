@@ -10,6 +10,7 @@ import { renderTransactionComponent } from './components/transaction.js';
 import { renderTodoComponent } from './components/todo.js';
 import { renderHealthComponent } from './components/health.js';
 import { renderSettingsComponent } from './components/settings.js';
+import { renderCalendarComponent } from './components/calendar.js';
 
 export function navigate(page) {
   AppState.loading = true;
@@ -127,6 +128,11 @@ export function renderPage() {
             <span class="${hideTextClass}">Healthy Basement</span>
           </button>
           
+          <button onclick="navigate('calendar')" class="sidebar-link w-full flex items-center ${gapClass} px-4 py-3 rounded-xl border border-transparent text-sm font-medium text-slate-400 hover:text-slate-200 transition-all ${AppState.activePage === 'calendar' ? 'active' : ''} ${centerIconClass}" title="Calendar">
+            <i data-lucide="calendar" class="w-5 h-5 shrink-0"></i>
+            <span class="${hideTextClass}">Calendar</span>
+          </button>
+          
         </nav>
       </div>
 
@@ -210,6 +216,8 @@ function renderActiveComponent() {
       return renderHealthComponent();
     case 'settings':
       return renderSettingsComponent();
+    case 'calendar':
+      return renderCalendarComponent();
     default:
       return renderDashboardComponent();
   }
