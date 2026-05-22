@@ -231,11 +231,26 @@ export function renderDashboardComponent() {
               <div class="text-center py-8 text-slate-500 text-sm">วันนี้ไม่มีแผนงานของคุณ ลองเพิ่มรายการใหม่ได้ที่แถบ Do the list</div>
             ` : AppState.todos.slice(0, 4).map(todo => `
               <div class="flex items-center justify-between p-3 rounded-xl bg-slate-900/40 border border-slate-800/20">
-                <div class="flex items-center gap-3">
-                  <div class="w-2 h-2 rounded-full ${todo.completed ? 'bg-emerald-500' : 'bg-orange-500 animate-pulse'}"></div>
-                  <span class="text-sm font-medium ${todo.completed ? 'line-through text-slate-500' : 'text-slate-200'}">${todo.task}</span>
+                <div class="flex items-center gap-3 min-w-0">
+                  <div class="w-2 h-2 rounded-full ${todo.completed ? 'bg-emerald-500' : 'bg-orange-500 animate-pulse'} shrink-0"></div>
+                  <div class="min-w-0">
+                    <span class="text-sm font-medium ${todo.completed ? 'line-through text-slate-500' : 'text-slate-200'} truncate block">${todo.task}</span>
+                    <div class="flex items-center gap-2 mt-0.5">
+                      <!-- Priority Badge -->
+                      ${todo.priority === 'high' ? `
+                        <span class="text-[8px] px-1.5 py-0.2 rounded bg-rose-500/10 border border-rose-500/20 text-rose-400 font-bold shrink-0">ด่วนสูง</span>
+                      ` : todo.priority === 'low' ? `
+                        <span class="text-[8px] px-1.5 py-0.2 rounded bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 font-bold shrink-0">ปกติ/ต่ำ</span>
+                      ` : `
+                        <span class="text-[8px] px-1.5 py-0.2 rounded bg-amber-500/10 border border-amber-500/20 text-amber-400 font-bold shrink-0">ปานกลาง</span>
+                      `}
+                      ${todo.date ? `
+                        <span class="text-[9px] text-slate-500 font-mono">${todo.date}</span>
+                      ` : ''}
+                    </div>
+                  </div>
                 </div>
-                <div class="flex items-center gap-2">
+                <div class="flex items-center gap-2 shrink-0">
                   ${todo.alertTime ? `
                     <span class="text-xs text-purple-400 font-mono flex items-center gap-1">
                       <i data-lucide="bell" class="w-3 h-3"></i> ${todo.alertTime} น.
@@ -274,10 +289,10 @@ export function renderDashboardComponent() {
               <div>
                 <div class="flex justify-between text-xs mb-1">
                   <span class="text-slate-400">เผาผลาญออก (Burned)</span>
-                  <span class="text-pink-300 font-bold">${AppState.health.cal_burned} Kcal</span>
+                  <span class="text-pink-300 font-bold">${AppState.health.cal_burned} / ${AppState.currentUser.burnGoal || 500} Kcal</span>
                 </div>
                 <div class="w-full bg-slate-800 rounded-full h-2">
-                  <div class="bg-gradient-to-r from-pink-500 to-rose-400 h-full rounded-full" style="width: ${Math.min(100, (AppState.health.cal_burned / 500) * 100)}%"></div>
+                  <div class="bg-gradient-to-r from-pink-500 to-rose-400 h-full rounded-full" style="width: ${Math.min(100, (AppState.health.cal_burned / (AppState.currentUser.burnGoal || 500)) * 100)}%"></div>
                 </div>
               </div>
             </div>
