@@ -26,7 +26,15 @@ export const NotificationEngine = {
             // 🔥 เพิ่ม 3 บรรทัดนี้เพื่อดันให้ข้อความเด้ง Popup บน Android
             tag: 'smartlife-alarm', // แยกหมวดหมู่ไม่ให้ส่งซ้ำซ้อน
             renotify: true,         // บังคับให้สั่นและเด้งเตือนใหม่ทุกครั้งแม้ tag เดิม
-            requireInteraction: true // บังคับให้แถบค้างอยู่บนจอจนกว่าผู้ใช้จะปัดออก
+            requireInteraction: true, // บังคับให้แถบค้างอยู่บนจอจนกว่าผู้ใช้จะปัดออก
+
+            // 🔥 เพิ่มปุ่มกดของเราเองลงไปตรงนี้ได้เลยครับ
+            actions: [
+              {
+                action: 'open_app',
+                title: '📱 เปิดดูตารางงาน'
+              }
+            ]
           });
         });
       } else {
