@@ -31,3 +31,10 @@ window.togglePasswordVisibility = function(id) {
   }
 };
 
+// ลงทะเบียนระบบหลังบ้านเพื่อให้ Android ยอมเด้ง Notification ระดับ OS
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('./sw.js')
+    .then((reg) => console.log('SmartLife Service Worker ลงทะเบียนสำเร็จ!', reg))
+    .catch((err) => console.error('Service Worker พัง:', err));
+}
+
