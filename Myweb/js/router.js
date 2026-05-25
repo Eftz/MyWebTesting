@@ -22,6 +22,11 @@ export function navigate(page) {
   AppState.selectedTxIds = [];
   AppState.selectedTodoIds = [];
 
+  // Auto-collapse sidebar on navigation on mobile
+  if (window.innerWidth < 768) {
+    AppState.sidebarCollapsed = true;
+  }
+
   renderPage();
 
   setTimeout(() => {
@@ -78,20 +83,30 @@ export function renderPage() {
   // 3. Normal App Shell (Sidebar + Main Area)
   app.className = "min-h-screen flex flex-col md:flex-row bg-[#f2f7f7]";
 
-  const asideClasses = AppState.sidebarCollapsed
-    ? "hidden md:flex md:w-20 sidebar-panel p-3 flex-col justify-between shrink-0 transition-all duration-300 overflow-hidden"
-    : "w-full md:w-64 sidebar-panel p-5 flex flex-col justify-between shrink-0 transition-all duration-300";
+  const isMobile = window.innerWidth < 768;
+  const collapseIcon = isMobile
+    ? (AppState.sidebarCollapsed ? 'chevron-down' : 'chevron-up')
+    : (AppState.sidebarCollapsed ? 'chevrons-right' : 'chevrons-left');
 
-  const hideTextClass = AppState.sidebarCollapsed ? "md:hidden" : "";
+  const asideClasses = AppState.sidebarCollapsed
+    ? "fixed md:sticky top-0 left-0 right-0 md:h-screen z-40 w-full md:w-20 sidebar-panel p-3.5 md:p-3 flex flex-col md:justify-between shrink-0 transition-all duration-300 h-[68px] md:h-screen overflow-hidden shadow-md md:shadow-none"
+    : "fixed md:sticky top-0 left-0 right-0 md:h-screen z-40 w-full md:w-64 sidebar-panel p-4 md:p-5 flex flex-col md:justify-between shrink-0 transition-all duration-300 h-screen md:h-screen overflow-y-auto md:overflow-visible shadow-xl md:shadow-none";
+
+  const hideTextClass = AppState.sidebarCollapsed ? "block md:hidden" : "";
   const centerIconClass = AppState.sidebarCollapsed ? "md:justify-center" : "";
   const gapClass = AppState.sidebarCollapsed ? "md:gap-0" : "gap-3";
+  const navCollapseClass = AppState.sidebarCollapsed ? "hidden md:flex flex-col justify-between flex-1" : "flex flex-col justify-between flex-1";
+  
+  const profileHeaderClass = AppState.sidebarCollapsed
+    ? "flex items-center justify-between md:flex-col md:items-center md:justify-center pb-0 md:pb-6 mb-0 md:mb-6 border-none md:border-b border-white/10 gap-3 w-full"
+    : "flex items-center justify-between pb-4 md:pb-6 mb-4 md:mb-6 border-b border-white/10 gap-3 w-full";
 
   app.innerHTML = `
     <!-- Sidebar navigation -->
     <aside class="${asideClasses}">
       <div>
         <!-- Profile Header -->
-        <div class="flex ${AppState.sidebarCollapsed ? 'flex-col items-center justify-center' : 'items-center justify-between'} pb-6 mb-6 border-b border-white/10 gap-3">
+        <div class="${profileHeaderClass}">
           <div onclick="navigate('settings')" class="profile-header-link flex items-center gap-3 min-w-0 cursor-pointer rounded-xl px-2 py-1.5 -mx-2 transition-all hover:bg-white/10" title="ตั้งค่าโปรไฟล์">
             ${AppState.currentUser.profileImage ? `
               <img src="${AppState.currentUser.profileImage}" class="w-10 h-10 rounded-full object-cover border border-white/20 shadow-lg shrink-0 transition-transform group-hover:scale-105">
@@ -106,66 +121,70 @@ export function renderPage() {
             </div>
           </div>
           <button onclick="toggleSidebar()" class="p-1.5 rounded-lg bg-white/10 border border-white/20 text-white/70 hover:text-white hover:bg-white/20 transition-all flex items-center justify-center cursor-pointer" title="${AppState.sidebarCollapsed ? 'ขยายเมนู' : 'ยุบเมนู'}">
-            <i data-lucide="${AppState.sidebarCollapsed ? 'chevrons-right' : 'chevrons-left'}" class="w-4 h-4"></i>
+            <i data-lucide="${collapseIcon}" class="w-4 h-4"></i>
           </button>
         </div>
 
-        <!-- Sidebar Navigation Menu -->
-        <nav class="space-y-2">
-          <button onclick="navigate('dashboard')" class="sidebar-link w-full flex items-center ${gapClass} px-4 py-3 rounded-xl border border-transparent text-sm font-medium transition-all ${AppState.activePage === 'dashboard' ? 'active' : ''} ${centerIconClass}" title="Dashboard">
-            <i data-lucide="layout-dashboard" class="w-5 h-5 shrink-0"></i>
-            <span class="${hideTextClass}">Dashboard</span>
-          </button>
-          
-          <button onclick="navigate('transaction')" class="sidebar-link w-full flex items-center ${gapClass} px-4 py-3 rounded-xl border border-transparent text-sm font-medium transition-all ${AppState.activePage === 'transaction' ? 'active' : ''} ${centerIconClass}" title="Transaction">
-            <i data-lucide="wallet" class="w-5 h-5 shrink-0"></i>
-            <span class="${hideTextClass}">Transaction</span>
-          </button>
-          
-          <button onclick="navigate('todo')" class="sidebar-link w-full flex items-center ${gapClass} px-4 py-3 rounded-xl border border-transparent text-sm font-medium transition-all ${AppState.activePage === 'todo' ? 'active' : ''} ${centerIconClass}" title="Do the < list >">
-            <i data-lucide="check-square" class="w-5 h-5 shrink-0"></i>
-            <span class="${hideTextClass}">Do the &lt; list &gt;</span>
-          </button>
-          
-          <button onclick="navigate('health')" class="sidebar-link w-full flex items-center ${gapClass} px-4 py-3 rounded-xl border border-transparent text-sm font-medium transition-all ${AppState.activePage === 'health' ? 'active' : ''} ${centerIconClass}" title="Healthy Basement">
-            <i data-lucide="heart" class="w-5 h-5 shrink-0"></i>
-            <span class="${hideTextClass}">Healthy Basement</span>
-          </button>
-          
-          <button onclick="navigate('calendar')" class="sidebar-link w-full flex items-center ${gapClass} px-4 py-3 rounded-xl border border-transparent text-sm font-medium transition-all ${AppState.activePage === 'calendar' ? 'active' : ''} ${centerIconClass}" title="Calendar">
-            <i data-lucide="calendar" class="w-5 h-5 shrink-0"></i>
-            <span class="${hideTextClass}">Calendar</span>
-          </button>
-          
-        </nav>
+        <div class="${navCollapseClass}">
+          <!-- Sidebar Navigation Menu -->
+          <nav class="space-y-2 mt-4 md:mt-0">
+            <button onclick="navigate('dashboard')" class="sidebar-link w-full flex items-center ${gapClass} px-4 py-3 rounded-xl border border-transparent text-sm font-medium transition-all ${AppState.activePage === 'dashboard' ? 'active' : ''} ${centerIconClass}" title="Dashboard">
+              <i data-lucide="layout-dashboard" class="w-5 h-5 shrink-0"></i>
+              <span class="${hideTextClass}">Dashboard</span>
+            </button>
+            
+            <button onclick="navigate('transaction')" class="sidebar-link w-full flex items-center ${gapClass} px-4 py-3 rounded-xl border border-transparent text-sm font-medium transition-all ${AppState.activePage === 'transaction' ? 'active' : ''} ${centerIconClass}" title="Transaction">
+              <i data-lucide="wallet" class="w-5 h-5 shrink-0"></i>
+              <span class="${hideTextClass}">Transaction</span>
+            </button>
+            
+            <button onclick="navigate('todo')" class="sidebar-link w-full flex items-center ${gapClass} px-4 py-3 rounded-xl border border-transparent text-sm font-medium transition-all ${AppState.activePage === 'todo' ? 'active' : ''} ${centerIconClass}" title="Do the < list >">
+              <i data-lucide="check-square" class="w-5 h-5 shrink-0"></i>
+              <span class="${hideTextClass}">Do the &lt; list &gt;</span>
+            </button>
+            
+            <button onclick="navigate('health')" class="sidebar-link w-full flex items-center ${gapClass} px-4 py-3 rounded-xl border border-transparent text-sm font-medium transition-all ${AppState.activePage === 'health' ? 'active' : ''} ${centerIconClass}" title="Healthy Basement">
+              <i data-lucide="heart" class="w-5 h-5 shrink-0"></i>
+              <span class="${hideTextClass}">Healthy Basement</span>
+            </button>
+            
+            <button onclick="navigate('calendar')" class="sidebar-link w-full flex items-center ${gapClass} px-4 py-3 rounded-xl border border-transparent text-sm font-medium transition-all ${AppState.activePage === 'calendar' ? 'active' : ''} ${centerIconClass}" title="Calendar">
+              <i data-lucide="calendar" class="w-5 h-5 shrink-0"></i>
+              <span class="${hideTextClass}">Calendar</span>
+            </button>
+            
+          </nav>
+        </div>
       </div>
 
-      <!-- Quick targets visual summary inside sidebar -->
-      <div class="mt-8 space-y-3">
-        ${AppState.sidebarCollapsed ? '' : `
-          <div class="bg-white/10 border border-white/20 rounded-xl p-3 text-xs">
-            <div class="flex justify-between text-teal-100 font-semibold mb-1">
-              <span>ดื่มน้ำวันนี้</span>
-              <span>${AppState.health.water}/${AppState.currentUser.waterGoal} ml</span>
+      <div class="${navCollapseClass} mt-auto">
+        <!-- Quick targets visual summary inside sidebar -->
+        <div class="mt-8 space-y-3">
+          ${AppState.sidebarCollapsed ? '' : `
+            <div class="bg-white/10 border border-white/20 rounded-xl p-3 text-xs">
+              <div class="flex justify-between text-teal-100 font-semibold mb-1">
+                <span>ดื่มน้ำวันนี้</span>
+                <span>${AppState.health.water}/${AppState.currentUser.waterGoal} ml</span>
+              </div>
+              <div class="w-full bg-[#004242] rounded-full h-1.5 overflow-hidden">
+                <div class="bg-white h-full transition-all duration-500" style="width: ${Math.min(100, (AppState.health.water / AppState.currentUser.waterGoal) * 100)}%"></div>
+              </div>
             </div>
-            <div class="w-full bg-[#004242] rounded-full h-1.5 overflow-hidden">
-              <div class="bg-white h-full transition-all duration-500" style="width: ${Math.min(100, (AppState.health.water / AppState.currentUser.waterGoal) * 100)}%"></div>
-            </div>
-          </div>
-        `}
+          `}
 
-        <button onclick="handleLogout()" class="w-full flex items-center ${gapClass} px-4 py-3 rounded-xl text-sm font-medium text-rose-250 hover:bg-white/10 transition-all ${centerIconClass}" title="Log Out">
-          <i data-lucide="log-out" class="w-5 h-5 shrink-0"></i>
-          <span class="${hideTextClass}">Log Out</span>
-        </button>
+          <button onclick="handleLogout()" class="w-full flex items-center ${gapClass} px-4 py-3 rounded-xl text-sm font-medium text-rose-250 hover:bg-white/10 transition-all ${centerIconClass}" title="Log Out">
+            <i data-lucide="log-out" class="w-5 h-5 shrink-0"></i>
+            <span class="${hideTextClass}">Log Out</span>
+          </button>
+        </div>
       </div>
     </aside>
 
     <!-- Main Content Container with Premium transitions -->
-    <main class="flex-1 p-6 md:p-10 overflow-y-auto max-h-screen page-fade-in flex flex-col">
+    <main class="flex-1 p-6 md:p-10 overflow-y-auto max-h-screen page-fade-in flex flex-col mt-[68px] md:mt-0">
       <!-- Toggle button top bar breadcrumb -->
       <div class="flex items-center gap-4 mb-6">
-        <button onclick="toggleSidebar()" class="p-2 rounded-xl bg-white border border-slate-200 text-slate-500 hover:text-slate-800 transition-colors flex items-center justify-center cursor-pointer shadow-sm hover:bg-slate-50" title="${AppState.sidebarCollapsed ? 'ขยายเมนู' : 'ยุบเมนู'}">
+        <button onclick="toggleSidebar()" class="p-2 rounded-xl bg-white border border-slate-200 text-slate-500 hover:text-slate-800 transition-colors flex items-center justify-center cursor-pointer shadow-sm hover:bg-slate-50 md:flex hidden" title="${AppState.sidebarCollapsed ? 'ขยายเมนู' : 'ยุบเมนู'}">
           <i data-lucide="${AppState.sidebarCollapsed ? 'menu' : 'menu-fold'}" class="w-5.5 h-5.5"></i>
         </button>
         <div class="flex items-center gap-2 text-xs font-bold text-slate-500 tracking-wider uppercase select-none">
@@ -233,4 +252,27 @@ window.handleLogout = handleLogout;
 window.renderPage = renderPage;
 window.renderActiveComponent = renderActiveComponent;
 window.toggleSidebar = toggleSidebar;
+
+// Auto-collapse mobile navbar on scroll or resize
+if (typeof window !== 'undefined') {
+  window.addEventListener('scroll', (event) => {
+    if (window.innerWidth < 768 && !AppState.sidebarCollapsed) {
+      const target = event.target;
+      const scrollTop = target === window ? window.scrollY : (target.scrollTop || 0);
+      if (scrollTop > 20) {
+        AppState.sidebarCollapsed = true;
+        renderPage();
+      }
+    }
+  }, { capture: true, passive: true });
+
+  window.addEventListener('resize', () => {
+    // Re-render when crossing mobile/desktop screen size breakpoint
+    const isMobileNow = window.innerWidth < 768;
+    if (AppState.lastMobileState !== isMobileNow) {
+      AppState.lastMobileState = isMobileNow;
+      renderPage();
+    }
+  }, { passive: true });
+}
 

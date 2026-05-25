@@ -329,10 +329,7 @@ export function renderCalendarComponent() {
         <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full lg:w-auto">
           <!-- Custom Navigation Tabs -->
           <div class="flex p-0.5 rounded-xl bg-slate-100 border border-slate-200 text-[11px] font-semibold text-slate-650 shrink-0">
-            <button class="px-3.5 py-1.5 rounded-lg bg-[#007a7a]/15 text-[#007a7a] font-bold border border-[#007a7a]/25">All events</button>
-            <button class="px-3.5 py-1.5 rounded-lg hover:text-slate-800 transition-colors">Shared</button>
-            <button class="px-3.5 py-1.5 rounded-lg hover:text-slate-800 transition-colors">Public</button>
-            <button class="px-3.5 py-1.5 rounded-lg hover:text-slate-800 transition-colors">Archived</button>
+          <button class="px-3.5 py-1.5 rounded-lg bg-[#007a7a]/15 text-[#007a7a] font-bold border border-[#007a7a]/25">All events</button>
           </div>
 
           <!-- Top Right Search -->
