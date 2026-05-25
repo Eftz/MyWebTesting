@@ -4,45 +4,45 @@ import { showToast } from '../ui.js';
 import { navigate } from '../router.js';
 
 export function renderOnboarding(app) {
-  app.className = "flex items-center justify-center min-h-screen bg-[#0a0715] p-4";
+  app.className = "flex items-center justify-center min-h-screen bg-[#f2f7f7] p-4";
   app.innerHTML = `
-    <div class="w-full max-w-lg glass-panel p-8 rounded-3xl border border-slate-800/50 shadow-2xl relative page-fade-in">
-      <div class="absolute -top-16 -right-16 w-36 h-36 rounded-full bg-cyan-600/10 blur-2xl"></div>
+    <div class="w-full max-w-lg glass-panel p-8 rounded-3xl border border-slate-200 shadow-2xl relative page-fade-in bg-white">
+      <div class="absolute -top-16 -right-16 w-36 h-36 rounded-full bg-teal-600/5 blur-2xl"></div>
 
       <div class="text-center mb-6">
-        <h2 class="text-2xl font-extrabold text-slate-100">ยินดีต้อนรับสู่ SmartLife! 👋</h2>
-        <p class="text-slate-400 text-sm mt-2">กรุณาตั้งเป้าหมายส่วนตัวครั้งแรกเพื่อขับเคลื่อนระบบให้เหมาะสมกับคุณ</p>
+        <h2 class="text-2xl font-extrabold text-slate-800">ยินดีต้อนรับสู่ SmartLife! 👋</h2>
+        <p class="text-slate-500 text-sm mt-2">กรุณาตั้งเป้าหมายส่วนตัวครั้งแรกเพื่อขับเคลื่อนระบบให้เหมาะสมกับคุณ</p>
       </div>
 
       <form onsubmit="handleOnboardingSubmit(event)" class="space-y-4">
         <div>
-          <label class="block text-slate-300 text-xs font-semibold uppercase mb-1.5">ชื่อแสดงผล (Display Name)</label>
+          <label class="block text-slate-650 text-xs font-semibold uppercase mb-1.5">ชื่อแสดงผล (Display Name)</label>
           <input type="text" id="ob-name" required class="glass-input w-full px-4 py-2.5 rounded-xl text-sm" value="${AppState.currentUser.name}">
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label class="block text-slate-300 text-xs font-semibold uppercase mb-1.5">เป้าหมายเงินออมประจำเดือน (฿)</label>
+            <label class="block text-slate-650 text-xs font-semibold uppercase mb-1.5">เป้าหมายเงินออมประจำเดือน (฿)</label>
             <input type="number" id="ob-savings" min="0" required class="glass-input w-full px-4 py-2.5 rounded-xl text-sm" value="5000">
           </div>
           <div>
-            <label class="block text-slate-300 text-xs font-semibold uppercase mb-1.5">เป้าหมายดื่มน้ำต่อวัน (มล.)</label>
+            <label class="block text-slate-650 text-xs font-semibold uppercase mb-1.5">เป้าหมายดื่มน้ำต่อวัน (มล.)</label>
             <input type="number" id="ob-water" min="0" required class="glass-input w-full px-4 py-2.5 rounded-xl text-sm" value="2000">
           </div>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label class="block text-slate-300 text-xs font-semibold uppercase mb-1.5">เป้าหมายออกกำลังกายต่อวัน (นาที)</label>
+            <label class="block text-slate-650 text-xs font-semibold uppercase mb-1.5">เป้าหมายออกกำลังกายต่อวัน (นาที)</label>
             <input type="number" id="ob-exercise" min="0" required class="glass-input w-full px-4 py-2.5 rounded-xl text-sm" value="30">
           </div>
           <div>
-            <label class="block text-slate-300 text-xs font-semibold uppercase mb-1.5">เป้าหมายแคลอรี่อาหารต่อวัน (Kcal)</label>
+            <label class="block text-slate-650 text-xs font-semibold uppercase mb-1.5">เป้าหมายแcalอรี่อาหารต่อวัน (Kcal)</label>
             <input type="number" id="ob-cal" min="0" required class="glass-input w-full px-4 py-2.5 rounded-xl text-sm" value="2000">
           </div>
         </div>
 
-        <button type="submit" class="w-full mt-4 py-3 rounded-xl font-bold text-white bg-gradient-to-r from-purple-600 to-cyan-500 hover:from-purple-500 hover:to-cyan-400 shadow-md transition-all flex items-center justify-center gap-2">
+        <button type="submit" class="w-full mt-4 py-3 rounded-xl font-bold text-white bg-gradient-to-r from-[#005f5f] to-[#007a7a] hover:from-[#004d4d] hover:to-[#006363] shadow-md shadow-[#007a7a]/15 transition-all flex items-center justify-center gap-2 cursor-pointer">
           <span>เริ่มต้นใช้งานเว็บไซต์</span>
           <i data-lucide="check" class="w-5 h-5"></i>
         </button>

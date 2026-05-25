@@ -11,21 +11,21 @@ export function renderHealthComponent() {
   return `
     <div class="space-y-8">
       <div>
-        <h1 class="text-2xl font-bold text-white flex items-center gap-2">
-          <i data-lucide="heart" class="text-cyan-400"></i>
+        <h1 class="text-2xl font-bold text-slate-800 flex items-center gap-2">
+          <i data-lucide="heart" class="text-cyan-600"></i>
           <span>ศูนย์ดูแลสุขภาพ (Healthy Basement)</span>
         </h1>
-        <p class="text-slate-400 text-xs mt-1">ติดตามเป้าหมายการดื่มน้ำ กายบริหาร และสัดส่วนแคลอรี่เข้าออกประจำวัน</p>
+        <p class="text-slate-500 text-xs mt-1">ติดตามเป้าหมายการดื่มน้ำ กายบริหาร และสัดส่วนแคลอรี่เข้าออกประจำวัน</p>
       </div>
 
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
         
         <!-- CARD 💧: Water Tracker -->
-        <div class="glass-panel p-6 rounded-3xl border border-slate-800/40 flex flex-col justify-between items-center relative overflow-hidden group">
+        <div class="glass-panel p-6 rounded-3xl border border-slate-200 flex flex-col justify-between items-center relative overflow-hidden group">
           <div class="absolute -right-8 -top-8 w-20 h-20 rounded-full bg-cyan-600/5 group-hover:bg-cyan-600/10 blur-xl"></div>
           
           <div class="w-full mb-4">
-            <h3 class="text-md font-bold text-cyan-300 flex items-center gap-1.5">
+            <h3 class="text-md font-bold text-cyan-700 flex items-center gap-1.5">
               <i data-lucide="droplet" class="w-5 h-5"></i> บันทึกการดื่มน้ำ
             </h3>
             <p class="text-[10px] text-slate-500 mt-0.5">เป้าหมายรายวัน: ${AppState.currentUser.waterGoal} มล.</p>
@@ -45,9 +45,9 @@ export function renderHealthComponent() {
           <div class="w-full space-y-3 mt-4">
             <!-- Quick Increment values -->
             <div class="grid grid-cols-3 gap-2">
-              <button onclick="addWater(250)" class="py-2.5 rounded-xl text-xs font-bold bg-cyan-600/15 border border-cyan-600/35 hover:bg-cyan-600/30 text-cyan-300 active:scale-95 transition-all">+250ml</button>
-              <button onclick="addWater(500)" class="py-2.5 rounded-xl text-xs font-bold bg-cyan-600/15 border border-cyan-600/35 hover:bg-cyan-600/30 text-cyan-300 active:scale-95 transition-all">+500ml</button>
-              <button onclick="addWater(750)" class="py-2.5 rounded-xl text-xs font-bold bg-cyan-600/15 border border-cyan-600/35 hover:bg-cyan-600/30 text-cyan-300 active:scale-95 transition-all">+750ml</button>
+              <button onclick="addWater(250)" class="py-2.5 rounded-xl text-xs font-bold bg-cyan-50 border border-cyan-200 hover:bg-cyan-100 text-cyan-700 active:scale-95 transition-all">+250ml</button>
+              <button onclick="addWater(500)" class="py-2.5 rounded-xl text-xs font-bold bg-cyan-50 border border-cyan-200 hover:bg-cyan-100 text-cyan-700 active:scale-95 transition-all">+500ml</button>
+              <button onclick="addWater(750)" class="py-2.5 rounded-xl text-xs font-bold bg-cyan-50 border border-cyan-200 hover:bg-cyan-100 text-cyan-700 active:scale-95 transition-all">+750ml</button>
             </div>
 
             <!-- Custom Input -->
@@ -56,18 +56,18 @@ export function renderHealthComponent() {
               <button onclick="addCustomWater()" class="px-4 py-2 rounded-xl text-xs font-bold bg-cyan-600 text-white hover:bg-cyan-500 transition-colors">เพิ่ม</button>
             </div>
             
-            <button onclick="resetWater()" class="w-full py-1.5 rounded-lg text-[10px] text-slate-500 hover:text-rose-400 border border-transparent hover:border-rose-900/30 transition-all">
+            <button onclick="resetWater()" class="w-full py-1.5 rounded-lg text-[10px] text-slate-500 hover:text-rose-600 border border-transparent hover:border-rose-200 hover:bg-rose-50 transition-all">
               รีเซ็ตค่าวันนี้ใหม่
             </button>
           </div>
         </div>
 
         <!-- CARD 🏋️: Exercise Fitness -->
-        <div class="glass-panel p-6 rounded-3xl border border-slate-800/40 flex flex-col justify-between items-center relative overflow-hidden group">
+        <div class="glass-panel p-6 rounded-3xl border border-slate-200 flex flex-col justify-between items-center relative overflow-hidden group">
           <div class="absolute -right-8 -top-8 w-20 h-20 rounded-full bg-emerald-600/5 group-hover:bg-emerald-600/10 blur-xl"></div>
           
           <div class="w-full mb-4">
-            <h3 class="text-md font-bold text-emerald-300 flex items-center gap-1.5">
+            <h3 class="text-md font-bold text-emerald-700 flex items-center gap-1.5">
               <i data-lucide="dumbbell" class="w-5 h-5"></i> เวลาออกกำลังกาย
             </h3>
             <p class="text-[10px] text-slate-500 mt-0.5">เป้าหมายรายวัน: ${AppState.currentUser.exerciseGoal} นาที</p>
@@ -75,11 +75,11 @@ export function renderHealthComponent() {
 
           <!-- Circular representation placeholder using Tailwind percentage borders or stats -->
           <div class="my-6 relative flex items-center justify-center">
-            <div class="w-32 h-32 rounded-full border-4 border-slate-800 flex items-center justify-center relative">
+            <div class="w-32 h-32 rounded-full border-4 border-slate-200 flex items-center justify-center relative">
               <div class="absolute inset-0 rounded-full border-4 border-emerald-500 transition-all duration-500" style="clip-path: polygon(0 0, 100% 0, 100% ${exercisePercent}%, 0 ${exercisePercent}%)"></div>
               <div class="text-center">
-                <span class="text-3xl font-extrabold text-white">${AppState.health.exercise}</span>
-                <span class="text-[10px] text-slate-400 block">นาทีสะสม</span>
+                <span class="text-3xl font-extrabold text-slate-800">${AppState.health.exercise}</span>
+                <span class="text-[10px] text-slate-550 block font-bold">นาทีสะสม</span>
               </div>
             </div>
           </div>
@@ -87,8 +87,8 @@ export function renderHealthComponent() {
           <div class="w-full space-y-3">
             <!-- Selector quick additions -->
             <div class="grid grid-cols-2 gap-2">
-              <button onclick="addExercise(10)" class="py-2.5 rounded-xl text-xs font-bold bg-emerald-600/15 border border-emerald-600/35 hover:bg-emerald-600/30 text-emerald-300 transition-all">+10 นาที</button>
-              <button onclick="addExercise(30)" class="py-2.5 rounded-xl text-xs font-bold bg-emerald-600/15 border border-emerald-600/35 hover:bg-emerald-600/30 text-emerald-300 transition-all">+30 นาที</button>
+              <button onclick="addExercise(10)" class="py-2.5 rounded-xl text-xs font-bold bg-emerald-50 border border-emerald-200 hover:bg-emerald-100 text-emerald-700 transition-all">+10 นาที</button>
+              <button onclick="addExercise(30)" class="py-2.5 rounded-xl text-xs font-bold bg-emerald-50 border border-emerald-200 hover:bg-emerald-100 text-emerald-700 transition-all">+30 นาที</button>
             </div>
 
             <!-- Custom Input -->
@@ -97,18 +97,18 @@ export function renderHealthComponent() {
               <button onclick="addCustomExercise()" class="px-4 py-2 rounded-xl text-xs font-bold bg-emerald-600 text-white hover:bg-emerald-500 transition-colors">เพิ่ม</button>
             </div>
             
-            <button onclick="resetExercise()" class="w-full py-1.5 rounded-lg text-[10px] text-slate-500 hover:text-rose-400 border border-transparent hover:border-rose-900/30 transition-all">
+            <button onclick="resetExercise()" class="w-full py-1.5 rounded-lg text-[10px] text-slate-500 hover:text-rose-600 border border-transparent hover:border-rose-200 hover:bg-rose-50 transition-all">
               รีเซ็ตค่าวันนี้ใหม่
             </button>
           </div>
         </div>
 
         <!-- CARD 🔥: Eating Calory (Intake and Burn metrics) -->
-        <div class="glass-panel p-6 rounded-3xl border border-slate-800/40 flex flex-col justify-between items-center relative overflow-hidden group">
+        <div class="glass-panel p-6 rounded-3xl border border-slate-200 flex flex-col justify-between items-center relative overflow-hidden group">
           <div class="absolute -right-8 -top-8 w-20 h-20 rounded-full bg-orange-600/5 group-hover:bg-orange-600/10 blur-xl"></div>
           
           <div class="w-full mb-4">
-            <h3 class="text-md font-bold text-orange-300 flex items-center gap-1.5">
+            <h3 class="text-md font-bold text-orange-600 flex items-center gap-1.5">
               <i data-lucide="flame" class="w-5 h-5"></i> ปริมาณแคลอรี่ (Calories)
             </h3>
             <p class="text-[10px] text-slate-500 mt-0.5">เป้าหมาย: บริโภค ${AppState.currentUser.calGoal} Kcal | เผาผลาญ ${AppState.currentUser.burnGoal || 500} Kcal</p>
@@ -118,12 +118,12 @@ export function renderHealthComponent() {
             <!-- Calorie Consumed tracking -->
             <div>
               <div class="flex justify-between items-center text-xs mb-1.5">
-                <span class="text-slate-300 font-semibold flex items-center gap-1">
-                  <i data-lucide="utensils" class="w-3.5 h-3.5 text-orange-400"></i> ทานเข้าไป (Intake)
+                <span class="text-slate-700 font-semibold flex items-center gap-1">
+                  <i data-lucide="utensils" class="w-3.5 h-3.5 text-orange-500"></i> ทานเข้าไป (Intake)
                 </span>
-                <span class="text-orange-300 font-bold">${AppState.health.cal_consumed} / ${AppState.currentUser.calGoal} Kcal</span>
+                <span class="text-orange-600 font-bold">${AppState.health.cal_consumed} / ${AppState.currentUser.calGoal} Kcal</span>
               </div>
-              <div class="w-full bg-slate-800 rounded-full h-3 overflow-hidden">
+              <div class="w-full bg-slate-100 rounded-full h-3 overflow-hidden">
                 <div class="bg-gradient-to-r from-orange-500 to-amber-400 h-full rounded-full" style="width: ${calPercent}%"></div>
               </div>
             </div>
@@ -131,12 +131,12 @@ export function renderHealthComponent() {
             <!-- Calorie Burned tracking -->
             <div>
               <div class="flex justify-between items-center text-xs mb-1.5">
-                <span class="text-slate-300 font-semibold flex items-center gap-1">
-                  <i data-lucide="sparkles" class="w-3.5 h-3.5 text-pink-400"></i> เผาผลาญออก (Burned)
+                <span class="text-slate-700 font-semibold flex items-center gap-1">
+                  <i data-lucide="sparkles" class="w-3.5 h-3.5 text-pink-500"></i> เผาผลาญออก (Burned)
                 </span>
-                <span class="text-pink-300 font-bold">${AppState.health.cal_burned} / ${AppState.currentUser.burnGoal || 500} Kcal</span>
+                <span class="text-pink-600 font-bold">${AppState.health.cal_burned} / ${AppState.currentUser.burnGoal || 500} Kcal</span>
               </div>
-              <div class="w-full bg-slate-800 rounded-full h-3 overflow-hidden">
+              <div class="w-full bg-slate-100 rounded-full h-3 overflow-hidden">
                 <div class="bg-gradient-to-r from-pink-500 to-rose-400 h-full rounded-full" style="width: ${Math.min(100, (AppState.health.cal_burned / (AppState.currentUser.burnGoal || 500)) * 100)}%"></div>
               </div>
             </div>
@@ -146,23 +146,23 @@ export function renderHealthComponent() {
             <div class="grid grid-cols-2 gap-4">
               <!-- Consumed manual input -->
               <div class="space-y-1.5">
-                <label class="text-[10px] text-slate-400 font-bold">เพิ่มปริมาณบริโภค</label>
+                <label class="text-[10px] text-slate-500 font-bold">เพิ่มปริมาณบริโภc</label>
                 <div class="flex gap-1.5">
                   <input type="number" id="cal-intake-input" min="0" placeholder="Kcal" class="glass-input w-full px-2 py-1.5 rounded-lg text-xs">
-                  <button onclick="addCalIntake()" class="px-2.5 py-1.5 rounded-lg bg-orange-600 hover:bg-orange-500 text-white font-bold text-xs shadow-md">+</button>
+                  <button onclick="addCalIntake()" class="px-2.5 py-1.5 rounded-lg bg-orange-650 hover:bg-orange-500 text-white font-bold text-xs shadow-sm">+</button>
                 </div>
               </div>
               <!-- Burned manual input -->
               <div class="space-y-1.5">
-                <label class="text-[10px] text-slate-400 font-bold">เพิ่มปริมาณเผาผลาญ</label>
+                <label class="text-[10px] text-slate-500 font-bold">เพิ่มปริมาณเผาผลาญ</label>
                 <div class="flex gap-1.5">
                   <input type="number" id="cal-burn-input" min="0" placeholder="Kcal" class="glass-input w-full px-2 py-1.5 rounded-lg text-xs">
-                  <button onclick="addCalBurn()" class="px-2.5 py-1.5 rounded-lg bg-pink-600 hover:bg-pink-500 text-white font-bold text-xs shadow-md">+</button>
+                  <button onclick="addCalBurn()" class="px-2.5 py-1.5 rounded-lg bg-pink-600 hover:bg-pink-500 text-white font-bold text-xs shadow-sm">+</button>
                 </div>
               </div>
             </div>
 
-            <button onclick="resetCalories()" class="w-full py-1.5 rounded-lg text-[10px] text-slate-500 hover:text-rose-400 border border-transparent hover:border-rose-900/30 transition-all">
+            <button onclick="resetCalories()" class="w-full py-1.5 rounded-lg text-[10px] text-slate-500 hover:text-rose-600 border border-transparent hover:border-rose-200 hover:bg-rose-50 transition-all">
               รีเซ็ตค่าวันนี้ใหม่
             </button>
           </div>

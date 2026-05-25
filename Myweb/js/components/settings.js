@@ -176,23 +176,23 @@ export function renderSettingsComponent() {
   return `
     <div class="space-y-6 max-w-xl">
       <div>
-        <h1 class="text-2xl font-bold text-white flex items-center gap-2">
-          <i data-lucide="settings" class="text-purple-400"></i>
+        <h1 class="text-2xl font-bold text-slate-800 flex items-center gap-2">
+          <i data-lucide="settings" class="text-[#007a7a]"></i>
           <span>ตั้งค่าข้อมูลทั่วไป (Settings Panel)</span>
         </h1>
-        <p class="text-slate-400 text-xs mt-1">แก้ไขข้อมูลส่วนตัว รหัสผ่าน และปรับเป้าหมายรายวันของคุณได้ตลอดเวลา</p>
+        <p class="text-slate-500 text-xs mt-1">แก้ไขข้อมูลส่วนตัว รหัสผ่าน และปรับเป้าหมายรายวันของคุณได้ตลอดเวลา</p>
       </div>
 
-      <div class="glass-panel p-6 rounded-3xl border border-slate-800/40">
+      <div class="glass-panel p-6 rounded-3xl border border-slate-200 bg-white shadow-sm">
         <!-- Premium Profile Picture customization area -->
-        <div class="flex flex-col sm:flex-row items-center gap-6 pb-6 mb-4 border-b border-slate-800/40">
+        <div class="flex flex-col sm:flex-row items-center gap-6 pb-6 mb-4 border-b border-slate-100">
           <div class="relative group">
-            <div class="absolute -inset-0.5 bg-gradient-to-tr from-purple-600 to-pink-500 rounded-full blur opacity-45 group-hover:opacity-75 transition-opacity"></div>
-            <div class="relative w-24 h-24 rounded-full bg-slate-900 border-2 border-purple-500/30 overflow-hidden shadow-2xl flex items-center justify-center">
+            <div class="absolute -inset-0.5 bg-gradient-to-tr from-[#005f5f] to-[#007a7a] rounded-full blur opacity-35 group-hover:opacity-60 transition-opacity"></div>
+            <div class="relative w-24 h-24 rounded-full bg-slate-50 border-2 border-[#007a7a]/30 overflow-hidden shadow-lg flex items-center justify-center">
               ${AppState.currentUser.profileImage ? `
                 <img src="${AppState.currentUser.profileImage}" class="w-full h-full object-cover">
               ` : `
-                <div class="w-full h-full bg-gradient-to-tr from-purple-600 to-pink-500 flex items-center justify-center font-extrabold text-3xl text-white">
+                <div class="w-full h-full bg-gradient-to-tr from-[#005f5f] to-[#007a7a] flex items-center justify-center font-extrabold text-3xl text-white">
                   ${AppState.currentUser.name.charAt(0).toUpperCase()}
                 </div>
               `}
@@ -200,18 +200,18 @@ export function renderSettingsComponent() {
           </div>
           
           <div class="flex-1 text-center sm:text-left space-y-2">
-            <h3 class="text-sm font-bold text-slate-200">รูปภาพโปรไฟล์ของคุณ</h3>
-            <p class="text-[10px] text-slate-400 leading-normal">รองรับไฟล์ภาพ JPEG/PNG จากเครื่อง หรือดึงภาพผ่าน Google Drive เพื่อแชร์ร่วมกันในคลาวด์</p>
+            <h3 class="text-sm font-bold text-slate-700">รูปภาพโปรไฟล์ของคุณ</h3>
+            <p class="text-[10px] text-slate-500 leading-normal">รองรับไฟล์ภาพ JPEG/PNG จากเครื่อง หรือดึงภาพผ่าน Google Drive เพื่อแชร์ร่วมกันในคลาวด์</p>
             
             <div class="flex flex-wrap justify-center sm:justify-start gap-2 pt-1">
-              <button type="button" onclick="triggerLocalAvatarSelect()" class="px-3.5 py-1.5 rounded-xl text-xs font-bold text-purple-300 bg-purple-500/10 border border-purple-500/25 hover:bg-purple-500/20 active:scale-95 transition-all flex items-center gap-1.5 cursor-pointer">
+              <button type="button" onclick="triggerLocalAvatarSelect()" class="px-3.5 py-1.5 rounded-xl text-xs font-bold text-[#007a7a] bg-[#007a7a]/10 border border-[#007a7a]/25 hover:bg-[#007a7a]/20 active:scale-95 transition-all flex items-center gap-1.5 cursor-pointer">
                 <i data-lucide="upload" class="w-3.5 h-3.5"></i> อัพโหลดรูปภาพ
               </button>
-              <button type="button" onclick="openGoogleDriveModal()" class="px-3.5 py-1.5 rounded-xl text-xs font-bold text-cyan-300 bg-cyan-500/10 border border-cyan-500/25 hover:bg-cyan-500/20 active:scale-95 transition-all flex items-center gap-1.5 cursor-pointer">
+              <button type="button" onclick="openGoogleDriveModal()" class="px-3.5 py-1.5 rounded-xl text-xs font-bold text-cyan-700 bg-cyan-50 border border-cyan-200 hover:bg-cyan-100 active:scale-95 transition-all flex items-center gap-1.5 cursor-pointer">
                 <i data-lucide="cloud" class="w-3.5 h-3.5"></i> ซิงค์ Google Drive
               </button>
               ${AppState.currentUser.profileImage ? `
-                <button type="button" onclick="removeProfileImage()" class="px-3 py-1.5 rounded-xl text-xs font-bold text-rose-400 bg-rose-500/10 border border-rose-500/25 hover:bg-rose-500/20 active:scale-95 transition-all cursor-pointer">
+                <button type="button" onclick="removeProfileImage()" class="px-3 py-1.5 rounded-xl text-xs font-bold text-rose-600 bg-rose-50 border border-rose-200 hover:bg-rose-100 active:scale-95 transition-all cursor-pointer">
                   ลบรูปภาพ
                 </button>
               ` : ''}
@@ -222,48 +222,48 @@ export function renderSettingsComponent() {
 
         <form onsubmit="handleSettingsUpdate(event)" class="space-y-4">
           <div>
-            <label class="block text-slate-300 text-xs font-semibold mb-1.5">ชื่อแสดงผลของคุณ (Display Name)</label>
+            <label class="block text-slate-650 text-xs font-semibold mb-1.5">ชื่อแสดงผลของคุณ (Display Name)</label>
             <input type="text" id="set-name" required class="glass-input w-full px-4 py-2.5 rounded-xl text-sm" value="${AppState.currentUser.name}">
           </div>
 
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label class="block text-slate-300 text-xs font-semibold mb-1.5">เป้าหมายการออมเงิน (฿)</label>
+              <label class="block text-slate-650 text-xs font-semibold mb-1.5">เป้าหมายการออมเงิน (฿)</label>
               <input type="number" id="set-savings" required class="glass-input w-full px-4 py-2.5 rounded-xl text-sm" value="${AppState.currentUser.savingsGoal}">
             </div>
             <div>
-              <label class="block text-slate-300 text-xs font-semibold mb-1.5">เป้าหมายน้ำต่อวัน (มล.)</label>
+              <label class="block text-slate-650 text-xs font-semibold mb-1.5">เป้าหมายน้ำต่อวัน (มล.)</label>
               <input type="number" id="set-water" required class="glass-input w-full px-4 py-2.5 rounded-xl text-sm" value="${AppState.currentUser.waterGoal}">
             </div>
           </div>
 
           <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div>
-              <label class="block text-slate-300 text-xs font-semibold mb-1.5">เป้าหมายออกกำลังกาย (นาที)</label>
+              <label class="block text-slate-650 text-xs font-semibold mb-1.5">เป้าหมายออกกำลังกาย (นาที)</label>
               <input type="number" id="set-exercise" required class="glass-input w-full px-4 py-2.5 rounded-xl text-sm" value="${AppState.currentUser.exerciseGoal}">
             </div>
             <div>
-              <label class="block text-slate-300 text-xs font-semibold mb-1.5">เป้าหมายบริโภคแคลอรี่ (Kcal)</label>
+              <label class="block text-slate-650 text-xs font-semibold mb-1.5">เป้าหมายบริโภคแคลอรี่ (Kcal)</label>
               <input type="number" id="set-cal" required class="glass-input w-full px-4 py-2.5 rounded-xl text-sm" value="${AppState.currentUser.calGoal}">
             </div>
             <div>
-              <label class="block text-slate-300 text-xs font-semibold mb-1.5">เป้าหมายเผาผลาญ (Kcal)</label>
+              <label class="block text-slate-650 text-xs font-semibold mb-1.5">เป้าหมายเผาผลาญ (Kcal)</label>
               <input type="number" id="set-burn" required class="glass-input w-full px-4 py-2.5 rounded-xl text-sm" value="${AppState.currentUser.burnGoal || 500}">
             </div>
           </div>
 
-          <hr class="border-slate-800/60 my-4">
+          <hr class="border-slate-100 my-4">
 
           <div class="pt-2 grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <button type="button" onclick="openUsernameModal()" class="w-full py-2.5 rounded-xl text-xs font-bold text-purple-400 bg-purple-500/10 border border-purple-500/20 hover:bg-purple-500/20 transition-all flex items-center justify-center gap-1.5 shadow-md cursor-pointer">
+            <button type="button" onclick="openUsernameModal()" class="w-full py-2.5 rounded-xl text-xs font-bold text-[#007a7a] bg-[#007a7a]/10 border border-[#007a7a]/20 hover:bg-[#007a7a]/20 transition-all flex items-center justify-center gap-1.5 shadow-sm cursor-pointer">
               <i data-lucide="user-cog" class="w-4 h-4"></i> เปลี่ยนชื่อผู้ใช้ (Username)
             </button>
-            <button type="button" onclick="openPasswordModal()" class="w-full py-2.5 rounded-xl text-xs font-bold text-rose-400 bg-rose-500/10 border border-rose-500/20 hover:bg-rose-500/20 transition-all flex items-center justify-center gap-1.5 shadow-md cursor-pointer">
+            <button type="button" onclick="openPasswordModal()" class="w-full py-2.5 rounded-xl text-xs font-bold text-rose-650 bg-rose-50 border border-rose-200 hover:bg-rose-100 transition-all flex items-center justify-center gap-1.5 shadow-sm cursor-pointer">
               <i data-lucide="key-round" class="w-4 h-4"></i> เปลี่ยนรหัสผ่านความปลอดภัย
             </button>
           </div>
 
-          <button type="submit" class="w-full py-3 mt-4 rounded-xl font-bold text-white bg-purple-600 hover:bg-purple-500 transition-colors shadow-md flex justify-center items-center gap-1.5 cursor-pointer">
+          <button type="submit" class="w-full py-3 mt-4 rounded-xl font-bold text-white bg-[#007a7a] hover:bg-[#006363] transition-colors shadow-md flex justify-center items-center gap-1.5 cursor-pointer">
             <i data-lucide="save" class="w-4 h-4"></i> บันทึกการเปลี่ยนแปลง
           </button>
         </form>
@@ -271,45 +271,45 @@ export function renderSettingsComponent() {
 
       <!-- Change Password Modal overlay -->
       ${AppState.passwordModalOpen ? `
-        <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md animate-fade-in">
-          <div class="w-full max-w-md glass-panel p-6 rounded-3xl border border-slate-800/60 shadow-2xl relative overflow-hidden animate-scale-up">
+        <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-fade-in">
+          <div class="w-full max-w-md bg-white p-6 rounded-3xl border border-slate-200 shadow-2xl relative overflow-hidden animate-scale-up">
             
             <!-- Close button -->
-            <button type="button" onclick="closePasswordModal()" class="absolute top-4 right-4 p-2 rounded-xl bg-white/5 border border-slate-800 text-slate-400 hover:text-slate-200 transition-colors cursor-pointer">
+            <button type="button" onclick="closePasswordModal()" class="absolute top-4 right-4 p-2 rounded-xl bg-slate-100 border border-slate-200 text-slate-550 hover:text-slate-750 transition-colors cursor-pointer">
               <i data-lucide="x" class="w-4 h-4"></i>
             </button>
-
-            <h3 class="text-md font-bold mb-4 flex items-center gap-2 text-rose-400">
+ 
+            <h3 class="text-md font-bold mb-4 flex items-center gap-2 text-rose-650">
               <i data-lucide="shield-alert" class="w-5 h-5"></i>
               <span>เปลี่ยนรหัสผ่านความปลอดภัย</span>
             </h3>
 
             <form onsubmit="handlePasswordChange(event)" class="space-y-4">
               <div>
-                <label class="block text-slate-400 text-xs font-semibold mb-1">รหัสผ่านปัจจุบัน</label>
+                <label class="block text-slate-650 text-xs font-semibold mb-1">รหัสผ่านปัจจุบัน</label>
                 <div class="relative flex items-center">
                   <input type="password" id="pw-current" required class="glass-input w-full pl-3 pr-10 py-2 rounded-lg text-xs" placeholder="กรอกรหัสผ่านเดิมเพื่อยืนยันตน">
-                  <button type="button" onclick="togglePasswordVisibility('pw-current')" class="absolute right-2.5 text-slate-500 hover:text-slate-300 transition-colors focus:outline-none cursor-pointer" title="เปิด/ปิดการมองเห็นรหัสผ่าน">
+                  <button type="button" onclick="togglePasswordVisibility('pw-current')" class="absolute right-2.5 text-slate-400 hover:text-slate-600 transition-colors focus:outline-none cursor-pointer" title="เปิด/ปิดการมองเห็นรหัสผ่าน">
                     <i id="eye-pw-current" data-lucide="eye" class="w-4.5 h-4.5"></i>
                   </button>
                 </div>
               </div>
 
               <div>
-                <label class="block text-slate-400 text-xs font-semibold mb-1">รหัสผ่านใหม่</label>
+                <label class="block text-slate-650 text-xs font-semibold mb-1">รหัสผ่านใหม่</label>
                 <div class="relative flex items-center">
                   <input type="password" id="pw-new" required class="glass-input w-full pl-3 pr-10 py-2 rounded-lg text-xs" placeholder="รหัสผ่านใหม่ที่ต้องการใช้">
-                  <button type="button" onclick="togglePasswordVisibility('pw-new')" class="absolute right-2.5 text-slate-500 hover:text-slate-300 transition-colors focus:outline-none cursor-pointer" title="เปิด/ปิดการมองเห็นรหัสผ่าน">
+                  <button type="button" onclick="togglePasswordVisibility('pw-new')" class="absolute right-2.5 text-slate-400 hover:text-slate-600 transition-colors focus:outline-none cursor-pointer" title="เปิด/ปิดการมองเห็นรหัสผ่าน">
                     <i id="eye-pw-new" data-lucide="eye" class="w-4.5 h-4.5"></i>
                   </button>
                 </div>
               </div>
 
               <div>
-                <label class="block text-slate-400 text-xs font-semibold mb-1">ยืนยันรหัสผ่านใหม่</label>
+                <label class="block text-slate-650 text-xs font-semibold mb-1">ยืนยันรหัสผ่านใหม่</label>
                 <div class="relative flex items-center">
                   <input type="password" id="pw-new-confirm" required class="glass-input w-full pl-3 pr-10 py-2 rounded-lg text-xs" placeholder="กรอกรหัสผ่านใหม่อีกครั้ง">
-                  <button type="button" onclick="togglePasswordVisibility('pw-new-confirm')" class="absolute right-2.5 text-slate-500 hover:text-slate-300 transition-colors focus:outline-none cursor-pointer" title="เปิด/ปิดการมองเห็นรหัสผ่าน">
+                  <button type="button" onclick="togglePasswordVisibility('pw-new-confirm')" class="absolute right-2.5 text-slate-400 hover:text-slate-600 transition-colors focus:outline-none cursor-pointer" title="เปิด/ปิดการมองเห็นรหัสผ่าน">
                     <i id="eye-pw-new-confirm" data-lucide="eye" class="w-4.5 h-4.5"></i>
                   </button>
                 </div>
@@ -319,7 +319,7 @@ export function renderSettingsComponent() {
                 <button type="submit" class="flex-1 py-2.5 rounded-xl text-xs font-bold text-white bg-rose-600 hover:bg-rose-500 shadow-md cursor-pointer">
                   ยืนยันการเปลี่ยนรหัสผ่าน
                 </button>
-                <button type="button" onclick="closePasswordModal()" class="px-4 py-2.5 rounded-xl text-xs font-semibold bg-white/5 border border-slate-800 hover:bg-white/10 text-slate-300 cursor-pointer">
+                <button type="button" onclick="closePasswordModal()" class="px-4 py-2.5 rounded-xl text-xs font-semibold bg-slate-100 border border-slate-200 hover:bg-slate-200 text-slate-700 cursor-pointer">
                   ยกเลิก
                 </button>
               </div>
@@ -330,45 +330,45 @@ export function renderSettingsComponent() {
 
       <!-- Change Username Modal overlay -->
       ${AppState.usernameModalOpen ? `
-        <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md animate-fade-in">
-          <div class="w-full max-w-md glass-panel p-6 rounded-3xl border border-slate-800/60 shadow-2xl relative overflow-hidden animate-scale-up">
+        <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-fade-in">
+          <div class="w-full max-w-md bg-white p-6 rounded-3xl border border-slate-200 shadow-2xl relative overflow-hidden animate-scale-up">
             
             <!-- Close button -->
-            <button type="button" onclick="closeUsernameModal()" class="absolute top-4 right-4 p-2 rounded-xl bg-white/5 border border-slate-800 text-slate-400 hover:text-slate-200 transition-colors cursor-pointer">
+            <button type="button" onclick="closeUsernameModal()" class="absolute top-4 right-4 p-2 rounded-xl bg-slate-100 border border-slate-200 text-slate-550 hover:text-slate-750 transition-colors cursor-pointer">
               <i data-lucide="x" class="w-4 h-4"></i>
             </button>
 
-            <h3 class="text-md font-bold mb-4 flex items-center gap-2 text-purple-400">
+            <h3 class="text-md font-bold mb-4 flex items-center gap-2 text-[#007a7a]">
               <i data-lucide="user-cog" class="w-5 h-5"></i>
               <span>เปลี่ยนชื่อผู้ใช้ (Username)</span>
             </h3>
 
             <form onsubmit="handleUsernameChange(event)" class="space-y-4">
               <div>
-                <label class="block text-slate-400 text-xs font-semibold mb-1">ชื่อผู้ใช้เดิม</label>
-                <input type="text" disabled class="glass-input w-full px-3 py-2 rounded-lg text-xs opacity-60 cursor-not-allowed" value="@${AppState.currentUser.username}">
+                <label class="block text-slate-650 text-xs font-semibold mb-1">ชื่อผู้ใช้เดิม</label>
+                <input type="text" disabled class="glass-input w-full px-3 py-2 rounded-lg text-xs opacity-60 bg-slate-50 border-slate-200 cursor-not-allowed" value="@${AppState.currentUser.username}">
               </div>
 
               <div>
-                <label class="block text-slate-400 text-xs font-semibold mb-1">ชื่อผู้ใช้ใหม่</label>
+                <label class="block text-slate-650 text-xs font-semibold mb-1">ชื่อผู้ใช้ใหม่</label>
                 <input type="text" id="uname-new" required class="glass-input w-full px-3 py-2 rounded-lg text-xs" placeholder="กรอกชื่อผู้ใช้ใหม่ (เช่น somchai_new)">
               </div>
 
               <div>
-                <label class="block text-slate-400 text-xs font-semibold mb-1">ยืนยันรหัสผ่านของคุณ</label>
+                <label class="block text-slate-650 text-xs font-semibold mb-1">ยืนยันรหัสผ่านของคุณ</label>
                 <div class="relative flex items-center">
                   <input type="password" id="uname-password" required class="glass-input w-full pl-3 pr-10 py-2 rounded-lg text-xs" placeholder="กรอกรหัสผ่านปัจจุบันเพื่อยืนยันการเปลี่ยน">
-                  <button type="button" onclick="togglePasswordVisibility('uname-password')" class="absolute right-2.5 text-slate-500 hover:text-slate-300 transition-colors focus:outline-none cursor-pointer" title="เปิด/ปิดการมองเห็นรหัสผ่าน">
+                  <button type="button" onclick="togglePasswordVisibility('uname-password')" class="absolute right-2.5 text-slate-400 hover:text-slate-600 transition-colors focus:outline-none cursor-pointer" title="เปิด/ปิดการมองเห็นรหัสผ่าน">
                     <i id="eye-uname-password" data-lucide="eye" class="w-4.5 h-4.5"></i>
                   </button>
                 </div>
               </div>
 
               <div class="flex gap-2 pt-2">
-                <button type="submit" class="flex-1 py-2.5 rounded-xl text-xs font-bold text-white bg-purple-600 hover:bg-purple-500 shadow-md cursor-pointer">
+                <button type="submit" class="flex-1 py-2.5 rounded-xl text-xs font-bold text-white bg-[#007a7a] hover:bg-[#006363] shadow-md cursor-pointer">
                   ยืนยันการเปลี่ยนชื่อผู้ใช้
                 </button>
-                <button type="button" onclick="closeUsernameModal()" class="px-4 py-2.5 rounded-xl text-xs font-semibold bg-white/5 border border-slate-800 hover:bg-white/10 text-slate-300 cursor-pointer">
+                <button type="button" onclick="closeUsernameModal()" class="px-4 py-2.5 rounded-xl text-xs font-semibold bg-slate-100 border border-slate-200 hover:bg-slate-200 text-slate-700 cursor-pointer">
                   ยกเลิก
                 </button>
               </div>
@@ -379,11 +379,11 @@ export function renderSettingsComponent() {
 
       <!-- Google Drive Synchronization Modal Overlay -->
       ${isDriveModalOpen ? `
-        <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md animate-fade-in">
-          <div class="w-full max-w-md glass-panel p-6 rounded-3xl border border-slate-800/60 shadow-2xl relative overflow-hidden animate-scale-up">
+        <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-fade-in">
+          <div class="w-full max-w-md bg-white p-6 rounded-3xl border border-slate-200 shadow-2xl relative overflow-hidden animate-scale-up">
             
             <!-- Close button -->
-            <button type="button" onclick="closeGoogleDriveModal()" class="absolute top-4 right-4 p-2 rounded-xl bg-white/5 border border-slate-800 text-slate-400 hover:text-slate-200 transition-colors cursor-pointer">
+            <button type="button" onclick="closeGoogleDriveModal()" class="absolute top-4 right-4 p-2 rounded-xl bg-slate-100 border border-slate-200 text-slate-550 hover:text-slate-750 transition-colors cursor-pointer">
               <i data-lucide="x" class="w-4 h-4"></i>
             </button>
 
@@ -391,16 +391,16 @@ export function renderSettingsComponent() {
             ${driveAuthStep === 0 ? `
               <div class="space-y-4">
                 <div class="text-center pt-2">
-                  <div class="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-cyan-500/10 border border-cyan-500/25 text-cyan-400 mb-3 shadow-lg">
+                  <div class="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-cyan-50 border border-cyan-200 text-cyan-600 mb-3 shadow-sm">
                     <i data-lucide="cloud" class="w-6 h-6 animate-pulse"></i>
                   </div>
-                  <h3 class="text-md font-bold text-white">เชื่อมโยงกับ Google Drive</h3>
-                  <p class="text-xs text-slate-400 mt-1">อัพเดตรูปภาพโปรไฟล์ผ่าน Cloud Storage ส่วนตัวของคุณ</p>
+                  <h3 class="text-md font-bold text-slate-800">เชื่อมโยงกับ Google Drive</h3>
+                  <p class="text-xs text-slate-500 mt-1">อัพเดตรูปภาพโปรไฟล์ผ่าน Cloud Storage ส่วนตัวของคุณ</p>
                 </div>
 
                 <form onsubmit="handleGoogleDriveLinkSubmit(event)" class="space-y-3">
                   <div>
-                    <label class="block text-slate-400 text-xs font-semibold mb-1">ลิงก์แชร์รูปภาพบน Google Drive ของคุณ</label>
+                    <label class="block text-slate-650 text-xs font-semibold mb-1">ลิงก์แชร์รูปภาพบน Google Drive ของคุณ</label>
                     <input type="url" id="drive-link-input" required class="glass-input w-full px-3 py-2 rounded-xl text-xs font-mono" placeholder="https://drive.google.com/file/d/.../view">
                     <span class="text-[9px] text-slate-500 mt-1 block leading-normal">* หมายเหตุ: โปรดตั้งค่าเปิดสิทธิ์ไฟล์ใน Drive เป็น "ทุกคนที่มีลิงก์แชร์สามารถเข้าดูได้ (Anyone with link)" เพื่อให้อ่านรูปได้ครับ</span>
                   </div>
@@ -411,11 +411,11 @@ export function renderSettingsComponent() {
                 </form>
 
                 <div class="relative flex items-center justify-center py-2">
-                  <div class="absolute inset-0 flex items-center"><div class="w-full border-t border-slate-800/80"></div></div>
-                  <span class="relative px-3 text-[10px] text-slate-500 bg-[#0a0715] font-bold uppercase tracking-wider">หรือซิงค์เสมือนจริง</span>
+                  <div class="absolute inset-0 flex items-center"><div class="w-full border-t border-slate-100"></div></div>
+                  <span class="relative px-3 text-[10px] text-slate-500 bg-white font-bold uppercase tracking-wider">หรือซิงค์เสมือนจริง</span>
                 </div>
 
-                <button type="button" onclick="startGoogleDriveSyncSimulate()" class="w-full py-3 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 transition-all shadow-lg flex justify-center items-center gap-2 cursor-pointer">
+                <button type="button" onclick="startGoogleDriveSyncSimulate()" class="w-full py-3 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-[#005f5f] to-[#007a7a] hover:from-[#004d4d] hover:to-[#006363] transition-all shadow-md flex justify-center items-center gap-2 cursor-pointer">
                   <i data-lucide="chrome" class="w-4 h-4"></i> เชื่อมต่อ Google Account & ซิงค์ข้อมูล
                 </button>
               </div>
@@ -426,7 +426,7 @@ export function renderSettingsComponent() {
               <div class="space-y-4">
                 <div class="text-center pt-2">
                   <!-- Muted Google Brand color svg -->
-                  <div class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-white/5 border border-slate-800 mb-2">
+                  <div class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-slate-50 border border-slate-200 mb-2">
                     <svg class="w-6 h-6" viewBox="0 0 24 24">
                       <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v3.91h6.69c-.29 1.5-.1.84-2.43 2.77v2.28h3.91c2.28-2.1 3.57-5.18 3.57-8.89z"/>
                       <path fill="#34A853" d="M12 24c3.24 0 5.97-1.08 7.96-2.91l-3.91-3.03c-1.08.72-2.48 1.15-4.05 1.15-3.11 0-5.74-2.1-6.68-4.92H1.28v3.13C3.26 20.3 7.33 24 12 24z"/>
@@ -434,33 +434,33 @@ export function renderSettingsComponent() {
                       <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.22 0 12 0 7.33 0 3.26 3.7 1.28 7.64l4.04 3.14c.94-2.82 3.57-4.92 6.68-4.92z"/>
                     </svg>
                   </div>
-                  <h3 class="text-md font-bold text-white">เลือกบัญชีเพื่อซิงค์ระบบ</h3>
-                  <p class="text-xs text-slate-400 mt-1">การอนุญาตนี้จะเชื่อมโยง API กับบัญชีคลาวด์ของคุณ</p>
+                  <h3 class="text-md font-bold text-slate-800">เลือกบัญชีเพื่อซิงค์ระบบ</h3>
+                  <p class="text-xs text-slate-500 mt-1">การอนุญาตนี้จะเชื่อมโยง API กับบัญชีคลาวด์ของคุณ</p>
                 </div>
 
                 <div class="space-y-2 pt-2">
-                  <button type="button" onclick="chooseDriveSimulatedAccount('${AppState.currentUser.username}@gmail.com')" class="w-full p-3 rounded-xl bg-white/5 border border-slate-800/60 hover:bg-white/10 hover:border-slate-700 transition-all flex items-center gap-3 text-left cursor-pointer">
-                    <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-purple-500 to-indigo-500 flex items-center justify-center text-xs font-bold text-white uppercase">
+                  <button type="button" onclick="chooseDriveSimulatedAccount('${AppState.currentUser.username}@gmail.com')" class="w-full p-3 rounded-xl bg-slate-50 border border-slate-200 hover:bg-slate-100 hover:border-slate-350 transition-all flex items-center gap-3 text-left cursor-pointer">
+                    <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-[#005f5f] to-[#007a7a] flex items-center justify-center text-xs font-bold text-white uppercase">
                       ${AppState.currentUser.name.charAt(0)}
                     </div>
                     <div>
-                      <p class="text-xs font-bold text-slate-200">${AppState.currentUser.name}</p>
+                      <p class="text-xs font-bold text-slate-700">${AppState.currentUser.name}</p>
                       <p class="text-[10px] text-slate-500">${AppState.currentUser.username}@gmail.com</p>
                     </div>
                   </button>
 
-                  <button type="button" onclick="chooseDriveSimulatedAccount('smartlife.health.sync@gmail.com')" class="w-full p-3 rounded-xl bg-white/5 border border-slate-800/60 hover:bg-white/10 hover:border-slate-700 transition-all flex items-center gap-3 text-left cursor-pointer">
+                  <button type="button" onclick="chooseDriveSimulatedAccount('smartlife.health.sync@gmail.com')" class="w-full p-3 rounded-xl bg-slate-50 border border-slate-200 hover:bg-slate-100 hover:border-slate-350 transition-all flex items-center gap-3 text-left cursor-pointer">
                     <div class="w-8 h-8 rounded-full bg-cyan-600 flex items-center justify-center text-xs font-bold text-white uppercase">
                       S
                     </div>
                     <div>
-                      <p class="text-xs font-bold text-slate-200">SmartLife Sync Center</p>
+                      <p class="text-xs font-bold text-slate-700">SmartLife Sync Center</p>
                       <p class="text-[10px] text-slate-500">smartlife.health.sync@gmail.com</p>
                     </div>
                   </button>
                 </div>
 
-                <button type="button" onclick="openGoogleDriveModal()" class="w-full py-2.5 mt-2 rounded-xl text-xs font-semibold text-slate-300 bg-white/5 border border-slate-800 hover:bg-white/10 transition-colors cursor-pointer">
+                <button type="button" onclick="openGoogleDriveModal()" class="w-full py-2.5 mt-2 rounded-xl text-xs font-semibold text-slate-650 bg-slate-100 border border-slate-200 hover:bg-slate-200 transition-colors cursor-pointer">
                   ย้อนกลับ
                 </button>
               </div>
@@ -470,13 +470,13 @@ export function renderSettingsComponent() {
             ${driveAuthStep === 2 ? `
               <div class="space-y-6 py-4 text-center">
                 <div class="relative w-16 h-16 mx-auto flex items-center justify-center">
-                  <div class="absolute inset-0 rounded-full border-4 border-cyan-500/10"></div>
-                  <div class="absolute inset-0 rounded-full border-4 border-cyan-500 border-t-transparent animate-spin"></div>
-                  <i data-lucide="cloud-lightning" class="w-6 h-6 text-cyan-400 animate-pulse"></i>
+                  <div class="absolute inset-0 rounded-full border-4 border-cyan-100"></div>
+                  <div class="absolute inset-0 rounded-full border-4 border-cyan-600 border-t-transparent animate-spin"></div>
+                  <i data-lucide="cloud-lightning" class="w-6 h-6 text-cyan-600 animate-pulse"></i>
                 </div>
 
                 <div class="space-y-2">
-                  <h4 class="text-sm font-bold text-slate-200">กำลังเชื่อมต่อ & ซิงค์ภาพจาก Drive...</h4>
+                  <h4 class="text-sm font-bold text-slate-700">กำลังเชื่อมต่อ & ซิงค์ภาพจาก Drive...</h4>
                   <p class="text-[10px] text-slate-500 h-8 flex items-center justify-center">
                     ${driveSyncProgress < 30 ? 'ขั้นตอนที่ 1: กำลังยืนยันสิทธิ์บัญชี OAuth Tokens...' :
                       driveSyncProgress < 70 ? 'ขั้นตอนที่ 2: กำลังเชื่อมต่อโฟลเดอร์ Google Drive Cloud...' :
@@ -485,23 +485,23 @@ export function renderSettingsComponent() {
                   </p>
                 </div>
 
-                <div class="w-full bg-slate-900 rounded-full h-2 overflow-hidden shadow-inner">
-                  <div class="bg-gradient-to-r from-cyan-500 to-purple-500 h-full rounded-full transition-all duration-300" style="width: ${driveSyncProgress}%"></div>
+                <div class="w-full bg-slate-100 rounded-full h-2 overflow-hidden shadow-inner">
+                  <div class="bg-gradient-to-r from-cyan-500 to-teal-500 h-full rounded-full transition-all duration-300" style="width: ${driveSyncProgress}%"></div>
                 </div>
-                <span class="text-xs font-mono font-bold text-cyan-400 block">${driveSyncProgress}%</span>
+                <span class="text-xs font-mono font-bold text-cyan-600 block">${driveSyncProgress}%</span>
               </div>
             ` : ''}
 
             <!-- Step 3: Success Screen -->
             ${driveAuthStep === 3 ? `
               <div class="space-y-5 py-4 text-center">
-                <div class="w-14 h-14 bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 rounded-full mx-auto flex items-center justify-center shadow-lg shadow-emerald-950/20">
+                <div class="w-14 h-14 bg-emerald-50 border border-emerald-250 text-emerald-600 rounded-full mx-auto flex items-center justify-center shadow-sm">
                   <i data-lucide="check" class="w-7 h-7"></i>
                 </div>
 
                 <div class="space-y-1">
-                  <h4 class="text-md font-bold text-slate-200">ระบบลิงก์รูปภาพเรียบร้อยแล้ว!</h4>
-                  <p class="text-xs text-slate-400">รูปโปรไฟล์จากระบบ Google Drive ของคุณอัปเดตเรียบร้อยครับ</p>
+                  <h4 class="text-md font-bold text-slate-700">ระบบลิงก์รูปภาพเรียบร้อยแล้ว!</h4>
+                  <p class="text-xs text-slate-500">รูปโปรไฟล์จากระบบ Google Drive ของคุณอัปเดตเรียบร้อยครับ</p>
                 </div>
 
                 <div class="pt-2">

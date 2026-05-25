@@ -318,35 +318,35 @@ export function renderCalendarComponent() {
       <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
         <div>
           <!-- Title & Breadcrumb -->
-          <h1 class="text-2xl font-bold text-white flex items-center gap-2">
-            <i data-lucide="calendar" class="text-purple-400"></i>
+          <h1 class="text-2xl font-bold text-slate-800 flex items-center gap-2">
+            <i data-lucide="calendar" class="text-[#007a7a]"></i>
             <span>ปฏิทินแผนงานสะสม (Calendar Schedule)</span>
           </h1>
-          <p class="text-slate-400 text-xs mt-1">มุมมองปฏิทินที่รวบรวมภารกิจเป้าหมายทั้งหมดรายเดือนอย่างพรีเมียม</p>
+          <p class="text-slate-500 text-xs mt-1">มุมมองปฏิทินที่รวบรวมภารกิจเป้าหมายทั้งหมดรายเดือนอย่างพรีเมียม</p>
         </div>
 
         <!-- Custom tabs and search input as in template -->
         <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full lg:w-auto">
           <!-- Custom Navigation Tabs -->
-          <div class="flex p-0.5 rounded-xl bg-slate-900/60 border border-slate-800/40 text-[11px] font-semibold text-slate-400 shrink-0">
-            <button class="px-3.5 py-1.5 rounded-lg bg-purple-500/10 text-purple-300 font-bold border border-purple-500/20">All events</button>
-            <button class="px-3.5 py-1.5 rounded-lg hover:text-slate-200 transition-colors">Shared</button>
-            <button class="px-3.5 py-1.5 rounded-lg hover:text-slate-200 transition-colors">Public</button>
-            <button class="px-3.5 py-1.5 rounded-lg hover:text-slate-200 transition-colors">Archived</button>
+          <div class="flex p-0.5 rounded-xl bg-slate-100 border border-slate-200 text-[11px] font-semibold text-slate-650 shrink-0">
+            <button class="px-3.5 py-1.5 rounded-lg bg-[#007a7a]/15 text-[#007a7a] font-bold border border-[#007a7a]/25">All events</button>
+            <button class="px-3.5 py-1.5 rounded-lg hover:text-slate-800 transition-colors">Shared</button>
+            <button class="px-3.5 py-1.5 rounded-lg hover:text-slate-800 transition-colors">Public</button>
+            <button class="px-3.5 py-1.5 rounded-lg hover:text-slate-800 transition-colors">Archived</button>
           </div>
 
           <!-- Top Right Search -->
           <div class="relative flex-1 sm:w-60 flex gap-2">
             <div class="relative flex-1">
-              <i data-lucide="search" class="absolute left-2.5 top-2.5 text-slate-500 w-3.5 h-3.5"></i>
+              <i data-lucide="search" class="absolute left-2.5 top-2.5 text-slate-400 w-3.5 h-3.5"></i>
               <input type="text" id="calendar-search-input" onkeydown="handleCalendarSearch(event)" value="${calendarSearchQuery}" class="glass-input w-full pl-9 pr-7 py-1.5 rounded-xl text-xs" placeholder="ค้นหาในปฏิทิน...">
               ${calendarSearchQuery ? `
-                <button onclick="clearCalendarSearch()" class="absolute right-2.5 top-2.5 text-slate-500 hover:text-slate-300 flex items-center justify-center">
+                <button onclick="clearCalendarSearch()" class="absolute right-2.5 top-2.5 text-slate-400 hover:text-slate-700 flex items-center justify-center">
                   <i data-lucide="x" class="w-3.5 h-3.5"></i>
                 </button>
               ` : ''}
             </div>
-            <button onclick="handleCalendarSearch(event)" class="px-3 py-1.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold transition-all shadow-md">
+            <button onclick="handleCalendarSearch(event)" class="px-3 py-1.5 rounded-xl bg-[#007a7a] hover:bg-[#006363] text-white text-xs font-bold transition-all shadow-md">
               ค้นหา
             </button>
           </div>
@@ -354,58 +354,58 @@ export function renderCalendarComponent() {
       </div>
 
       <!-- Main Calendar Controller Panel -->
-      <div class="glass-panel p-5 rounded-2xl border border-slate-800/40 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+      <div class="glass-panel p-5 rounded-2xl border border-slate-200 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <!-- Date display and title -->
         <div class="flex items-center gap-4">
           <!-- Calendar sheet visual (e.g. JAN 10) -->
-          <div class="w-12 h-14 bg-slate-900 border border-slate-800 rounded-xl overflow-hidden shadow-lg flex flex-col shrink-0">
-            <div class="bg-purple-600/20 text-purple-400 text-[9px] font-bold py-0.5 text-center tracking-wider uppercase border-b border-slate-850">
+          <div class="w-12 h-14 bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm flex flex-col shrink-0">
+            <div class="bg-[#007a7a]/10 text-[#007a7a] text-[9px] font-bold py-0.5 text-center tracking-wider uppercase border-b border-slate-100">
               ${shortMonthStr}
             </div>
-            <div class="flex-1 flex items-center justify-center text-white text-lg font-black font-sans leading-none">
+            <div class="flex-1 flex items-center justify-center text-slate-800 text-lg font-black font-sans leading-none">
               ${displayedDayNum}
             </div>
           </div>
 
           <!-- Date titles -->
           <div>
-            <h2 class="text-xl font-bold text-slate-100 flex items-center gap-2">
+            <h2 class="text-xl font-bold text-slate-800 flex items-center gap-2">
               <span>${currentMonthName} ${currentYear}</span>
             </h2>
-            <p class="text-xs text-slate-400 font-mono mt-0.5">${dateRangeStr}</p>
+            <p class="text-xs text-slate-500 font-mono mt-0.5">${dateRangeStr}</p>
           </div>
         </div>
 
         <!-- Navigator controls -->
         <div class="flex items-center gap-2 w-full md:w-auto justify-end">
-          <div class="flex p-0.5 bg-slate-900/60 border border-slate-800/40 rounded-xl">
+          <div class="flex p-0.5 bg-slate-100 border border-slate-200 rounded-xl">
             <!-- Previous Month -->
-            <button onclick="prevMonth()" class="p-2 rounded-lg text-slate-400 hover:text-slate-200 transition-colors hover:bg-white/5" title="เดือนก่อนหน้า">
+            <button onclick="prevMonth()" class="p-2 rounded-lg text-slate-500 hover:text-slate-800 transition-colors hover:bg-slate-200/50" title="เดือนก่อนหน้า">
               <i data-lucide="chevron-left" class="w-4 h-4"></i>
             </button>
             
             <!-- Go Today -->
-            <button onclick="goToday()" class="px-3 py-1 rounded-lg text-xs font-bold text-slate-300 hover:text-slate-100 hover:bg-white/5 transition-all">
+            <button onclick="goToday()" class="px-3 py-1 rounded-lg text-xs font-bold text-slate-600 hover:text-slate-850 hover:bg-slate-200/50 transition-all">
               Today
             </button>
             
             <!-- Next Month -->
-            <button onclick="nextMonth()" class="p-2 rounded-lg text-slate-400 hover:text-slate-200 transition-colors hover:bg-white/5" title="เดือนถัดไป">
+            <button onclick="nextMonth()" class="p-2 rounded-lg text-slate-500 hover:text-slate-800 transition-colors hover:bg-slate-200/50" title="เดือนถัดไป">
               <i data-lucide="chevron-right" class="w-4 h-4"></i>
             </button>
           </div>
 
           <!-- View selector dropdown matching Template -->
           <div class="relative shrink-0">
-            <select onchange="if(this.value === 'todo') navigate('todo')" class="bg-slate-900/60 border border-slate-800/40 rounded-xl px-3.5 py-2 text-xs font-semibold text-slate-300 hover:text-slate-200 focus:outline-none focus:border-purple-500/50 cursor-pointer appearance-none pr-8">
+            <select onchange="if(this.value === 'todo') navigate('todo')" class="bg-white border border-slate-200 rounded-xl px-3.5 py-2 text-xs font-semibold text-slate-700 hover:text-slate-850 focus:outline-none focus:border-[#007a7a] cursor-pointer appearance-none pr-8">
               <option value="month" selected>Month view</option>
               <option value="todo">List view</option>
             </select>
-            <i data-lucide="chevron-down" class="absolute right-2.5 top-3 w-3.5 h-3.5 text-slate-400 pointer-events-none"></i>
+            <i data-lucide="chevron-down" class="absolute right-2.5 top-3 w-3.5 h-3.5 text-slate-500 pointer-events-none"></i>
           </div>
 
-          <!-- Premium Black themed + Add Event button -->
-          <button onclick="openCalendarModal()" class="px-4 py-2 rounded-xl text-xs font-bold text-black bg-white hover:bg-slate-200 hover:scale-105 active:scale-100 transition-all flex items-center gap-1.5 shadow-xl shrink-0">
+          <!-- Premium Teal themed + Add Event button -->
+          <button onclick="openCalendarModal()" class="px-4 py-2 rounded-xl text-xs font-bold text-white bg-[#007a7a] hover:bg-[#006363] hover:scale-105 active:scale-100 transition-all flex items-center gap-1.5 shadow-md shrink-0">
             <i data-lucide="plus" class="w-4 h-4 stroke-[3]"></i> Add event
           </button>
         </div>
@@ -487,28 +487,28 @@ export function renderCalendarComponent() {
 
       <!-- Add/Edit Inline Modal for Calendar -->
       ${isModalOpen ? `
-        <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md animate-fade-in">
-          <div class="w-full max-w-md glass-panel p-6 rounded-3xl border border-slate-800/60 shadow-2xl relative overflow-hidden animate-scale-up">
+        <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-fade-in">
+          <div class="w-full max-w-md bg-white p-6 rounded-3xl border border-slate-200 shadow-2xl relative overflow-hidden animate-scale-up">
             
             <!-- Close button -->
-            <button type="button" onclick="closeCalendarModal()" class="absolute top-4 right-4 p-2 rounded-xl bg-white/5 border border-slate-800 text-slate-400 hover:text-slate-200 transition-colors">
+            <button type="button" onclick="closeCalendarModal()" class="absolute top-4 right-4 p-2 rounded-xl bg-slate-100 border border-slate-200 text-slate-500 hover:text-slate-700 transition-colors">
               <i data-lucide="x" class="w-4 h-4"></i>
             </button>
 
-            <h3 class="text-md font-bold mb-4 flex items-center gap-2">
-              <i data-lucide="${modalTodoId ? 'edit-3' : 'plus-circle'}" class="${modalTodoId ? 'text-amber-400' : 'text-purple-400'}"></i>
+            <h3 class="text-md font-bold mb-4 flex items-center gap-2 text-slate-800">
+              <i data-lucide="${modalTodoId ? 'edit-3' : 'plus-circle'}" class="${modalTodoId ? 'text-[#f2994a]' : 'text-[#007a7a]'}"></i>
               <span>${modalTodoId ? 'แก้ไขกิจกรรมปฏิทิน' : 'เพิ่มกิจกรรมลงปฏิทิน'}</span>
             </h3>
 
             <form id="calendar-event-form" onsubmit="handleCalendarSubmit(event)" class="space-y-4">
               <div>
-                <label class="block text-slate-400 text-xs font-semibold mb-1">ชื่อภารกิจ / กิจกรรม</label>
+                <label class="block text-slate-650 text-xs font-semibold mb-1">ชื่อภารกิจ / กิจกรรม</label>
                 <input type="text" id="cal-todo-task" required class="glass-input w-full px-3 py-2 rounded-lg text-xs" 
                        placeholder="เช่น ประชุมเช้า, วิ่งออกกำลังกาย" value="${modalTodoTask}">
               </div>
 
               <div>
-                <label class="block text-slate-400 text-xs font-semibold mb-1">วันที่จัดกิจกรรม</label>
+                <label class="block text-slate-650 text-xs font-semibold mb-1">วันที่จัดกิจกรรม</label>
                 <input type="date" id="cal-todo-date" required class="glass-input w-full px-3 py-2 rounded-lg text-xs" 
                        value="${modalTodoDate}" onclick="this.showPicker()">
                 
@@ -519,7 +519,7 @@ export function renderCalendarComponent() {
               </div>
 
               <div>
-                <label class="block text-slate-400 text-xs font-semibold mb-1">เวลาตั้งเตือนความจำ (Alert Time)</label>
+                <label class="block text-slate-650 text-xs font-semibold mb-1">เวลาตั้งเตือนความจำ (Alert Time)</label>
                 <input type="time" id="cal-todo-alert-time" required class="glass-input w-full px-3 py-2 rounded-lg text-xs" 
                        value="${modalTodoAlertTime}" onclick="this.showPicker()">
                 
@@ -532,7 +532,7 @@ export function renderCalendarComponent() {
               </div>
 
               <div>
-                <label class="block text-slate-400 text-xs font-semibold mb-1">ระดับความสำคัญ (Priority)</label>
+                <label class="block text-slate-650 text-xs font-semibold mb-1">ระดับความสำคัญ (Priority)</label>
                 <select id="cal-todo-priority" class="glass-input w-full px-3 py-2 rounded-lg text-xs cursor-pointer">
                   <option value="high" ${modalTodoPriority === 'high' ? 'selected' : ''}>🔴 สูง (High)</option>
                   <option value="medium" ${modalTodoPriority === 'medium' ? 'selected' : ''}>🟡 กลาง (Medium)</option>
@@ -541,7 +541,7 @@ export function renderCalendarComponent() {
               </div>
 
               <div class="flex gap-2 pt-2">
-                <button type="submit" class="flex-1 py-2.5 rounded-xl text-xs font-bold text-white bg-purple-600 hover:bg-purple-500 shadow-md">
+                <button type="submit" class="flex-1 py-2.5 rounded-xl text-xs font-bold text-white bg-[#007a7a] hover:bg-[#006363] shadow-md">
                   บันทึกกิจกรรม
                 </button>
                 
@@ -551,30 +551,32 @@ export function renderCalendarComponent() {
                   </button>
                 ` : ''}
                 
-                <button type="button" onclick="closeCalendarModal()" class="px-4 py-2.5 rounded-xl text-xs font-semibold bg-white/5 border border-slate-800 hover:bg-white/10 text-slate-300">
+                <button type="button" onclick="closeCalendarModal()" class="px-4 py-2.5 rounded-xl text-xs font-semibold bg-slate-100 border border-slate-200 hover:bg-slate-200 text-slate-700">
                   ยกเลิก
                 </button>
               </div>
             </form>
+          </div>
+        </div>
       ` : ''}
 
       <!-- Day View Modal for Calendar -->
       ${isDayViewOpen ? `
-        <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md animate-fade-in">
-          <div class="w-full max-w-lg glass-panel p-6 rounded-3xl border border-slate-800/60 shadow-2xl relative overflow-hidden animate-scale-up">
+        <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-fade-in">
+          <div class="w-full max-w-lg bg-white p-6 rounded-3xl border border-slate-200 shadow-2xl relative overflow-hidden animate-scale-up">
             
             <!-- Close button -->
-            <button type="button" onclick="closeDayView()" class="absolute top-4 right-4 p-2 rounded-xl bg-white/5 border border-slate-800 text-slate-400 hover:text-slate-200 transition-colors">
+            <button type="button" onclick="closeDayView()" class="absolute top-4 right-4 p-2 rounded-xl bg-slate-100 border border-slate-200 text-slate-500 hover:text-slate-700 transition-colors">
               <i data-lucide="x" class="w-4 h-4"></i>
             </button>
 
             <!-- Title & Subtitle -->
             <div class="mb-5">
-              <h3 class="text-md font-bold text-white flex items-center gap-2">
-                <i data-lucide="calendar-days" class="text-purple-400"></i>
+              <h3 class="text-md font-bold text-slate-800 flex items-center gap-2">
+                <i data-lucide="calendar-days" class="text-[#007a7a]"></i>
                 <span>แผนงานประจำวันที่ ${selectedDayDate.split('-').reverse().join('/')}</span>
               </h3>
-              <p class="text-slate-400 text-[11px] mt-1">รายการกิจกรรมเป้าหมายทั้งหมดสำหรับวันนี้ คลิกรายการเพื่อเข้าสู่การแก้ไข</p>
+              <p class="text-slate-500 text-[11px] mt-1">รายการกิจกรรมเป้าหมายทั้งหมดสำหรับวันนี้ คลิกรายการเพื่อเข้าสู่การแก้ไข</p>
             </div>
 
             <!-- Events List -->
@@ -596,28 +598,28 @@ export function renderCalendarComponent() {
         return dayTodos.map((todo) => {
           const colorClass = priorityColorMap[todo.priority] || 'event-purple';
           return `
-                    <div class="flex items-center gap-3 p-3 rounded-xl bg-slate-900/60 border border-slate-800/40 hover:bg-slate-800/40 transition-all cursor-pointer group"
+                    <div class="flex items-center gap-3 p-3 rounded-xl bg-slate-50 border border-slate-200 hover:bg-slate-100 transition-all cursor-pointer group"
                          onclick="editDayViewTodo('${todo.id}')">
                       
                       <!-- Completion bullet -->
                       <button type="button" onclick="toggleCalendarTodoCompleted(event, '${todo.id}')" 
-                              class="shrink-0 w-5 h-5 rounded-full border ${todo.completed ? 'border-emerald-500 bg-emerald-500/20 text-emerald-400' : 'border-slate-700 bg-slate-950'} flex items-center justify-center text-[10px] font-bold hover:scale-110 transition-transform">
+                              class="shrink-0 w-5 h-5 rounded-full border ${todo.completed ? 'border-emerald-500 bg-emerald-500/20 text-emerald-400' : 'border-slate-300 bg-white'} flex items-center justify-center text-[10px] font-bold hover:scale-110 transition-transform">
                         ${todo.completed ? '✓' : ''}
                       </button>
 
                       <!-- Task Text -->
                       <div class="flex-1 min-w-0">
                         <div class="flex flex-wrap items-center gap-2">
-                          <p class="text-xs font-semibold ${todo.completed ? 'line-through text-slate-500' : 'text-slate-200'} truncate group-hover:text-purple-400 transition-colors">
+                          <p class="text-xs font-semibold ${todo.completed ? 'line-through text-slate-450' : 'text-slate-800'} truncate group-hover:text-[#007a7a] transition-colors">
                             ${todo.task}
                           </p>
                           <!-- Priority Badge -->
                           ${todo.priority === 'high' ? `
-                            <span class="text-[8px] px-1.5 py-0.5 rounded bg-rose-500/10 border border-rose-500/20 text-rose-450 font-bold shrink-0">ด่วนสูง</span>
+                            <span class="text-[8px] px-1.5 py-0.5 rounded bg-rose-50 border border-rose-200 text-rose-600 font-bold shrink-0">ด่วนสูง</span>
                           ` : todo.priority === 'low' ? `
-                            <span class="text-[8px] px-1.5 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/20 text-emerald-450 font-bold shrink-0">ปกติ/ต่ำ</span>
+                            <span class="text-[8px] px-1.5 py-0.5 rounded bg-emerald-50 border border-emerald-250 text-emerald-600 font-bold shrink-0">ปกติ/ต่ำ</span>
                           ` : `
-                            <span class="text-[8px] px-1.5 py-0.5 rounded bg-amber-500/10 border border-amber-500/20 text-amber-450 font-bold shrink-0">ปานกลาง</span>
+                            <span class="text-[8px] px-1.5 py-0.5 rounded bg-amber-50 border border-amber-250 text-amber-600 font-bold shrink-0">ปานกลาง</span>
                           `}
                         </div>
                         ${todo.alertTime ? `
@@ -628,7 +630,7 @@ export function renderCalendarComponent() {
                       </div>
 
                       <!-- Edit indicator icon -->
-                      <div class="text-slate-500 group-hover:text-purple-400 transition-colors">
+                      <div class="text-slate-500 group-hover:text-[#007a7a] transition-colors">
                         <i data-lucide="chevron-right" class="w-4 h-4"></i>
                       </div>
                     </div>
@@ -638,11 +640,11 @@ export function renderCalendarComponent() {
             </div>
 
             <!-- Footer Action Controls -->
-            <div class="flex gap-2 pt-2 border-t border-slate-850">
-              <button onclick="addDayViewTodo()" class="flex-1 py-2.5 rounded-xl text-xs font-bold text-black bg-white hover:bg-slate-200 transition-all flex items-center justify-center gap-1.5 shadow-md">
+            <div class="flex gap-2 pt-2 border-t border-slate-200">
+              <button onclick="addDayViewTodo()" class="flex-1 py-2.5 rounded-xl text-xs font-bold text-white bg-[#007a7a] hover:bg-[#006363] transition-all flex items-center justify-center gap-1.5 shadow-md">
                 <i data-lucide="plus-circle" class="w-4 h-4"></i> เพิ่มกิจกรรมใหม่
               </button>
-              <button type="button" onclick="closeDayView()" class="px-5 py-2.5 rounded-xl text-xs font-semibold bg-white/5 border border-slate-800 hover:bg-white/10 text-slate-300">
+              <button type="button" onclick="closeDayView()" class="px-5 py-2.5 rounded-xl text-xs font-semibold bg-slate-100 border border-slate-200 hover:bg-slate-200 text-slate-700">
                 ปิดหน้าต่าง
               </button>
             </div>

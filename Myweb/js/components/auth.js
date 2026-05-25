@@ -5,40 +5,40 @@ import { navigate, renderPage } from '../router.js';
 import { sha256 } from '../crypto.js';
 
 export function renderAuth(app) {
-  app.className = "flex items-center justify-center min-h-screen bg-[#0a0715] p-4";
+  app.className = "flex items-center justify-center min-h-screen bg-[#f2f7f7] p-4";
   
   // Decide whether to show Sign In or Sign Up (Default is Sign In when undefined/signin)
   const showSignUp = app.dataset.authMode === 'signup';
   
   app.innerHTML = `
-    <div class="w-full max-w-md glass-panel p-8 rounded-3xl border border-slate-800/50 shadow-2xl relative overflow-hidden page-fade-in">
+    <div class="w-full max-w-md glass-panel p-8 rounded-3xl border border-slate-200 shadow-2xl relative overflow-hidden page-fade-in bg-white">
       <!-- Cyber background decoration -->
-      <div class="absolute -top-24 -left-24 w-48 h-48 rounded-full bg-purple-600/10 blur-3xl"></div>
-      <div class="absolute -bottom-24 -right-24 w-48 h-48 rounded-full bg-cyan-600/10 blur-3xl"></div>
+      <div class="absolute -top-24 -left-24 w-48 h-48 rounded-full bg-teal-600/5 blur-3xl"></div>
+      <div class="absolute -bottom-24 -right-24 w-48 h-48 rounded-full bg-[#007a7a]/5 blur-3xl"></div>
 
       <div class="text-center mb-8 relative">
-        <div class="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-tr from-purple-600 to-indigo-600 shadow-xl shadow-purple-600/20 mb-4">
+        <div class="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-tr from-[#005f5f] to-[#007a7a] shadow-xl shadow-[#007a7a]/15 mb-4">
           <i data-lucide="sparkles" class="w-8 h-8 text-white"></i>
         </div>
-        <h2 class="text-3xl font-extrabold tracking-tight bg-gradient-to-r from-purple-400 via-pink-400 to-cyan-400 bg-clip-text text-transparent">SmartLife Portal</h2>
-        <p class="text-slate-400 text-sm mt-2">${showSignUp ? 'สร้างบัญชีผู้ใช้ใหม่เพื่อเริ่มต้น' : 'กรอกชื่อผู้ใช้เพื่อเข้าใช้กระดานข้อมูล'}</p>
+        <h2 class="text-3xl font-extrabold tracking-tight bg-gradient-to-r from-[#005f5f] via-[#007a7a] to-[#0d9488] bg-clip-text text-transparent">SmartLife Portal</h2>
+        <p class="text-slate-500 text-sm mt-2">${showSignUp ? 'สร้างบัญชีผู้ใช้ใหม่เพื่อเริ่มต้น' : 'กรอกชื่อผู้ใช้เพื่อเข้าใช้กระดานข้อมูล'}</p>
       </div>
 
       <form id="auth-form" onsubmit="handleAuthSubmit(event, ${showSignUp})" class="space-y-5 relative">
         <div>
-          <label class="block text-slate-300 text-xs font-semibold uppercase tracking-wider mb-2">Username</label>
+          <label class="block text-slate-650 text-xs font-semibold uppercase tracking-wider mb-2">Username</label>
           <div class="relative">
-            <i data-lucide="user" class="absolute left-3.5 top-3.5 text-slate-500 w-5 h-5"></i>
+            <i data-lucide="user" class="absolute left-3.5 top-3.5 text-slate-400 w-5 h-5"></i>
             <input type="text" id="auth-username" required class="glass-input w-full pl-11 pr-4 py-3 rounded-xl text-sm" placeholder="เช่น somchai_12">
           </div>
         </div>
 
         <div>
-          <label class="block text-slate-300 text-xs font-semibold uppercase tracking-wider mb-2">Password</label>
+          <label class="block text-slate-650 text-xs font-semibold uppercase tracking-wider mb-2">Password</label>
           <div class="relative flex items-center">
-            <i data-lucide="lock" class="absolute left-3.5 top-3.5 text-slate-500 w-5 h-5"></i>
+            <i data-lucide="lock" class="absolute left-3.5 top-3.5 text-slate-400 w-5 h-5"></i>
             <input type="password" id="auth-password" required class="glass-input w-full pl-11 pr-11 py-3 rounded-xl text-sm" placeholder="••••••••">
-            <button type="button" onclick="togglePasswordVisibility('auth-password')" class="absolute right-3.5 text-slate-500 hover:text-slate-300 transition-colors focus:outline-none" title="เปิด/ปิดการมองเห็นรหัสผ่าน">
+            <button type="button" onclick="togglePasswordVisibility('auth-password')" class="absolute right-3.5 text-slate-400 hover:text-slate-600 transition-colors focus:outline-none" title="เปิด/ปิดการมองเห็นรหัสผ่าน">
               <i id="eye-auth-password" data-lucide="eye" class="w-5 h-5"></i>
             </button>
           </div>
@@ -46,30 +46,30 @@ export function renderAuth(app) {
 
         ${showSignUp ? `
         <div>
-          <label class="block text-slate-300 text-xs font-semibold uppercase tracking-wider mb-2">Confirm Password</label>
+          <label class="block text-slate-650 text-xs font-semibold uppercase tracking-wider mb-2">Confirm Password</label>
           <div class="relative flex items-center">
-            <i data-lucide="shield-check" class="absolute left-3.5 top-3.5 text-slate-500 w-5 h-5"></i>
+            <i data-lucide="shield-check" class="absolute left-3.5 top-3.5 text-slate-400 w-5 h-5"></i>
             <input type="password" id="auth-confirm" required class="glass-input w-full pl-11 pr-11 py-3 rounded-xl text-sm" placeholder="••••••••">
-            <button type="button" onclick="togglePasswordVisibility('auth-confirm')" class="absolute right-3.5 text-slate-500 hover:text-slate-300 transition-colors focus:outline-none" title="เปิด/ปิดการมองเห็นรหัสผ่าน">
+            <button type="button" onclick="togglePasswordVisibility('auth-confirm')" class="absolute right-3.5 text-slate-400 hover:text-slate-600 transition-colors focus:outline-none" title="เปิด/ปิดการมองเห็นรหัสผ่าน">
               <i id="eye-auth-confirm" data-lucide="eye" class="w-5 h-5"></i>
             </button>
           </div>
         </div>
         ` : ''}
 
-        <button type="submit" class="w-full py-3.5 rounded-xl font-bold text-white bg-gradient-to-r from-purple-600 via-indigo-600 to-cyan-500 hover:from-purple-500 hover:to-cyan-400 shadow-lg shadow-purple-900/40 hover:shadow-cyan-900/20 active:scale-[0.98] transition-all flex items-center justify-center gap-2">
+        <button type="submit" class="w-full py-3.5 rounded-xl font-bold text-white bg-gradient-to-r from-[#005f5f] via-[#007a7a] to-[#0d9488] hover:from-[#004d4d] hover:to-[#007a7a] shadow-lg shadow-[#007a7a]/20 active:scale-[0.98] transition-all flex items-center justify-center gap-2 cursor-pointer">
           <span>${showSignUp ? 'Sign Up' : 'Sign In'}</span>
           <i data-lucide="arrow-right" class="w-5 h-5"></i>
         </button>
       </form>
 
-      <div class="text-center mt-6 text-sm text-slate-400 relative">
+      <div class="text-center mt-6 text-sm text-slate-500 relative">
         ${showSignUp ? `
           <span>มีบัญชีอยู่แล้ว? </span>
-          <button onclick="toggleAuthMode(false)" class="text-purple-400 hover:text-purple-300 font-semibold underline underline-offset-4">เข้าสู่ระบบ</button>
+          <button onclick="toggleAuthMode(false)" class="text-[#007a7a] hover:text-[#005f5f] font-bold underline underline-offset-4 cursor-pointer bg-transparent border-none">เข้าสู่ระบบ</button>
         ` : `
           <span>ยังไม่มีบัญชีผู้ใช้? </span>
-          <button onclick="toggleAuthMode(true)" class="text-purple-400 hover:text-purple-300 font-semibold underline underline-offset-4">สมัครสมาชิกใหม่</button>
+          <button onclick="toggleAuthMode(true)" class="text-[#007a7a] hover:text-[#005f5f] font-bold underline underline-offset-4 cursor-pointer bg-transparent border-none">สมัครสมาชิกใหม่</button>
         `}
       </div>
     </div>

@@ -37,11 +37,11 @@ export function renderTransactionComponent() {
     <div class="space-y-6">
       <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
-          <h1 class="text-2xl font-bold text-white flex items-center gap-2">
-            <i data-lucide="wallet" class="text-purple-400"></i>
+          <h1 class="text-2xl font-bold text-slate-800 flex items-center gap-2">
+            <i data-lucide="wallet" class="text-[#007a7a]"></i>
             <span>ธุรกรรมส่วนบุคคล (Transaction_$$)</span>
           </h1>
-          <p class="text-slate-400 text-xs mt-1">บันทึกรายรับ รายจ่าย หรือเงินออมของคุณ เพื่อการจัดสรรกระเป๋าเงินอย่างเป็นระบบ</p>
+          <p class="text-slate-500 text-xs mt-1">บันทึกรายรับ รายจ่าย หรือเงินออมของคุณ เพื่อการจัดสรรกระเป๋าเงินอย่างเป็นระบบ</p>
         </div>
 
         <!-- toggle mode controller & Add transaction button -->
@@ -50,14 +50,14 @@ export function renderTransactionComponent() {
             <button onclick="handleTxBulkDelete()" class="px-4 py-2 rounded-xl text-xs font-bold text-white bg-rose-600 hover:bg-rose-500 transition-all shadow-md">
               ลบรายการที่เลือก (${AppState.selectedTxIds.length})
             </button>
-            <button onclick="toggleTxEditMode()" class="px-4 py-2 rounded-xl text-xs font-bold text-slate-100 bg-purple-700 hover:bg-purple-600 transition-all flex items-center gap-1.5 shadow-md">
+            <button onclick="toggleTxEditMode()" class="px-4 py-2 rounded-xl text-xs font-bold text-slate-100 bg-[#007a7a] hover:bg-[#006363] transition-all flex items-center gap-1.5 shadow-md">
               <i data-lucide="check" class="w-3.5 h-3.5"></i> เสร็จสิ้น
             </button>
           ` : `
-            <button onclick="openTxModal()" class="px-4 py-2 rounded-xl text-xs font-bold text-white bg-purple-600 hover:bg-purple-500 transition-all flex items-center gap-1.5 shadow-md">
+            <button onclick="openTxModal()" class="px-4 py-2 rounded-xl text-xs font-bold text-white bg-[#007a7a] hover:bg-[#006363] transition-all flex items-center gap-1.5 shadow-md">
               <i data-lucide="plus-circle" class="w-3.5 h-3.5"></i> เพิ่มธุรกรรมใหม่
             </button>
-            <button onclick="toggleTxEditMode()" class="px-4 py-2 rounded-xl text-xs font-bold text-slate-400 bg-slate-900 border border-slate-800 hover:bg-slate-800 hover:text-slate-200 transition-all flex items-center gap-1.5">
+            <button onclick="toggleTxEditMode()" class="px-4 py-2 rounded-xl text-xs font-bold text-slate-650 bg-white border border-slate-200 hover:bg-slate-50 hover:text-slate-850 transition-all flex items-center gap-1.5">
               <i data-lucide="edit" class="w-3.5 h-3.5"></i> จัดการรายการ 
             </button>
           `}
@@ -65,22 +65,30 @@ export function renderTransactionComponent() {
       </div>
 
       <!-- Lists Ledger Database (Full Width) -->
-      <div class="glass-panel p-6 rounded-2xl border border-slate-800/40 w-full">
+      <div class="glass-panel p-6 rounded-2xl border border-slate-200 w-full">
         <!-- Search & Count controller -->
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-6">
-          <h3 class="text-sm font-bold text-slate-200">
+          <h3 class="text-sm font-bold text-slate-800">
             รายการประวัติการเงินทั้งหมด (${filtered.length} รายการ)
           </h3>
           
           <div class="relative w-full sm:w-72 flex gap-2">
             <div class="relative flex-1">
-              <i data-lucide="search" class="absolute left-2.5 top-2.5 text-slate-500 w-4 h-4"></i>
+              <i data-lucide="search" class="absolute left-2.5 top-2.5 text-slate-400 w-4 h-4"></i>
               <input type="text" id="tx-search" onkeydown="if(event.key === 'Enter') renderPage()" value="${query}" class="glass-input w-full pl-9 pr-3 py-1.5 rounded-xl text-xs" placeholder="ค้นหาบันทึก, ประเภท, หมวดหมู่... (กด Enter)">
             </div>
-            <button onclick="renderPage()" class="px-3 py-1.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold transition-all shadow-md flex items-center justify-center shrink-0">
+            <button onclick="renderPage()" class="px-3 py-1.5 rounded-xl bg-[#007a7a] hover:bg-[#006363] text-white text-xs font-bold transition-all shadow-md flex items-center justify-center shrink-0">
               ค้นหา
             </button>
           </div>
+        </div>
+
+        <!-- Tabular Header (to match ref2 layout) -->
+        <div class="hidden sm:grid grid-cols-12 gap-3 px-4 py-2.5 text-[10px] font-bold text-slate-500 border-b border-slate-200 mb-1 select-none">
+          <div class="col-span-5 pl-14">รายการ / บันทึกย่อ</div>
+          <div class="col-span-2 text-center">ประเภท</div>
+          <div class="col-span-2 text-center">หมวดหมู่</div>
+          <div class="col-span-3 text-right pr-2">จำนวนเงิน</div>
         </div>
 
         <!-- Scroll list items -->
@@ -90,45 +98,69 @@ export function renderTransactionComponent() {
           ` : filtered.map(t => {
             const isSelected = AppState.selectedTxIds.includes(t.id);
 
-            // Styling depends on transaction type (New Savings styling added)
-            let typeColor = 'text-rose-400';
+            // Styling depends on transaction type
+            let typeColor = 'text-rose-600';
             let prefix = '-฿';
             if (t.type === 'income') {
-              typeColor = 'text-emerald-400';
+              typeColor = 'text-emerald-600';
               prefix = '+฿';
             } else if (t.type === 'savings') {
-              typeColor = 'text-purple-400';
+              typeColor = 'text-sky-700';
               prefix = 'ออม ฿';
             }
 
             return `
-              <div class="shopee-item p-3.5 rounded-xl bg-slate-900/40 border border-slate-800/30 hover:bg-slate-900/60 ${AppState.txEditMode ? 'edit-mode' : ''} transition-all">
+              <div class="shopee-item p-3 px-4 rounded-xl bg-white border border-slate-200 hover:bg-slate-50 ${AppState.txEditMode ? 'edit-mode' : ''} transition-all duration-150 flex items-center justify-between gap-3 shadow-sm">
                 
                 <!-- Shopee Checkbox -->
-                <div class="shopee-checkbox-container">
-                  <input type="checkbox" ${isSelected ? 'checked' : ''} onchange="toggleTxSelection('${t.id}')" class="w-4 h-4 rounded border-slate-800 bg-slate-950 accent-purple text-purple-600 focus:ring-purple-600">
+                <div class="shopee-checkbox-container shrink-0">
+                  <input type="checkbox" ${isSelected ? 'checked' : ''} onchange="toggleTxSelection('${t.id}')" class="w-4 h-4 rounded border-slate-350 bg-white accent-[#007a7a] text-[#007a7a] focus:ring-[#007a7a]">
                 </div>
 
-                <!-- Item Core info -->
-                <div class="flex-1 flex justify-between items-center min-w-0 ml-2">
-                  <div class="truncate pr-4">
-                    <h4 class="text-xs font-semibold text-slate-200 truncate">${t.note}</h4>
-                    <div class="flex gap-2 items-center mt-1">
-                      <span class="text-[9px] font-bold px-2 py-0.5 rounded bg-slate-800 text-slate-400 border border-slate-700/30">${t.category}</span>
-                      <span class="text-[9px] text-slate-500 font-mono">${t.date}</span>
-                    </div>
+                <!-- Icon to match ref2 file/wallet icon column -->
+                <div class="shrink-0 p-2 rounded-lg bg-slate-100 text-slate-500">
+                  <i data-lucide="${t.type === 'income' ? 'trending-up' : t.type === 'savings' ? 'piggy-bank' : 'trending-down'}" class="w-4 h-4"></i>
+                </div>
+
+                <!-- Row Content Columns -->
+                <div class="flex-1 grid grid-cols-1 sm:grid-cols-12 gap-2 items-center min-w-0">
+                  
+                  <!-- Note Name Column -->
+                  <div class="col-span-5 truncate">
+                    <h4 onclick="editTx('${t.id}')" class="text-xs font-bold text-slate-800 truncate cursor-pointer hover:underline hover:text-[#007a7a]">
+                      ${t.note}
+                    </h4>
+                    <span class="text-[9px] text-slate-500 font-mono">${t.date}</span>
                   </div>
 
-                  <div class="text-right shrink-0">
+                  <!-- Type Status Badge Column -->
+                  <div class="col-span-2 text-left sm:text-center shrink-0">
+                    ${t.type === 'income' ? `
+                      <span class="text-[10px] px-2.5 py-0.5 rounded-full font-bold bg-emerald-100 text-emerald-800 border border-emerald-200 shadow-sm shrink-0">รายรับ</span>
+                    ` : t.type === 'expense' ? `
+                      <span class="text-[10px] px-2.5 py-0.5 rounded-full font-bold bg-rose-100 text-rose-800 border border-rose-200 shadow-sm shrink-0">รายจ่าย</span>
+                    ` : `
+                      <span class="text-[10px] px-2.5 py-0.5 rounded-full font-bold bg-sky-100 text-sky-800 border border-sky-200 shadow-sm shrink-0">เงินออม</span>
+                    `}
+                  </div>
+
+                  <!-- Category Badge Column -->
+                  <div class="col-span-2 text-left sm:text-center shrink-0">
+                    <span class="text-[10px] font-semibold px-2 py-0.5 rounded bg-slate-100 text-slate-650 border border-slate-200">${t.category}</span>
+                  </div>
+
+                  <!-- Amount Column -->
+                  <div class="col-span-3 text-left sm:text-right shrink-0">
                     <span class="text-xs font-extrabold ${typeColor}">
                       ${prefix}${t.amount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                     </span>
                   </div>
+
                 </div>
 
                 <!-- Shopee Action inline buttons -->
                 <div class="shopee-actions">
-                  <button onclick="editTx('${t.id}')" class="p-1.5 rounded-lg bg-purple-500/10 text-purple-400 hover:bg-purple-500/20 transition-colors">
+                  <button onclick="editTx('${t.id}')" class="p-1.5 rounded-lg bg-[#007a7a]/10 text-[#007a7a] hover:bg-[#007a7a]/20 transition-colors">
                     <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
                   </button>
                 </div>
@@ -141,16 +173,16 @@ export function renderTransactionComponent() {
 
       <!-- Add/Edit Popup Modal overlay -->
       ${AppState.txModalOpen ? `
-        <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md animate-fade-in">
-          <div class="w-full max-w-md glass-panel p-6 rounded-3xl border border-slate-800/60 shadow-2xl relative overflow-hidden animate-scale-up">
+        <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-fade-in">
+          <div class="w-full max-w-md bg-white p-6 rounded-3xl border border-slate-200 shadow-2xl relative overflow-hidden animate-scale-up">
             
             <!-- Close button -->
-            <button type="button" onclick="closeTxModal()" class="absolute top-4 right-4 p-2 rounded-xl bg-white/5 border border-slate-800 text-slate-400 hover:text-slate-200 transition-colors">
+            <button type="button" onclick="closeTxModal()" class="absolute top-4 right-4 p-2 rounded-xl bg-slate-100 border border-slate-200 text-slate-500 hover:text-slate-700 transition-colors">
               <i data-lucide="x" class="w-4 h-4"></i>
             </button>
 
-            <h3 id="tx-form-title" class="text-md font-bold mb-4 flex items-center gap-2">
-              <i data-lucide="plus-circle" class="text-purple-400"></i>
+            <h3 id="tx-form-title" class="text-md font-bold mb-4 flex items-center gap-2 text-slate-800">
+              <i data-lucide="plus-circle" class="text-[#007a7a]"></i>
               <span>เพิ่มรายการธุรกรรม</span>
             </h3>
 
@@ -158,13 +190,13 @@ export function renderTransactionComponent() {
               <input type="hidden" id="tx-id">
               
               <div>
-                <label class="block text-slate-400 text-xs font-semibold mb-1">หัวข้อกิจกรรม / บันทึกย่อ</label>
+                <label class="block text-slate-650 text-xs font-semibold mb-1">หัวข้อกิจกรรม / บันทึกย่อ</label>
                 <input type="text" id="tx-note" required class="glass-input w-full px-3 py-2 rounded-lg text-xs" placeholder="เช่น เงินเดือน, ซื้อข้าวเย็น, ออมเงินสำรอง">
               </div>
 
               <div class="grid grid-cols-2 gap-3">
                 <div>
-                  <label class="block text-slate-400 text-xs font-semibold mb-1">ประเภทธุรกรรม</label>
+                  <label class="block text-slate-650 text-xs font-semibold mb-1">ประเภทธุรกรรม</label>
                   <select id="tx-type" required class="glass-input w-full px-3 py-2 rounded-lg text-xs">
                     <option value="expense">รายจ่าย</option>
                     <option value="income">รายรับ</option>
@@ -172,14 +204,14 @@ export function renderTransactionComponent() {
                   </select>
                 </div>
                 <div>
-                  <label class="block text-slate-400 text-xs font-semibold mb-1">จำนวนเงิน (฿)</label>
+                  <label class="block text-slate-650 text-xs font-semibold mb-1">จำนวนเงิน (฿)</label>
                   <input type="number" id="tx-amount" min="0.01" step="any" required class="glass-input w-full px-3 py-2 rounded-lg text-xs" placeholder="0.00">
                 </div>
               </div>
 
               <div class="grid grid-cols-2 gap-3">
                 <div>
-                  <label class="block text-slate-400 text-xs font-semibold mb-1">หมวดหมู่</label>
+                  <label class="block text-slate-650 text-xs font-semibold mb-1">หมวดหมู่</label>
                   <select id="tx-category" required class="glass-input w-full px-3 py-2 rounded-lg text-xs">
                     <option value="อาหาร">อาหาร</option>
                     <option value="การเดินทาง">การเดินทาง</option>
@@ -192,7 +224,7 @@ export function renderTransactionComponent() {
                   </select>
                 </div>
                 <div>
-                  <label class="block text-slate-400 text-xs font-semibold mb-1">เวลาบันทึก</label>
+                  <label class="block text-slate-650 text-xs font-semibold mb-1">เวลาบันทึก</label>
                   <input type="date" id="tx-date" value="${AppState.getTodayString()}" onclick="this.showPicker()" required class="glass-input w-full px-3 py-2 rounded-lg text-xs">
                   
                   <!-- Quick Date shortcuts requested by user -->
@@ -204,10 +236,10 @@ export function renderTransactionComponent() {
               </div>
 
               <div class="flex gap-2 pt-2">
-                <button type="submit" class="flex-1 py-2.5 rounded-xl text-xs font-bold text-white bg-purple-600 hover:bg-purple-500 shadow-md">
+                <button type="submit" class="flex-1 py-2.5 rounded-xl text-xs font-bold text-white bg-[#007a7a] hover:bg-[#006363] shadow-md">
                   บันทึกข้อมูล
                 </button>
-                <button type="button" onclick="closeTxModal()" class="px-4 py-2.5 rounded-xl text-xs font-semibold bg-white/5 border border-slate-800 hover:bg-white/10 text-slate-300">
+                <button type="button" onclick="closeTxModal()" class="px-4 py-2.5 rounded-xl text-xs font-semibold bg-slate-100 border border-slate-200 hover:bg-slate-200 text-slate-700">
                   ยกเลิก
                 </button>
               </div>
