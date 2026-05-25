@@ -16,7 +16,8 @@ export function notifyStateChange() {
 export const AppState = {
   currentUser: null,
   activePage: 'dashboard',
-  sidebarCollapsed: false,
+  sidebarCollapsed: typeof window !== 'undefined' ? window.innerWidth < 768 : false,
+  lastMobileState: typeof window !== 'undefined' ? window.innerWidth < 768 : false,
   transactions: [],
   todos: [],
   health: {

@@ -15,7 +15,7 @@ import { renderCalendarComponent } from './components/calendar.js';
 export function navigate(page) {
   AppState.loading = true;
   AppState.activePage = page;
-  
+
   // Reset bulk selection modes when switching pages
   AppState.txEditMode = false;
   AppState.todoEditMode = false;
@@ -81,16 +81,14 @@ export function renderPage() {
   }
 
   // 3. Normal App Shell (Sidebar + Main Area)
-  app.className = "min-h-screen flex flex-col md:flex-row bg-[#f2f7f7]";
-
   const isMobile = window.innerWidth < 768;
   const collapseIcon = isMobile
     ? (AppState.sidebarCollapsed ? 'chevron-down' : 'chevron-up')
     : (AppState.sidebarCollapsed ? 'chevrons-right' : 'chevrons-left');
 
   const asideClasses = AppState.sidebarCollapsed
-    ? "fixed md:sticky top-0 left-0 right-0 md:h-screen z-40 w-full md:w-20 sidebar-panel p-3.5 md:p-3 flex flex-col md:justify-between shrink-0 transition-all duration-300 h-[68px] md:h-screen overflow-hidden shadow-md md:shadow-none"
-    : "fixed md:sticky top-0 left-0 right-0 md:h-screen z-40 w-full md:w-64 sidebar-panel p-4 md:p-5 flex flex-col md:justify-between shrink-0 transition-all duration-300 h-screen md:h-screen overflow-y-auto md:overflow-visible shadow-xl md:shadow-none";
+    ? "fixed md:sticky top-0 left-0 right-0 md:h-screen z-40 w-full md:w-20 sidebar-panel p-3.5 md:p-3 flex flex-col md:justify-between shrink-0 transition-all duration-300 h-[68px] max-h-[68px] md:max-h-none md:h-screen overflow-hidden shadow-md md:shadow-none"
+    : "fixed md:sticky top-0 left-0 right-0 md:h-screen z-40 w-full md:w-64 sidebar-panel p-4 md:p-5 flex flex-col md:justify-between shrink-0 transition-all duration-300 h-auto max-h-[90vh] md:max-h-none md:h-screen overflow-y-auto md:overflow-visible shadow-xl md:shadow-none";
 
   const hideTextClass = AppState.sidebarCollapsed ? "block md:hidden" : "";
   const centerIconClass = AppState.sidebarCollapsed ? "md:justify-center" : "";
@@ -101,9 +99,35 @@ export function renderPage() {
     ? "flex items-center justify-between md:flex-col md:items-center md:justify-center pb-0 md:pb-6 mb-0 md:mb-6 border-none md:border-b border-white/10 gap-3 w-full"
     : "flex items-center justify-between pb-4 md:pb-6 mb-4 md:mb-6 border-b border-white/10 gap-3 w-full";
 
-  app.innerHTML = `
-    <!-- Sidebar navigation -->
-    <aside class="${asideClasses}">
+  let aside = document.getElementById('app-sidebar');
+  let main = document.getElementById('app-main');
+
+  if (!aside || !main) {
+    app.className = "min-h-screen flex flex-col md:flex-row bg-[#f2f7f7]";
+    app.innerHTML = `
+      <!-- Sidebar navigation -->
+      <aside id="app-sidebar" class="${asideClasses}"></aside>
+
+      <!-- Main Content Container with Premium transitions -->
+      <main id="app-main" class="flex-1 p-6 md:p-10 overflow-y-auto max-h-screen page-fade-in flex flex-col mt-[68px] md:mt-0">
+        <!-- Toggle button top bar breadcrumb -->
+        <div id="app-breadcrumb" class="flex items-center gap-4 mb-6"></div>
+        
+        <div id="app-content" class="flex-1"></div>
+      </main>
+    `;
+    aside = document.getElementById('app-sidebar');
+    main = document.getElementById('app-main');
+  }
+
+  // Update aside classes if changed
+  if (aside.className !== asideClasses) {
+    aside.className = asideClasses;
+  }
+
+  // Render sidebar contents inside aside
+  aside.innerHTML = `
+    <div class="flex flex-col md:justify-between h-full w-full">
       <div>
         <!-- Profile Header -->
         <div class="${profileHeaderClass}">
@@ -152,7 +176,6 @@ export function renderPage() {
               <i data-lucide="calendar" class="w-5 h-5 shrink-0"></i>
               <span class="${hideTextClass}">Calendar</span>
             </button>
-            
           </nav>
         </div>
       </div>
@@ -178,27 +201,29 @@ export function renderPage() {
           </button>
         </div>
       </div>
-    </aside>
-
-    <!-- Main Content Container with Premium transitions -->
-    <main class="flex-1 p-6 md:p-10 overflow-y-auto max-h-screen page-fade-in flex flex-col mt-[68px] md:mt-0">
-      <!-- Toggle button top bar breadcrumb -->
-      <div class="flex items-center gap-4 mb-6">
-        <button onclick="toggleSidebar()" class="p-2 rounded-xl bg-white border border-slate-200 text-slate-500 hover:text-slate-800 transition-colors flex items-center justify-center cursor-pointer shadow-sm hover:bg-slate-50 md:flex hidden" title="${AppState.sidebarCollapsed ? 'ขยายเมนู' : 'ยุบเมนู'}">
-          <i data-lucide="${AppState.sidebarCollapsed ? 'menu' : 'menu-fold'}" class="w-5.5 h-5.5"></i>
-        </button>
-        <div class="flex items-center gap-2 text-xs font-bold text-slate-500 tracking-wider uppercase select-none">
-          <span>SmartLife</span>
-          <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i>
-          <span class="text-[#007a7a]">${AppState.activePage}</span>
-        </div>
-      </div>
-      
-      <div class="flex-1">
-        ${renderActiveComponent()}
-      </div>
-    </main>
+    </div>
   `;
+
+  // Update breadcrumb
+  const breadcrumb = document.getElementById('app-breadcrumb');
+  if (breadcrumb) {
+    breadcrumb.innerHTML = `
+      <button onclick="toggleSidebar()" class="p-2 rounded-xl bg-white border border-slate-200 text-slate-500 hover:text-slate-800 transition-colors flex items-center justify-center cursor-pointer shadow-sm hover:bg-slate-50 md:flex hidden" title="${AppState.sidebarCollapsed ? 'ขยายเมนู' : 'ยุบเมนู'}">
+        <i data-lucide="${AppState.sidebarCollapsed ? 'menu' : 'menu-fold'}" class="w-5.5 h-5.5"></i>
+      </button>
+      <div class="flex items-center gap-2 text-xs font-bold text-slate-500 tracking-wider uppercase select-none">
+        <span>SmartLife</span>
+        <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i>
+        <span class="text-[#007a7a]">${AppState.activePage}</span>
+      </div>
+    `;
+  }
+
+  // Update main content area
+  const content = document.getElementById('app-content');
+  if (content) {
+    content.innerHTML = renderActiveComponent();
+  }
 
   // Draw dashboard Chart.js Doughnut if active
   if (AppState.activePage === 'dashboard') {
@@ -271,6 +296,7 @@ if (typeof window !== 'undefined') {
     const isMobileNow = window.innerWidth < 768;
     if (AppState.lastMobileState !== isMobileNow) {
       AppState.lastMobileState = isMobileNow;
+      AppState.sidebarCollapsed = isMobileNow;
       renderPage();
     }
   }, { passive: true });

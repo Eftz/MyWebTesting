@@ -4,11 +4,11 @@
   --bg-primary: #f2f7f7;
   --bg-secondary: #ffffff;
   --bg-tertiary: #edf4f4;
-  
+
   --glass-bg: #ffffff;
   --glass-border: rgba(0, 95, 95, 0.08);
   --glass-border-focus: rgba(0, 122, 122, 0.4);
-  
+
   --accent-purple: #007a7a;
   --accent-purple-glow: rgba(0, 122, 122, 0.2);
   --accent-blue: #0284c7;
@@ -18,11 +18,11 @@
   --accent-pink: #f2994a;
   --accent-pink-glow: rgba(242, 153, 74, 0.2);
   --accent-orange: #f2994a;
-  
+
   --text-primary: #1e293b;
   --text-secondary: #475569;
   --text-muted: #64748b;
-  
+
   font-family: 'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, sans-serif;
 }
 
@@ -55,7 +55,7 @@ body {
   padding: 0;
   min-height: 100vh;
   overflow-x: hidden;
-  background-image: 
+  background-image:
     radial-gradient(circle at 10% 20%, rgba(0, 122, 122, 0.05) 0%, transparent 40%),
     radial-gradient(circle at 90% 80%, rgba(16, 185, 129, 0.05) 0%, transparent 45%),
     radial-gradient(circle at 50% 50%, rgba(242, 153, 74, 0.03) 0%, transparent 50%);
@@ -115,10 +115,12 @@ body {
     transform: scale(0.95);
     opacity: 0.5;
   }
+
   50% {
     transform: scale(1.03);
     opacity: 0.8;
   }
+
   100% {
     transform: scale(1);
     opacity: 1;
@@ -134,6 +136,11 @@ body {
   background: #005d5d;
   color: #ffffff;
   border-right: 1px solid rgba(0, 0, 0, 0.1);
+  transition: max-height 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+    width 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+    padding 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+    background-color 0.45s ease !important;
 }
 
 .sidebar-link {
@@ -154,7 +161,8 @@ body {
   border-color: transparent !important;
 }
 
-.sidebar-link.active i, .sidebar-link.active span {
+.sidebar-link.active i,
+.sidebar-link.active span {
   color: #005d5d !important;
 }
 
@@ -248,14 +256,20 @@ body {
 }
 
 @keyframes wave {
-  0% { transform: translateX(0) rotate(0deg); }
-  100% { transform: translateX(-50%) rotate(360deg); }
+  0% {
+    transform: translateX(0) rotate(0deg);
+  }
+
+  100% {
+    transform: translateX(-50%) rotate(360deg);
+  }
 }
 
 /* Sparkle/Active glow on complete */
 .sparkle-complete {
   position: relative;
 }
+
 .sparkle-complete::after {
   content: '★';
   position: absolute;
@@ -267,8 +281,17 @@ body {
 }
 
 @keyframes float {
-  0%, 100% { transform: translateY(0) scale(1); opacity: 0.8; }
-  50% { transform: translateY(-6px) scale(1.2); opacity: 1; }
+
+  0%,
+  100% {
+    transform: translateY(0) scale(1);
+    opacity: 0.8;
+  }
+
+  50% {
+    transform: translateY(-6px) scale(1.2);
+    opacity: 1;
+  }
 }
 
 /* Notification banner slide-in */
@@ -281,8 +304,15 @@ body {
 }
 
 @keyframes slideIn {
-  0% { transform: translateY(100px) scale(0.9); opacity: 0; }
-  100% { transform: translateY(0) scale(1); opacity: 1; }
+  0% {
+    transform: translateY(100px) scale(0.9);
+    opacity: 0;
+  }
+
+  100% {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
 }
 
 /* Premium Page Slide-Up and Fade-In Transition */
@@ -295,6 +325,7 @@ body {
     opacity: 0;
     transform: translateY(8px);
   }
+
   100% {
     opacity: 1;
     transform: translateY(0);
@@ -330,11 +361,13 @@ body {
     transform: scale(0.95);
     opacity: 0;
   }
+
   to {
     transform: scale(1);
     opacity: 1;
   }
 }
+
 .animate-scale-up {
   animation: scaleUp 0.22s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
 }
@@ -431,6 +464,7 @@ body {
   border-color: rgba(236, 72, 153, 0.2);
   color: #db2777;
 }
+
 .event-pink .event-dot {
   background-color: #db2777;
 }
@@ -440,6 +474,7 @@ body {
   border-color: rgba(6, 182, 212, 0.2);
   color: #0891b2;
 }
+
 .event-blue .event-dot {
   background-color: #0891b2;
 }
@@ -449,6 +484,7 @@ body {
   border-color: rgba(16, 185, 129, 0.2);
   color: #059669;
 }
+
 .event-green .event-dot {
   background-color: #059669;
 }
@@ -458,6 +494,7 @@ body {
   border-color: rgba(147, 51, 234, 0.2);
   color: #7c3aed;
 }
+
 .event-purple .event-dot {
   background-color: #7c3aed;
 }
@@ -467,6 +504,7 @@ body {
   border-color: rgba(249, 115, 22, 0.2);
   color: #ea580c;
 }
+
 .event-orange .event-dot {
   background-color: #ea580c;
 }
@@ -497,5 +535,3 @@ body {
   opacity: 0.8;
   margin-left: auto;
 }
-
-
