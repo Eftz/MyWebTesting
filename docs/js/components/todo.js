@@ -282,9 +282,27 @@ export function renderTodoComponent() {
 
 // Actions logic for Do the list
 export async function initializeNotificationPermission() {
+  if (!('Notification' in window)) {
+    AudioEngine.playChime();
+    // Check if it is iOS (iPhone/iPad)
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || 
+                  (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    if (isIOS) {
+      showToast('📱 สำหรับ iPhone: กรุณากดแชร์ (Share) แล้วเลือก "เพิ่มไปยังหน้าจอโฮม" (Add to Home Screen) เพื่อรองรับการเตือนความจำนอกแอพนะครับ', 'warning');
+    } else {
+      showToast('⚠️ เบราว์เซอร์นี้ยังไม่รองรับการแจ้งเตือนระดับ OS แต่ระบบเสียงเตือนและกล่องเตือนในหน้าเว็บจะยังทำงานปกติครับ', 'warning');
+    }
+    return;
+  }
+  
   await NotificationEngine.requestPermission();
   AudioEngine.playChime();
-  showToast('เปิดใช้ระบบเตือนและทดสอบเสียงเรียบร้อยแล้ว!', 'success');
+  
+  if (NotificationEngine.granted) {
+    showToast('🔔 เปิดใช้งานการแจ้งเตือนความจำระดับระบบ (Push Notification) เรียบร้อยแล้ว!', 'success');
+  } else {
+    showToast('⚠️ สิทธิ์การแจ้งเตือนถูกปฏิเสธ หากต้องการรับแจ้งเตือน กรุณาอนุญาตสิทธิ์ในตั้งค่าเว็บของเบราว์เซอร์นะครับ', 'warning');
+  }
 }
 
 export function toggleTodoEditMode() {
