@@ -143,6 +143,54 @@ body {
     background-color 0.45s ease !important;
 }
 
+/* Mobile Smooth Sidebar Transition options */
+@media (max-width: 767px) {
+  .sidebar-panel {
+    width: 100% !important;
+    left: 0 !important;
+    right: 0 !important;
+    padding: 14px !important; /* Force identical top/bottom and left/right padding to prevent shifting */
+    overflow: hidden !important; /* Block dynamic scrollbars and their layout shifts completely */
+  }
+
+  .sidebar-panel.collapsed {
+    height: 68px !important;
+    max-height: 68px !important;
+  }
+
+  .sidebar-panel.expanded {
+    height: 395px !important;
+    max-height: 395px !important;
+  }
+
+  /* Transition for navigation options inside the navbar */
+  .sidebar-panel .sidebar-divider,
+  .sidebar-panel nav,
+  .sidebar-panel .water-summary-container {
+    transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+                opacity 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+                max-height 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  /* When collapsed, smoothly slide up and fade out the options */
+  .sidebar-panel.collapsed .sidebar-divider,
+  .sidebar-panel.collapsed nav,
+  .sidebar-panel.collapsed .water-summary-container {
+    opacity: 0 !important;
+    transform: translateY(-20px) !important;
+    pointer-events: none !important;
+  }
+
+  /* When expanded, smoothly slide down and fade in the options */
+  .sidebar-panel.expanded .sidebar-divider,
+  .sidebar-panel.expanded nav,
+  .sidebar-panel.expanded .water-summary-container {
+    opacity: 1 !important;
+    transform: translateY(0) !important;
+    pointer-events: auto !important;
+  }
+}
+
 .sidebar-link {
   position: relative;
   transition: all 0.2s ease;

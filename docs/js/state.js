@@ -27,20 +27,20 @@ export const AppState = {
     cal_consumed: 0,
     cal_burned: 0
   },
-  
+
   // Bulk selection modes (Shopee Bucket)
   txEditMode: false,
   todoEditMode: false,
   selectedTxIds: [],
   selectedTodoIds: [],
-  
+
   // Modal states for popup forms
   txModalOpen: false,
   todoModalOpen: false,
-  
+
   // Transition loading state
   loading: false,
-  
+
   // Charts instance references cache
   charts: {},
 
@@ -52,14 +52,14 @@ export const AppState = {
         this.loadUserData();
       }
     }
-    
+
     // Set up alert polling ticker (Every 1 second)
     setInterval(() => this.checkTodoAlarms(), 1000);
   },
 
   loadUserData() {
     const username = this.currentUser.username;
-    
+
     // Load transactions and sort by date descending
     const rawTx = localStorage.getItem(`smart_tx_${username}`);
     const loadedTx = rawTx ? JSON.parse(rawTx) : [];
@@ -72,16 +72,16 @@ export const AppState = {
       return b.id.localeCompare(a.id);
     });
     this.transactions = loadedTx;
-    
+
     // Load Todos
     const rawTodos = localStorage.getItem(`smart_plans_${username}`);
     this.todos = rawTodos ? JSON.parse(rawTodos) : [];
-    
+
     // Load Health (with auto Daily Reset logic)
     const today = this.getTodayString();
     const rawHealth = localStorage.getItem(`smart_daily_health_${username}`);
     let healthData = rawHealth ? JSON.parse(rawHealth) : null;
-    
+
     if (!healthData || healthData.date !== today) {
       // Trigger Daily Reset
       healthData = {
@@ -98,7 +98,7 @@ export const AppState = {
 
   saveTransactions() {
     if (!this.currentUser) return;
-    
+
     // Ensure sorted before saving
     this.transactions.sort((a, b) => {
       const dateA = new Date(a.date);
@@ -128,7 +128,7 @@ export const AppState = {
   saveProfile() {
     if (!this.currentUser) return;
     localStorage.setItem(`smart_profile_${this.currentUser.username}`, JSON.stringify(this.currentUser));
-    
+
     // Update user in catalog
     const users = JSON.parse(localStorage.getItem('smart_users') || '[]');
     const index = users.findIndex(u => u.username === this.currentUser.username);
@@ -146,18 +146,18 @@ export const AppState = {
 
   checkTodoAlarms() {
     if (!this.currentUser) return;
-    
+
     const now = new Date();
     const currentTimeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
     const todayStr = this.getTodayString();
-    
+
     let changed = false;
     this.todos.forEach(todo => {
       if (!todo.completed && !todo.notified && todo.alertTime) {
         if (todo.alertTime === currentTimeStr && todo.date === todayStr) {
           todo.notified = true;
           changed = true;
-          
+
           try {
             // Trigger Web Notification
             NotificationEngine.show(
@@ -167,14 +167,14 @@ export const AppState = {
           } catch (e) {
             console.error("OS Notification error:", e);
           }
-          
+
           try {
             // Trigger Sound chime
             AudioEngine.playChime();
           } catch (e) {
             console.error("Audio synthesiser error:", e);
           }
-          
+
           // Display toast
           showToast(`🔔 ${todo.task} (${todo.alertTime} น.)`, 'info');
         }
