@@ -5,10 +5,10 @@ export function showToast(message, type = 'success') {
   if (!container) return;
 
   const colors = {
-    success: 'bg-emerald-500/20 border-emerald-500/40 text-emerald-300',
-    error: 'bg-rose-500/20 border-rose-500/40 text-rose-300',
-    info: 'bg-cyan-500/20 border-cyan-500/40 text-cyan-300',
-    warning: 'bg-orange-500/20 border-orange-500/40 text-orange-300'
+    success: 'bg-emerald-500/20 border-emerald-500/40 text-emerald-900',
+    error: 'bg-rose-500/20 border-rose-500/40 text-rose-900',
+    info: 'bg-cyan-500/20 border-cyan-500/40 text-cyan-900',
+    warning: 'bg-orange-500/20 border-orange-500/40 text-orange-900'
   };
 
   const toast = document.createElement('div');
@@ -19,7 +19,7 @@ export function showToast(message, type = 'success') {
   `;
 
   container.appendChild(toast);
-  
+
   // Auto-remove after 4 seconds
   setTimeout(() => {
     toast.style.opacity = '0';
