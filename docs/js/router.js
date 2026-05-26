@@ -88,7 +88,7 @@ export function renderPage() {
 
   const asideClasses = AppState.sidebarCollapsed
     ? "fixed md:sticky top-0 left-0 right-0 md:h-screen z-40 w-full md:w-20 sidebar-panel collapsed p-3.5 md:p-3 flex flex-col md:justify-between shrink-0 transition-all duration-300 h-[68px] max-h-[68px] md:max-h-none md:h-screen overflow-hidden shadow-md md:shadow-none"
-    : "fixed md:sticky top-0 left-0 right-0 md:h-screen z-40 w-full md:w-64 sidebar-panel expanded p-3.5 md:p-5 flex flex-col md:justify-between shrink-0 transition-all duration-300 h-auto max-h-[450px] md:max-h-none md:h-screen overflow-y-auto md:overflow-visible shadow-xl md:shadow-none";
+    : "fixed md:sticky top-0 left-0 right-0 md:h-screen z-40 w-full md:w-64 sidebar-panel expanded p-3.5 md:p-5 flex flex-col md:justify-between shrink-0 transition-all duration-300 h-auto max-h-[85vh] md:max-h-none md:h-screen overflow-y-auto md:overflow-visible shadow-xl md:shadow-none";
 
   const hideTextClass = AppState.sidebarCollapsed ? "block md:hidden" : "";
   const centerIconClass = AppState.sidebarCollapsed ? "md:justify-center" : "";
