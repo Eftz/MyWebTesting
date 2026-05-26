@@ -216,7 +216,13 @@ if (typeof window !== 'undefined') {
   window.addEventListener('scroll', (event) => {
     if (window.innerWidth < 768) {
       const target = event.target;
-      const scrollTop = target === window ? window.scrollY : (target.scrollTop || 0);
+      
+      // Prevent collapsing if the user is actively scrolling inside the navbar itself
+      if (target && target.closest && target.closest('.sidebar-panel')) {
+        return;
+      }
+
+      const scrollTop = target === window || target === document ? window.scrollY : (target.scrollTop || 0);
 
       // If scrolling down beyond a threshold, collapse the navbar options
       if (scrollTop > lastScrollTop && scrollTop > 20) {
