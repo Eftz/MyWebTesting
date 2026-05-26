@@ -1,6 +1,6 @@
 // SmartLife SPA Entry Bootstrapper Module
-import { AppState, subscribeState } from './js/state.js?v=4';
-import { renderPage } from './js/router.js?v=4';
+import { AppState, subscribeState } from './js/state.js';
+import { renderPage } from './js/router.js';
 
 window.addEventListener('DOMContentLoaded', () => {
   AppState.loading = true;
@@ -14,7 +14,7 @@ window.addEventListener('DOMContentLoaded', () => {
   }, 600); // 600ms sleek initial transition loader
 });
 
-window.togglePasswordVisibility = function(id) {
+window.togglePasswordVisibility = function (id) {
   const input = document.getElementById(id);
   const eyeIcon = document.getElementById(`eye-${id}`);
   if (input && eyeIcon) {
