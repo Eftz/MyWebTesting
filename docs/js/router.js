@@ -302,13 +302,24 @@ function renderSidebarContent(aside, collapseIcon, hideTextClass, centerIconClas
               <i data-lucide="calendar" class="w-5 h-5 shrink-0"></i>
               <span class="${hideTextClass}">Calendar</span>
             </button>
+            
+            <!-- Mini water progress for Mobile Landscape only -->
+            <div onclick="navigate('health')" class="mobile-landscape-water items-center justify-center gap-1.5 px-2 py-1.5 rounded-xl border border-sky-200/60 bg-sky-50/50 cursor-pointer shadow-sm hover:bg-sky-100/50 transition-colors" title="เป้าหมายดื่มน้ำวันนี้">
+              <i data-lucide="droplet" class="w-4 h-4 text-sky-500"></i>
+              <div class="flex flex-col items-start leading-none">
+                <span class="text-[9px] font-extrabold text-sky-700">${AppState.health.water}/${AppState.currentUser.waterGoal}</span>
+                <div class="w-full bg-sky-200 rounded-full h-0.5 mt-0.5 overflow-hidden">
+                  <div class="bg-sky-500 h-full" style="width: ${Math.min(100, (AppState.health.water / AppState.currentUser.waterGoal) * 100)}%"></div>
+                </div>
+              </div>
+            </div>
           </nav>
         </div>
       </div>
 
       <div class="flex flex-col justify-between md:flex-1 mt-auto">
         <!-- Quick targets visual summary inside sidebar -->
-        <div class="mt-8 space-y-3 water-summary-container">
+        <div class="mt-8 space-y-3 water-summary-container transition-opacity duration-300 ${AppState.sidebarCollapsed ? 'md:hidden' : ''}">
           <div class="bg-white/10 border border-white/20 rounded-xl p-3 text-xs">
             <div class="flex justify-between text-teal-100 font-semibold mb-1">
               <span>ดื่มน้ำวันนี้</span>
@@ -376,6 +387,16 @@ function updateSidebarDynamicStates(aside, collapseIcon, hideTextClass, centerIc
     // Update gap and alignment classes
     link.className = `sidebar-link w-full flex items-center ${gapClass} px-4 py-3 rounded-xl border border-transparent text-sm font-medium transition-all ${page === AppState.activePage ? 'active' : ''} ${centerIconClass}`;
   });
+
+  // 5. Update water summary container visibility on desktop
+  const waterContainer = aside.querySelector('.water-summary-container');
+  if (waterContainer) {
+    if (AppState.sidebarCollapsed) {
+      waterContainer.classList.add('md:hidden');
+    } else {
+      waterContainer.classList.remove('md:hidden');
+    }
+  }
 
   // 5. Update logout button classes
   const logoutBtn = aside.querySelector('.logout-btn-default');

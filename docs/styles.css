@@ -137,6 +137,10 @@ body {
 }
 
 /* Sidebar Custom Styling */
+.mobile-landscape-water {
+  display: none !important;
+}
+
 .sidebar-panel {
   background: #005d5d;
   color: #ffffff;
@@ -206,6 +210,10 @@ body {
     /* Hide water summary in landscape to save space */
     .water-summary-container {
       display: none !important;
+    }
+
+    .mobile-landscape-water {
+      display: flex !important;
     }
 
     /* Ensure nav icons are centered */
@@ -727,6 +735,11 @@ body {
 
   /* Desktop */
   @media (min-width: 768px) {
+    /* Hide water summary when sidebar is collapsed on desktop */
+    .sidebar-panel.collapsed .water-summary-container {
+      display: none !important;
+    }
+
     /* When sidebar is expanded */
     .sidebar-panel.expanded ~ main .modal-overlay-safe {
       left: 16rem;
