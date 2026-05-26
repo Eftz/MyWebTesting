@@ -79,20 +79,16 @@ export async function handleLocalProfileUpload(event) {
     return;
   }
 
-  showToast('กำลังประมวลผลรูปภาพ...', 'info');
+  showToast('กำลังประมวลผลและอัพโหลดรูปภาพ...', 'info');
+
+  // compressImage shrinks the image to 128x128 JPEG at 70% quality (under ~10KB).
+  // We can safely store this tiny Base64 string directly in Firestore to sync across all devices!
   compressImage(file, async (base64Data) => {
     try {
-      const { storage, ref, uploadString, getDownloadURL } = await import('../firebase.js');
-      showToast('กำลังอัพโหลดรูปภาพขึ้น Cloud...', 'info');
-
-      const uid = AppState.currentUser.uid;
-      const imageRef = ref(storage, `profiles/${uid}_avatar.jpg`);
-      await uploadString(imageRef, base64Data, 'data_url');
-      const downloadURL = await getDownloadURL(imageRef);
-
-      AppState.currentUser.profileImage = downloadURL;
+      AppState.currentUser.profileImage = base64Data;
       AppState.saveProfile();
-      showToast('อัพโหลดและอัปเดตรูปภาพโปรไฟล์แล้วครับ! 📸', 'success');
+
+      showToast('อัพโหลดและซิงค์รูปภาพโปรไฟล์สำเร็จ! 📸', 'success');
       renderPage();
     } catch (e) {
       console.error(e);
@@ -591,27 +587,29 @@ export async function handleUsernameChange(event) {
   }
 
   try {
-    const { auth, signInWithEmailAndPassword } = await import('../firebase.js');
-    const email = `${oldUsername}@smartlife.app`;
+    const { auth, signInWithEmailAndPassword, updateEmail } = await import('../firebase.js');
+    const oldEmail = auth.currentUser.email; // Safely get the exact email they are logged in with
+    const newEmail = `${newUsername}@smartlife.app`;
 
     // Verify password by attempting to sign in
     showToast('กำลังตรวจสอบความปลอดภัย...', 'info');
-    await signInWithEmailAndPassword(auth, email, password);
+    await signInWithEmailAndPassword(auth, oldEmail, password);
 
-    // Actually updating the email in Firebase Auth requires updateEmail,
-    // For simplicity, we just update the username in Firestore and inform user 
-    // that they still need to login with the original username.
+    // Firebase Security prevents changing email without verification (auth/operation-not-allowed).
+    // So we only update the display username in Firestore. The login username (Auth email) remains the original.
 
+    // Update the username in Firestore
     AppState.currentUser.username = newUsername;
     AppState.saveProfile();
 
     AppState.usernameModalOpen = false;
+    showToast('เปลี่ยนชื่อสำเร็จ! (หมายเหตุ: ใช้ชื่อเดิมในการล็อกอินเข้าสู่ระบบ)', 'success');
     showToast('เปลี่ยนชื่อผู้ใช้สำหรับแสดงผลเรียบร้อยแล้ว! 🎉', 'success');
     renderPage();
 
   } catch (error) {
     console.error("Username Change Error:", error);
-    showToast('รหัสผ่านไม่ถูกต้อง หรือไม่สามารถเปลี่ยนชื่อได้', 'error');
+    showToast(`เปลี่ยนชื่อไม่ได้: ${error.message}`, 'error');
   }
 }
 
@@ -635,7 +633,7 @@ export async function handlePasswordChange(event) {
 
   try {
     const { auth, signInWithEmailAndPassword, updatePassword } = await import('../firebase.js');
-    const email = `${AppState.currentUser.username}@smartlife.app`;
+    const email = auth.currentUser.email; // Safely get the exact email they are logged in with
 
     // Re-authenticate user with current password
     showToast('กำลังตรวจสอบความปลอดภัย...', 'info');
