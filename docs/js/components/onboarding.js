@@ -53,7 +53,7 @@ export function renderOnboarding(app) {
   if (window.lucide) window.lucide.createIcons();
 }
 
-export function handleOnboardingSubmit(event) {
+export async function handleOnboardingSubmit(event) {
   event.preventDefault();
   
   const name = document.getElementById('ob-name').value.trim();
@@ -68,9 +68,16 @@ export function handleOnboardingSubmit(event) {
   AppState.currentUser.exerciseGoal = exercise;
   AppState.currentUser.calGoal = cal;
   AppState.currentUser.onboarded = true;
+  
+  // Set burnGoal default if missing
+  if (!AppState.currentUser.burnGoal) {
+    AppState.currentUser.burnGoal = 500;
+  }
 
-  AppState.saveProfile();
-  showToast('ตั้งเป้าหมายส่วนตัวสำเร็จ ยินดีต้อนรับครับ!');
+  showToast('กำลังบันทึกข้อมูล...', 'info');
+  await AppState.saveProfile();
+  
+  showToast('ตั้งเป้าหมายส่วนตัวสำเร็จ ยินดีต้อนรับครับ!', 'success');
   navigate('dashboard');
 }
 

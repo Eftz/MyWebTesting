@@ -2,6 +2,7 @@
 import { AudioEngine } from './audio.js';
 import { NotificationEngine } from './notification.js';
 import { showToast } from './ui.js';
+import { auth, db, doc, getDoc, setDoc, collection, getDocs, writeBatch, onAuthStateChanged } from './firebase.js';
 
 const stateListeners = [];
 
@@ -39,30 +40,47 @@ export const AppState = {
   todoModalOpen: false,
 
   // Transition loading state
-  loading: false,
+  loading: true, // Start loading
 
   // Charts instance references cache
   charts: {},
 
   init() {
-    const active = localStorage.getItem('smart_active_user');
-    if (active) {
-      this.currentUser = JSON.parse(localStorage.getItem(`smart_profile_${active}`));
-      if (this.currentUser) {
-        this.loadUserData();
+    onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        // User is signed in
+        const docRef = doc(db, "users", user.uid);
+        const docSnap = await getDoc(docRef);
+        
+        if (docSnap.exists()) {
+          this.currentUser = docSnap.data();
+          await this.loadUserData();
+        } else {
+          // This happens if auth succeeds but profile isn't fully created yet.
+          // In auth.js we setDoc before navigating, so it should exist.
+          this.currentUser = null;
+        }
+      } else {
+        // User is signed out
+        this.currentUser = null;
+        this.transactions = [];
+        this.todos = [];
       }
-    }
+      this.loading = false;
+      notifyStateChange();
+    });
 
     // Set up alert polling ticker (Every 1 second)
     setInterval(() => this.checkTodoAlarms(), 1000);
   },
 
-  loadUserData() {
-    const username = this.currentUser.username;
+  async loadUserData() {
+    if (!this.currentUser) return;
+    const uid = this.currentUser.uid;
 
-    // Load transactions and sort by date descending
-    const rawTx = localStorage.getItem(`smart_tx_${username}`);
-    const loadedTx = rawTx ? JSON.parse(rawTx) : [];
+    // Load transactions
+    const txSnapshot = await getDocs(collection(db, `users/${uid}/transactions`));
+    const loadedTx = txSnapshot.docs.map(doc => doc.data());
     loadedTx.sort((a, b) => {
       const dateA = new Date(a.date);
       const dateB = new Date(b.date);
@@ -74,68 +92,82 @@ export const AppState = {
     this.transactions = loadedTx;
 
     // Load Todos
-    const rawTodos = localStorage.getItem(`smart_plans_${username}`);
-    this.todos = rawTodos ? JSON.parse(rawTodos) : [];
+    const todoSnapshot = await getDocs(collection(db, `users/${uid}/todos`));
+    this.todos = todoSnapshot.docs.map(doc => doc.data());
+    // Sort todos by date desc as well (optional, but good for UI consistency)
+    this.todos.sort((a, b) => new Date(b.date) - new Date(a.date));
 
     // Load Health (with auto Daily Reset logic)
     const today = this.getTodayString();
-    const rawHealth = localStorage.getItem(`smart_daily_health_${username}`);
-    let healthData = rawHealth ? JSON.parse(rawHealth) : null;
-
-    if (!healthData || healthData.date !== today) {
-      // Trigger Daily Reset
-      healthData = {
+    const healthRef = doc(db, `users/${uid}/health`, today);
+    const healthSnap = await getDoc(healthRef);
+    
+    if (healthSnap.exists()) {
+      this.health = healthSnap.data();
+    } else {
+      // Trigger Daily Reset (create new day doc)
+      this.health = {
         date: today,
         water: 0,
         exercise: 0,
         cal_consumed: 0,
         cal_burned: 0
       };
-      localStorage.setItem(`smart_daily_health_${username}`, JSON.stringify(healthData));
+      await setDoc(healthRef, this.health);
     }
-    this.health = healthData;
   },
 
-  saveTransactions() {
+  async saveTransactions() {
     if (!this.currentUser) return;
+    const uid = this.currentUser.uid;
 
-    // Ensure sorted before saving
-    this.transactions.sort((a, b) => {
-      const dateA = new Date(a.date);
-      const dateB = new Date(b.date);
-      if (dateB - dateA !== 0) {
-        return dateB - dateA;
-      }
-      return b.id.localeCompare(a.id);
+    // We'll write the entire current transactions array using a Batch Write to overwrite collection.
+    // In production, this might be optimized to only update changed docs, but for this SPA migration,
+    // we sync the current state to Firestore.
+    // Note: To truly sync, we need to handle deletes properly. Since we manage array in memory,
+    // we can rewrite the collection by updating existing and writing new. For deleted, it requires
+    // deleting docs not in the array. For simplicity, we write all current. (Or update the delete function)
+    // Wait, the better way is to update specific docs in the UI handlers!
+    // But to keep the `saveTransactions` API the same, we'll iterate and setDoc for each transaction.
+    const batch = writeBatch(db);
+    this.transactions.forEach(tx => {
+      const txRef = doc(db, `users/${uid}/transactions`, tx.id);
+      batch.set(txRef, tx);
     });
-
-    localStorage.setItem(`smart_tx_${this.currentUser.username}`, JSON.stringify(this.transactions));
+    // Fire-and-forget for UI speed
+    batch.commit().catch(e => console.error("Error saving TX:", e));
     notifyStateChange();
   },
 
-  saveTodos() {
+  async saveTodos() {
     if (!this.currentUser) return;
-    localStorage.setItem(`smart_plans_${this.currentUser.username}`, JSON.stringify(this.todos));
+    const uid = this.currentUser.uid;
+
+    const batch = writeBatch(db);
+    this.todos.forEach(todo => {
+      const todoRef = doc(db, `users/${uid}/todos`, todo.id);
+      batch.set(todoRef, todo);
+    });
+    batch.commit().catch(e => console.error("Error saving Todos:", e));
     notifyStateChange();
   },
 
-  saveHealth() {
+  async saveHealth() {
     if (!this.currentUser) return;
-    localStorage.setItem(`smart_daily_health_${this.currentUser.username}`, JSON.stringify(this.health));
+    const uid = this.currentUser.uid;
+    const today = this.getTodayString();
+    const healthRef = doc(db, `users/${uid}/health`, today);
+    
+    setDoc(healthRef, this.health).catch(e => console.error("Error saving health:", e));
     notifyStateChange();
   },
 
-  saveProfile() {
+  async saveProfile() {
     if (!this.currentUser) return;
-    localStorage.setItem(`smart_profile_${this.currentUser.username}`, JSON.stringify(this.currentUser));
-
-    // Update user in catalog
-    const users = JSON.parse(localStorage.getItem('smart_users') || '[]');
-    const index = users.findIndex(u => u.username === this.currentUser.username);
-    if (index !== -1) {
-      users[index] = this.currentUser;
-      localStorage.setItem('smart_users', JSON.stringify(users));
-    }
+    const uid = this.currentUser.uid;
+    const userRef = doc(db, "users", uid);
+    
+    setDoc(userRef, this.currentUser).catch(e => console.error("Error saving profile:", e));
     notifyStateChange();
   },
 

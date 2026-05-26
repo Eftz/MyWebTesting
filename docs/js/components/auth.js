@@ -2,7 +2,6 @@
 import { AppState } from '../state.js';
 import { showToast } from '../ui.js';
 import { navigate, renderPage } from '../router.js';
-import { sha256 } from '../crypto.js';
 
 export function renderAuth(app) {
   app.className = "flex items-center justify-center min-h-screen bg-[#f2f7f7] p-4";
@@ -85,7 +84,7 @@ export function toggleAuthMode(isSignUp) {
   renderPage();
 }
 
-export function handleAuthSubmit(event, isSignUp) {
+export async function handleAuthSubmit(event, isSignUp) {
   event.preventDefault();
   
   const username = document.getElementById('auth-username').value.trim().toLowerCase();
@@ -95,8 +94,12 @@ export function handleAuthSubmit(event, isSignUp) {
     showToast('กรุณากรอกข้อมูลให้ครบถ้วน', 'error');
     return;
   }
+  
+  // Create a fake email for Firebase Auth based on the username
+  const email = `${username}@smartlife.app`;
 
-  const users = JSON.parse(localStorage.getItem('smart_users') || '[]');
+  // Dynamically import Firebase logic
+  const { auth, db, createUserWithEmailAndPassword, signInWithEmailAndPassword, doc, setDoc } = await import('../firebase.js');
 
   if (isSignUp) {
     const confirm = document.getElementById('auth-confirm').value;
@@ -105,66 +108,55 @@ export function handleAuthSubmit(event, isSignUp) {
       return;
     }
 
-    if (users.some(u => u.username === username)) {
-      showToast('ชื่อผู้ใช้นี้ถูกใช้งานแล้ว', 'error');
-      return;
-    }
+    try {
+      showToast('กำลังสร้างบัญชี...', 'info');
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
 
-    const hashedPassword = sha256(password);
-    const newUser = {
-      username: username,
-      password: hashedPassword,
-      name: username.charAt(0).toUpperCase() + username.slice(1),
-      savingsGoal: 5000,
-      waterGoal: 2000,
-      exerciseGoal: 30,
-      calGoal: 2000,
-      burnGoal: 500,
-      onboarded: false
-    };
+      // Initial user profile
+      const newUserProfile = {
+        uid: user.uid,
+        username: username,
+        name: username.charAt(0).toUpperCase() + username.slice(1),
+        savingsGoal: 5000,
+        waterGoal: 2000,
+        exerciseGoal: 30,
+        calGoal: 2000,
+        burnGoal: 500,
+        onboarded: false,
+        profileImage: null,
+        createdAt: new Date().toISOString()
+      };
 
-    users.push(newUser);
-    localStorage.setItem('smart_users', JSON.stringify(users));
-    localStorage.setItem(`smart_profile_${username}`, JSON.stringify(newUser));
-    localStorage.setItem('smart_active_user', username);
-    
-    AppState.currentUser = newUser;
-    AppState.loadUserData();
-    showToast('สมัครสมาชิกสำเร็จ!');
-    navigate('dashboard');
-  } else {
-    const hashedPassword = sha256(password);
-    let user = users.find(u => u.username === username);
-    
-    let passwordMatched = false;
-    if (user) {
-      if (user.password === hashedPassword) {
-        passwordMatched = true;
-      } else if (user.password === password) {
-        // Migration of legacy plain-text password account to SHA-256 hashed password
-        passwordMatched = true;
-        user.password = hashedPassword;
-        localStorage.setItem('smart_users', JSON.stringify(users));
-        
-        // Also update in profile store
-        const profile = JSON.parse(localStorage.getItem(`smart_profile_${username}`));
-        if (profile) {
-          profile.password = hashedPassword;
-          localStorage.setItem(`smart_profile_${username}`, JSON.stringify(profile));
-        }
+      // Save to Firestore
+      await setDoc(doc(db, "users", user.uid), newUserProfile);
+      
+      // We don't need to manually navigate here, because state.js will listen to onAuthStateChanged
+      // However, we can update AppState just in case
+      AppState.currentUser = newUserProfile;
+      showToast('สมัครสมาชิกสำเร็จ!');
+      navigate('dashboard');
+    } catch (error) {
+      console.error("SignUp Error:", error);
+      if (error.code === 'auth/email-already-in-use') {
+        showToast('ชื่อผู้ใช้นี้ถูกใช้งานแล้ว', 'error');
+      } else if (error.code === 'auth/weak-password') {
+        showToast('รหัสผ่านต้องมีอย่างน้อย 6 ตัวอักษร', 'error');
+      } else {
+        showToast('เกิดข้อผิดพลาดในการสมัครสมาชิก', 'error');
       }
     }
-
-    if (!passwordMatched) {
+  } else {
+    try {
+      showToast('กำลังเข้าสู่ระบบ...', 'info');
+      await signInWithEmailAndPassword(auth, email, password);
+      showToast('เข้าสู่ระบบสำเร็จ');
+      // Navigation is handled by state.js auth observer, or we can force it:
+      navigate('dashboard');
+    } catch (error) {
+      console.error("SignIn Error:", error);
       showToast('ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง', 'error');
-      return;
     }
-
-    localStorage.setItem('smart_active_user', username);
-    AppState.currentUser = JSON.parse(localStorage.getItem(`smart_profile_${username}`));
-    AppState.loadUserData();
-    showToast('เข้าสู่ระบบสำเร็จ');
-    navigate('dashboard');
   }
 }
 

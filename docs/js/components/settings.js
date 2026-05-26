@@ -1,8 +1,7 @@
 // SmartLife SPA Settings Component Module
-import { AppState } from '../state.js';
-import { showToast } from '../ui.js';
-import { renderPage } from '../router.js';
-import { sha256 } from '../crypto.js';
+import { AppState, notifyStateChange } from '../state.js';
+import { showToast, compressImage } from '../ui.js';
+import { navigate, renderPage } from '../router.js';
 
 // Local states for Google Drive modal & simulation sync
 let isDriveModalOpen = false;
@@ -71,7 +70,7 @@ export function triggerLocalAvatarSelect() {
 }
 
 // Local profile image upload handler
-export function handleLocalProfileUpload(event) {
+export async function handleLocalProfileUpload(event) {
   const file = event.target.files[0];
   if (!file) return;
 
@@ -81,11 +80,24 @@ export function handleLocalProfileUpload(event) {
   }
 
   showToast('กำลังประมวลผลรูปภาพ...', 'info');
-  compressImage(file, (base64Data) => {
-    AppState.currentUser.profileImage = base64Data;
-    AppState.saveProfile();
-    showToast('อัพโหลดและอัปเดตรูปภาพโปรไฟล์แล้วครับ! 📸', 'success');
-    renderPage();
+  compressImage(file, async (base64Data) => {
+    try {
+      const { storage, ref, uploadString, getDownloadURL } = await import('../firebase.js');
+      showToast('กำลังอัพโหลดรูปภาพขึ้น Cloud...', 'info');
+      
+      const uid = AppState.currentUser.uid;
+      const imageRef = ref(storage, `profiles/${uid}_avatar.jpg`);
+      await uploadString(imageRef, base64Data, 'data_url');
+      const downloadURL = await getDownloadURL(imageRef);
+      
+      AppState.currentUser.profileImage = downloadURL;
+      AppState.saveProfile();
+      showToast('อัพโหลดและอัปเดตรูปภาพโปรไฟล์แล้วครับ! 📸', 'success');
+      renderPage();
+    } catch (e) {
+      console.error(e);
+      showToast('เกิดข้อผิดพลาดในการอัพโหลดรูปภาพ', 'error');
+    }
   });
 }
 
@@ -561,7 +573,7 @@ export function closeUsernameModal() {
   renderPage();
 }
 
-export function handleUsernameChange(event) {
+export async function handleUsernameChange(event) {
   event.preventDefault();
 
   const newUsername = document.getElementById('uname-new').value.trim().toLowerCase();
@@ -578,114 +590,72 @@ export function handleUsernameChange(event) {
     return;
   }
 
-  // Validate password
-  const hashedCurrent = sha256(password);
-  let currentPasswordValid = false;
-  if (AppState.currentUser.password === hashedCurrent) {
-    currentPasswordValid = true;
-  } else if (AppState.currentUser.password === password) {
-    currentPasswordValid = true;
-  }
-
-  if (!currentPasswordValid) {
-    showToast('รหัสผ่านไม่ถูกต้อง กรุณาลองใหม่อีกครั้ง', 'error');
-    return;
-  }
-
-  // Check if new username is already taken
-  const users = JSON.parse(localStorage.getItem('smart_users') || '[]');
-  if (users.some(u => u.username === newUsername)) {
-    showToast('ชื่อผู้ใช้นี้ถูกใช้งานแล้ว', 'error');
-    return;
-  }
-
-  // Perform migration of localStorage keys
-  const profileData = localStorage.getItem(`smart_profile_${oldUsername}`);
-  const txData = localStorage.getItem(`smart_tx_${oldUsername}`);
-  const plansData = localStorage.getItem(`smart_plans_${oldUsername}`);
-  const healthData = localStorage.getItem(`smart_daily_health_${oldUsername}`);
-
-  // Set new keys
-  if (profileData) {
-    const parsedProfile = JSON.parse(profileData);
-    parsedProfile.username = newUsername;
-    localStorage.setItem(`smart_profile_${newUsername}`, JSON.stringify(parsedProfile));
-    AppState.currentUser = parsedProfile;
-  } else {
+  try {
+    const { auth, signInWithEmailAndPassword } = await import('../firebase.js');
+    const email = `${oldUsername}@smartlife.app`;
+    
+    // Verify password by attempting to sign in
+    showToast('กำลังตรวจสอบความปลอดภัย...', 'info');
+    await signInWithEmailAndPassword(auth, email, password);
+    
+    // Actually updating the email in Firebase Auth requires updateEmail,
+    // For simplicity, we just update the username in Firestore and inform user 
+    // that they still need to login with the original username.
+    
     AppState.currentUser.username = newUsername;
-    localStorage.setItem(`smart_profile_${newUsername}`, JSON.stringify(AppState.currentUser));
+    AppState.saveProfile();
+
+    AppState.usernameModalOpen = false;
+    showToast('เปลี่ยนชื่อผู้ใช้สำหรับแสดงผลเรียบร้อยแล้ว! 🎉', 'success');
+    renderPage();
+
+  } catch (error) {
+    console.error("Username Change Error:", error);
+    showToast('รหัสผ่านไม่ถูกต้อง หรือไม่สามารถเปลี่ยนชื่อได้', 'error');
   }
-
-  if (txData) localStorage.setItem(`smart_tx_${newUsername}`, txData);
-  if (plansData) localStorage.setItem(`smart_plans_${newUsername}`, plansData);
-  if (healthData) localStorage.setItem(`smart_daily_health_${newUsername}`, healthData);
-
-  // Remove old keys
-  localStorage.removeItem(`smart_profile_${oldUsername}`);
-  localStorage.removeItem(`smart_tx_${oldUsername}`);
-  localStorage.removeItem(`smart_plans_${oldUsername}`);
-  localStorage.removeItem(`smart_daily_health_${oldUsername}`);
-
-  // Update catalog (smart_users)
-  const index = users.findIndex(u => u.username === oldUsername);
-  if (index !== -1) {
-    users[index].username = newUsername;
-    users[index].name = AppState.currentUser.name;
-    localStorage.setItem('smart_users', JSON.stringify(users));
-  }
-
-  // Update active user key
-  localStorage.setItem('smart_active_user', newUsername);
-
-  // Reload data into AppState
-  AppState.loadUserData();
-
-  AppState.usernameModalOpen = false;
-  showToast('เปลี่ยนชื่อผู้ใช้เรียบร้อยแล้ว! 🎉', 'success');
-  renderPage();
 }
 
-export function handlePasswordChange(event) {
+export async function handlePasswordChange(event) {
   event.preventDefault();
 
   const current = document.getElementById('pw-current').value;
   const newPass = document.getElementById('pw-new').value;
   const confirmPass = document.getElementById('pw-new-confirm').value;
 
-  // 1. Verify old password (supporting both hashed and legacy plain text comparisons)
-  const hashedCurrent = sha256(current);
-  let currentPasswordValid = false;
-  if (AppState.currentUser.password === hashedCurrent) {
-    currentPasswordValid = true;
-  } else if (AppState.currentUser.password === current) {
-    currentPasswordValid = true;
-  }
-
-  if (!currentPasswordValid) {
-    showToast('รหัสผ่านเดิมไม่ถูกต้อง กรุณาลองใหม่อีกครั้ง', 'error');
-    return;
-  }
-
-  // 2. Validate new password length or strength
-  if (newPass.length < 4) {
-    showToast('รหัสผ่านใหม่ต้องมีความยาวอย่างน้อย 4 ตัวอักษร', 'warning');
-    return;
-  }
-
-  // 3. Verify new passwords match
+  // 1. Verify new passwords match
   if (newPass !== confirmPass) {
     showToast('รหัสผ่านใหม่และยืนยันรหัสผ่านไม่ตรงกัน', 'error');
     return;
   }
+  
+  if (newPass.length < 6) {
+    showToast('รหัสผ่านใหม่ต้องมีความยาวอย่างน้อย 6 ตัวอักษร', 'warning');
+    return;
+  }
 
-  // 4. Update password securely using SHA-256 hash
-  const hashedNewPass = sha256(newPass);
-  AppState.currentUser.password = hashedNewPass;
-  AppState.saveProfile();
-  AppState.passwordModalOpen = false;
-
-  showToast('เปลี่ยนรหัสผ่านความปลอดภัยเรียบร้อยแล้ว! 🔒', 'success');
-  renderPage();
+  try {
+    const { auth, signInWithEmailAndPassword, updatePassword } = await import('../firebase.js');
+    const email = `${AppState.currentUser.username}@smartlife.app`;
+    
+    // Re-authenticate user with current password
+    showToast('กำลังตรวจสอบความปลอดภัย...', 'info');
+    await signInWithEmailAndPassword(auth, email, current);
+    
+    // Update password
+    await updatePassword(auth.currentUser, newPass);
+    
+    AppState.passwordModalOpen = false;
+    showToast('เปลี่ยนรหัสผ่านความปลอดภัยเรียบร้อยแล้ว! 🔒', 'success');
+    renderPage();
+    
+  } catch (error) {
+    console.error("Password Change Error:", error);
+    if (error.code === 'auth/wrong-password' || error.code === 'auth/invalid-credential') {
+      showToast('รหัสผ่านเดิมไม่ถูกต้อง กรุณาลองใหม่อีกครั้ง', 'error');
+    } else {
+      showToast('เกิดข้อผิดพลาดในการเปลี่ยนรหัสผ่าน', 'error');
+    }
+  }
 }
 
 // Expose settings updates & password/username modal triggers to window globally

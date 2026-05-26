@@ -35,12 +35,20 @@ export function navigate(page) {
   }, 400); // 400ms premium transition delay
 }
 
-export function handleLogout() {
-  localStorage.removeItem('smart_active_user');
-  AppState.currentUser = null;
-  AppState.activePage = 'dashboard';
-  navigate('dashboard');
-  showToast('ออกจากระบบเรียบร้อยแล้ว');
+export async function handleLogout() {
+  const { auth, signOut } = await import('./firebase.js');
+  try {
+    await signOut(auth);
+    // Remove legacy local storage user if exists
+    localStorage.removeItem('smart_active_user');
+    AppState.currentUser = null;
+    AppState.activePage = 'dashboard';
+    navigate('dashboard');
+    showToast('ออกจากระบบเรียบร้อยแล้ว');
+  } catch (error) {
+    console.error("Logout Error:", error);
+    showToast('เกิดข้อผิดพลาดในการออกจากระบบ', 'error');
+  }
 }
 
 export function renderPage() {
