@@ -160,7 +160,9 @@ body {
 
   .sidebar-panel.expanded {
     height: auto !important;
-    max-height: 98vh !important;
+    max-height: 80vh !important; /* Fallback for older browsers */
+    max-height: calc(100dvh - 10px) !important; /* Dynamic viewport height to prevent overflowing below physical screen */
+    overflow-y: auto !important;
   }
 
   /* Transition for navigation options inside the navbar */
