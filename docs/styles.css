@@ -131,6 +131,11 @@ body {
   animation: ripple 0.4s ease-out;
 }
 
+/* Hide landscape-specific logout button by default */
+.logout-btn-landscape {
+  display: none !important;
+}
+
 /* Sidebar Custom Styling */
 .sidebar-panel {
   background: #005d5d;
@@ -175,13 +180,6 @@ body {
       padding: 0 12px !important;
     }
 
-    /* Ensure logout button aligns to the far right */
-    .sidebar-panel button[onclick="handleLogout()"] {
-      margin-left: auto;
-      display: flex !important;
-      align-items: center;
-    }
-
     /* Profile on the left */
     .profile-header-link {
       margin-right: auto;
@@ -189,16 +187,20 @@ body {
     }
 
     /* Unified logout button styling */
-    .sidebar-panel button[onclick="handleLogout()"] {
+    .logout-btn-landscape {
       margin-left: auto;
       display: flex !important;
       align-items: center;
       padding: 8px;
     }
 
-    .sidebar-panel button[onclick="handleLogout()"] span {
+    .logout-btn-landscape span {
       display: none;
-      /* hide text, keep icon */
+    }
+
+    /* Hide default logout button in landscape */
+    .logout-btn-default {
+      display: none !important;
     }
 
     /* Hide water summary in landscape to save space */
@@ -299,7 +301,7 @@ body {
     }
 
     /* Logout button placement in landscape */
-    .sidebar-panel button[onclick="handleLogout()"] {
+    .logout-btn-landscape {
       position: absolute;
       right: 8px;
       top: 50%;

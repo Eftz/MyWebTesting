@@ -268,7 +268,7 @@ function renderSidebarContent(aside, collapseIcon, hideTextClass, centerIconClas
           <button onclick="toggleSidebar()" class="p-1.5 rounded-lg bg-white/10 border border-white/20 text-white/70 hover:text-white hover:bg-white/20 transition-all flex items-center justify-center cursor-pointer shrink-0" title="${AppState.sidebarCollapsed ? 'ขยายเมนู' : 'ยุบเมนู'}">
             <i data-lucide="${collapseIcon}" class="w-4 h-4"></i>
           </button>
-          <button onclick="handleLogout()" class="logout-btn p-1.5 rounded-lg bg-white/10 border border-white/20 text-white/70 hover:text-white hover:bg-white/20 transition-all flex items-center justify-center cursor-pointer shrink-0" title="ออกจากระบบ">
+          <button onclick="handleLogout()" class="logout-btn-landscape p-1.5 rounded-lg bg-white/10 border border-white/20 text-white/70 hover:text-white hover:bg-white/20 transition-all items-center justify-center cursor-pointer shrink-0" title="ออกจากระบบ">
             <i data-lucide="log-out" class="w-4 h-4"></i>
           </button>
         </div>
@@ -320,6 +320,10 @@ function renderSidebarContent(aside, collapseIcon, hideTextClass, centerIconClas
           </div>
         </div>
         
+        <button onclick="handleLogout()" class="logout-btn-default w-full flex items-center ${gapClass} px-4 py-3 rounded-xl text-sm font-medium text-rose-250 hover:bg-white/10 transition-all ${centerIconClass}" title="Log Out">
+          <i data-lucide="log-out" class="w-5 h-5 shrink-0"></i>
+          <span class="${hideTextClass}">Log Out</span>
+        </button>
       </div>
     </div>
   `;
@@ -374,9 +378,13 @@ function updateSidebarDynamicStates(aside, collapseIcon, hideTextClass, centerIc
   });
 
   // 5. Update logout button classes
-  const logoutBtn = aside.querySelector('button[onclick="handleLogout()"]');
+  const logoutBtn = aside.querySelector('.logout-btn-default');
   if (logoutBtn) {
-    logoutBtn.className = `w-full flex items-center ${gapClass} px-4 py-3 rounded-xl text-sm font-medium text-rose-250 hover:bg-white/10 transition-all ${centerIconClass}`;
+    logoutBtn.className = `logout-btn-default w-full flex items-center ${gapClass} px-4 py-3 rounded-xl text-sm font-medium text-rose-250 hover:bg-white/10 transition-all ${centerIconClass}`;
+    const logoutSpan = logoutBtn.querySelector('span');
+    if (logoutSpan) {
+      logoutSpan.className = hideTextClass;
+    }
   }
 
   // 6. Update water progress
