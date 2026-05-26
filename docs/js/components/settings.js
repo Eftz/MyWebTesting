@@ -272,7 +272,7 @@ export function renderSettingsComponent() {
       <!-- Change Password Modal overlay -->
       ${AppState.passwordModalOpen ? `
         <div class="modal-overlay-safe z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-fade-in">
-          <div class="w-full max-w-md bg-white p-6 rounded-3xl border border-slate-200 shadow-2xl relative overflow-hidden animate-scale-up">
+          <div class="w-full max-w-md bg-white p-5 landscape:p-4 rounded-3xl border border-slate-200 shadow-2xl relative overflow-y-auto max-h-[85vh] landscape:max-h-[85vh] animate-scale-up">
             
             <!-- Close button -->
             <button type="button" onclick="closePasswordModal()" class="absolute top-4 right-4 p-2 rounded-xl bg-slate-100 border border-slate-200 text-slate-550 hover:text-slate-750 transition-colors cursor-pointer">
@@ -331,7 +331,7 @@ export function renderSettingsComponent() {
       <!-- Change Username Modal overlay -->
       ${AppState.usernameModalOpen ? `
         <div class="modal-overlay-safe z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-fade-in">
-          <div class="w-full max-w-md bg-white p-6 rounded-3xl border border-slate-200 shadow-2xl relative overflow-hidden animate-scale-up">
+          <div class="w-full max-w-md bg-white p-5 landscape:p-4 rounded-3xl border border-slate-200 shadow-2xl relative overflow-y-auto max-h-[85vh] landscape:max-h-[85vh] animate-scale-up">
             
             <!-- Close button -->
             <button type="button" onclick="closeUsernameModal()" class="absolute top-4 right-4 p-2 rounded-xl bg-slate-100 border border-slate-200 text-slate-550 hover:text-slate-750 transition-colors cursor-pointer">
@@ -380,7 +380,7 @@ export function renderSettingsComponent() {
       <!-- Google Drive Synchronization Modal Overlay -->
       ${isDriveModalOpen ? `
         <div class="modal-overlay-safe z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-fade-in">
-          <div class="w-full max-w-md bg-white p-6 rounded-3xl border border-slate-200 shadow-2xl relative overflow-hidden animate-scale-up">
+          <div class="w-full max-w-md bg-white p-5 landscape:p-4 rounded-3xl border border-slate-200 shadow-2xl relative overflow-y-auto max-h-[85vh] landscape:max-h-[85vh] animate-scale-up">
             
             <!-- Close button -->
             <button type="button" onclick="closeGoogleDriveModal()" class="absolute top-4 right-4 p-2 rounded-xl bg-slate-100 border border-slate-200 text-slate-550 hover:text-slate-750 transition-colors cursor-pointer">
