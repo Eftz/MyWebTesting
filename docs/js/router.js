@@ -27,8 +27,6 @@ export function navigate(page) {
     AppState.sidebarCollapsed = true;
   }
 
-  console.log("Navigate to:", page, "Loading:", AppState.loading);
-
   renderPage();
 
   setTimeout(() => {
@@ -124,7 +122,7 @@ export function renderPage() {
       <aside id="app-sidebar" class="${asideClasses}"></aside>
 
       <!-- Main Content Container with Premium transitions -->
-      <main id="app-main" class="flex-1 p-6 md:p-10 overflow-y-auto max-h-screen flex flex-col mt-[68px] md:mt-0" style="animation: pageFadeIn 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards;" onanimationend="this.style.animation='none'">
+      <main id="app-main" class="flex-1 p-6 md:p-10 flex flex-col mt-[68px] md:mt-0" style="animation: pageFadeIn 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards;" onanimationend="this.style.animation='none'">
         <!-- Toggle button top bar breadcrumb -->
         <div id="app-breadcrumb" class="flex items-center gap-4 mb-6"></div>
         

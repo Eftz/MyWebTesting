@@ -484,7 +484,7 @@ export function renderCalendarComponent() {
 
       <!-- Add/Edit Inline Modal for Calendar -->
       ${isModalOpen ? `
-        <div class="modal-overlay-safe z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-fade-in">
+        <div class="modal-overlay-safe fixed inset-0 top-[68px] md:top-0 landscape:top-[60px] md:landscape:top-0 ${AppState.sidebarCollapsed ? 'md:left-20' : 'md:left-64'} z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-fade-in">
           <div class="w-full max-w-md bg-white p-5 landscape:p-4 rounded-3xl border border-slate-200 shadow-2xl relative overflow-y-auto max-h-[85vh] landscape:max-h-[85vh] animate-scale-up">
             
             <!-- Close button -->
@@ -559,7 +559,7 @@ export function renderCalendarComponent() {
 
       <!-- Day View Modal for Calendar -->
       ${isDayViewOpen ? `
-        <div class="modal-overlay-safe z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-fade-in">
+        <div class="modal-overlay-safe fixed inset-0 top-[68px] md:top-0 landscape:top-[60px] md:landscape:top-0 ${AppState.sidebarCollapsed ? 'md:left-20' : 'md:left-64'} z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-fade-in">
           <div class="w-full max-w-lg bg-white p-5 landscape:p-4 rounded-3xl border border-slate-200 shadow-2xl relative overflow-y-auto max-h-[85vh] landscape:max-h-[85vh] animate-scale-up">
             
             <!-- Close button -->
