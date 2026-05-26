@@ -151,8 +151,6 @@ body {
     right: 0 !important;
     padding: 14px !important;
     /* Force identical top/bottom and left/right padding to prevent shifting */
-    overflow: hidden !important;
-    /* Block dynamic scrollbars and their layout shifts completely */
   }
 
   .sidebar-panel.collapsed {
