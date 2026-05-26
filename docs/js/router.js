@@ -216,7 +216,7 @@ if (typeof window !== 'undefined') {
   window.addEventListener('scroll', (event) => {
     if (window.innerWidth < 768) {
       const target = event.target;
-      
+
       // Prevent collapsing if the user is actively scrolling inside the navbar itself
       if (target && target.closest && target.closest('.sidebar-panel')) {
         return;
@@ -268,6 +268,9 @@ function renderSidebarContent(aside, collapseIcon, hideTextClass, centerIconClas
           <button onclick="toggleSidebar()" class="p-1.5 rounded-lg bg-white/10 border border-white/20 text-white/70 hover:text-white hover:bg-white/20 transition-all flex items-center justify-center cursor-pointer shrink-0" title="${AppState.sidebarCollapsed ? 'ขยายเมนู' : 'ยุบเมนู'}">
             <i data-lucide="${collapseIcon}" class="w-4 h-4"></i>
           </button>
+          <button onclick="handleLogout()" class="logout-btn p-1.5 rounded-lg bg-white/10 border border-white/20 text-white/70 hover:text-white hover:bg-white/20 transition-all flex items-center justify-center cursor-pointer shrink-0" title="ออกจากระบบ">
+            <i data-lucide="log-out" class="w-4 h-4"></i>
+          </button>
         </div>
 
         <div class="h-px bg-white/10 my-3 block md:hidden sidebar-divider"></div>
@@ -315,12 +318,8 @@ function renderSidebarContent(aside, collapseIcon, hideTextClass, centerIconClas
               <div class="bg-white h-full transition-all duration-500 water-progress-bar" style="width: ${Math.min(100, (AppState.health.water / AppState.currentUser.waterGoal) * 100)}%"></div>
             </div>
           </div>
-
-          <button onclick="handleLogout()" class="w-full flex items-center ${gapClass} px-4 py-3 rounded-xl text-sm font-medium text-rose-250 hover:bg-white/10 transition-all ${centerIconClass}" title="Log Out">
-            <i data-lucide="log-out" class="w-5 h-5 shrink-0"></i>
-            <span class="${hideTextClass}">Log Out</span>
-          </button>
         </div>
+        
       </div>
     </div>
   `;

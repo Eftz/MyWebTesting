@@ -272,7 +272,8 @@ body {
     .sidebar-panel>div>div {
       width: 100%;
       display: flex;
-      justify-content: center;
+      justify-content: space-between;
+      align-items: center;
     }
 
     /* Hide unnecessary elements in landscape */
@@ -295,6 +296,16 @@ body {
       transform: none !important;
       opacity: 1 !important;
       pointer-events: auto !important;
+    }
+
+    /* Logout button placement in landscape */
+    .sidebar-panel button[onclick="handleLogout()"] {
+      position: absolute;
+      right: 8px;
+      top: 50%;
+      transform: translateY(-50%);
+      display: flex !important;
+      align-items: center;
     }
 
     .sidebar-link {
