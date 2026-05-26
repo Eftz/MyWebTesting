@@ -46,7 +46,7 @@ export function renderTransactionComponent() {
 
         <div class="flex gap-2">
           ${AppState.txEditMode ? `
-            <button onclick="handleTxBulkDelete()" class="px-4 py-2 rounded-xl text-xs font-bold text-white bg-rose-600 hover:bg-rose-50 transition-all shadow-md">
+            <button onclick="confirmTxBulkDelete()" class="px-4 py-2 rounded-xl text-xs font-bold text-white bg-rose-600 hover:bg-rose-50 transition-all shadow-md">
               ลบรายการที่เลือก (${AppState.selectedTxIds.length})
             </button>
             <button onclick="toggleTxEditMode()" class="px-4 py-2 rounded-xl text-xs font-bold text-slate-100 bg-[#007a7a] hover:bg-[#006363] transition-all flex items-center gap-1.5 shadow-md">
@@ -247,6 +247,30 @@ export function renderTransactionComponent() {
           </div>
         </div>
       ` : ''}
+
+      ${AppState.txBulkDeleteConfirmOpen ? `
+        <div class="modal-overlay-safe z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm animate-fade-in">
+          <div class="w-full max-w-sm bg-white p-5 landscape:p-4 rounded-3xl border border-slate-100 shadow-2xl text-center relative overflow-y-auto max-h-[85vh] landscape:max-h-[85vh] animate-scale-up">
+            <div class="w-12 h-12 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center mx-auto mb-3">
+              <i data-lucide="trash-2" class="w-5 h-5"></i>
+            </div>
+            <h3 class="text-sm font-black text-slate-800">ยืนยันลบข้อมูลธุรกรรม?</h3>
+            <p class="text-xs text-slate-500 mt-1">คุณกำลังลบรายการประวัติการเงินจำนวน:</p>
+            <div class="my-3 py-2 px-4 rounded-lg bg-slate-50 text-slate-700 text-xs font-black inline-block">
+              รวมทั้งหมด ${AppState.selectedTxIds.length} รายการ
+            </div>
+            <p class="text-[10px] text-slate-400 mb-4">ข้อมูลที่ถูกลบจะไม่สามารถนำกลับมาคำนวณใหม่ได้อีก</p>
+            <div class="flex gap-2.5 mt-2">
+              <button onclick="executeTxBulkDelete()" class="flex-1 py-2 rounded-xl text-xs font-bold text-white bg-rose-600 hover:bg-rose-500 shadow-md transition-colors">
+                ใช่, ลบถาวร
+              </button>
+              <button onclick="cancelTxBulkDelete()" class="flex-1 py-2 rounded-xl text-xs font-bold bg-slate-100 border border-slate-200 hover:bg-slate-200 text-slate-700 transition-colors">
+                ยกเลิก
+              </button>
+            </div>
+          </div>
+        </div>
+      ` : ''}
     </div>
   `;
 }
@@ -388,16 +412,26 @@ export function deleteTx(id) {
   renderPage();
 }
 
-export function handleTxBulkDelete() {
+export function confirmTxBulkDelete() {
   if (AppState.selectedTxIds.length === 0) {
     showToast('กรุณาเลือกรายการที่ต้องการลบก่อน', 'warning');
     return;
   }
+  AppState.txBulkDeleteConfirmOpen = true;
+  renderPage();
+}
 
+export function executeTxBulkDelete() {
   AppState.transactions = AppState.transactions.filter(t => !AppState.selectedTxIds.includes(t.id));
   AppState.saveTransactions();
   showToast(`ลบรายการสำเร็จ ${AppState.selectedTxIds.length} รายการ`);
   AppState.selectedTxIds = [];
+  AppState.txBulkDeleteConfirmOpen = false;
+  renderPage();
+}
+
+export function cancelTxBulkDelete() {
+  AppState.txBulkDeleteConfirmOpen = false;
   renderPage();
 }
 
@@ -426,5 +460,7 @@ window.handleTxSubmit = handleTxSubmit;
 window.resetTxForm = resetTxForm;
 window.editTx = editTx;
 window.deleteTx = deleteTx;
-window.handleTxBulkDelete = handleTxBulkDelete;
+window.confirmTxBulkDelete = confirmTxBulkDelete;
+window.executeTxBulkDelete = executeTxBulkDelete;
+window.cancelTxBulkDelete = cancelTxBulkDelete;
 window.addTxQuickDate = addTxQuickDate;
