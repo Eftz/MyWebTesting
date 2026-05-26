@@ -374,7 +374,7 @@ export function renderCalendarComponent() {
         </div>
 
         <!-- Navigator controls -->
-        <div class="flex items-center gap-2 w-full md:w-auto justify-end">
+        <div class="flex flex-wrap items-center gap-2 w-full md:w-auto justify-start md:justify-end">
           <div class="flex p-0.5 bg-slate-100 border border-slate-200 rounded-xl">
             <!-- Previous Month -->
             <button onclick="prevMonth()" class="p-2 rounded-lg text-slate-500 hover:text-slate-800 transition-colors hover:bg-slate-200/50" title="เดือนก่อนหน้า">
