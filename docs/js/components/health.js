@@ -32,13 +32,13 @@ export function renderHealthComponent() {
           </div>
 
           <!-- Glass dynamic representation -->
-          <div class="water-container my-4">
-            <div class="water-fill" style="height: ${waterPercent}%">
-              <div class="water-wave"></div>
+          <div class="relative w-[150px] h-[150px] rounded-full overflow-hidden border-[5px] border-[#cffafe] bg-[#f1f5f9] mx-auto shadow-[inset_0_4px_10px_rgba(0,0,0,0.05)] my-4">
+            <div class="absolute bottom-0 left-0 w-full bg-[#06b6d4] transition-all duration-1000 ease-out" style="height: ${waterPercent}%">
+              <div class="absolute -top-[15px] left-0 w-[200%] h-[16px] bg-[url('data:image/svg+xml,%3Csvg xmlns=\\'http://www.w3.org/2000/svg\\' viewBox=\\'0 0 800 88.7\\'%3E%3Cpath d=\\'M800 56.9c-155.5 0-204.9-50-405.5-49.9-200 0-250 49.9-394.5 49.9v31.8h800v-.2-31.6z\\' fill=\\'%2306b6d4\\'/%3E%3C/svg%3E')] bg-[length:50%_100%] animate-[wave-animation_2s_linear_infinite]"></div>
             </div>
-            <div class="absolute inset-0 flex flex-col justify-center items-center text-white font-bold drop-shadow-md z-10">
-              <span class="text-2xl">${AppState.health.water}</span>
-              <span class="text-[10px] opacity-75">/ ${AppState.currentUser.waterGoal} ml</span>
+            <div class="absolute inset-0 flex flex-col justify-center items-center text-white font-bold drop-shadow-md z-10 pointer-events-none mix-blend-exclusion">
+              <span class="text-3xl">${AppState.health.water}</span>
+              <span class="text-[10px] opacity-90">/ ${AppState.currentUser.waterGoal} ml</span>
             </div>
           </div>
 
