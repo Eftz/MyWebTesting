@@ -1,6 +1,6 @@
 // SmartLife SPA Entry Bootstrapper Module
-import { AppState, subscribeState } from './js/state.js';
-import { renderPage } from './js/router.js';
+import { AppState, subscribeState } from './js/state.js?v=3';
+import { renderPage } from './js/router.js?v=3';
 
 window.addEventListener('DOMContentLoaded', () => {
   AppState.loading = true;
