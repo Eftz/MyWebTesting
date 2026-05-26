@@ -211,8 +211,8 @@ export function renderTodoComponent() {
       </div>
 
       ${AppState.todoModalOpen ? `
-        <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-fade-in">
-          <div class="w-full max-w-md bg-white p-6 rounded-3xl border border-slate-200 shadow-2xl relative overflow-hidden animate-scale-up">
+        <div class="modal-overlay-safe z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-fade-in">
+          <div class="w-full max-w-md bg-white p-5 landscape:p-4 rounded-3xl border border-slate-200 shadow-2xl relative overflow-y-auto max-h-[85vh] landscape:max-h-[85vh] animate-scale-up">
             <button type="button" onclick="closeTodoModal()" class="absolute top-4 right-4 p-2 rounded-xl bg-slate-100 border border-slate-200 text-slate-500 hover:text-slate-700 transition-colors">
               <i data-lucide="x" class="w-4 h-4"></i>
             </button>
@@ -266,8 +266,8 @@ export function renderTodoComponent() {
       ` : ''}
 
       ${AppState.activeDeleteTarget ? `
-        <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm animate-fade-in">
-          <div class="w-full max-w-sm bg-white p-6 rounded-3xl border border-slate-100 shadow-2xl text-center relative animate-scale-up">
+        <div class="modal-overlay-safe z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm animate-fade-in">
+          <div class="w-full max-w-sm bg-white p-5 landscape:p-4 rounded-3xl border border-slate-100 shadow-2xl text-center relative overflow-y-auto max-h-[85vh] landscape:max-h-[85vh] animate-scale-up">
             <div class="w-12 h-12 rounded-full bg-rose-50 text-rose-600 flex items-center justify-center mx-auto mb-3">
               <i data-lucide="alert-triangle" class="w-6 h-6"></i>
             </div>
@@ -290,8 +290,8 @@ export function renderTodoComponent() {
       ` : ''}
 
       ${AppState.bulkDeleteConfirmOpen ? `
-        <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm animate-fade-in">
-          <div class="w-full max-w-sm bg-white p-6 rounded-3xl border border-slate-100 shadow-2xl text-center relative animate-scale-up">
+        <div class="modal-overlay-safe z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm animate-fade-in">
+          <div class="w-full max-w-sm bg-white p-5 landscape:p-4 rounded-3xl border border-slate-100 shadow-2xl text-center relative overflow-y-auto max-h-[85vh] landscape:max-h-[85vh] animate-scale-up">
             <div class="w-12 h-12 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center mx-auto mb-3">
               <i data-lucide="trash-2" class="w-5 h-5"></i>
             </div>

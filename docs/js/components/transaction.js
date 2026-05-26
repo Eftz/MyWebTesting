@@ -175,8 +175,8 @@ export function renderTransactionComponent() {
       </div>
 
       ${AppState.txModalOpen ? `
-        <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-fade-in">
-          <div class="w-full max-w-md bg-white p-6 rounded-3xl border border-slate-200 shadow-2xl relative overflow-hidden animate-scale-up">
+        <div class="modal-overlay-safe z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-fade-in">
+          <div class="w-full max-w-md bg-white p-5 landscape:p-4 rounded-3xl border border-slate-200 shadow-2xl relative overflow-y-auto max-h-[85vh] landscape:max-h-[85vh] animate-scale-up">
             
             <button type="button" onclick="closeTxModal()" class="absolute top-4 right-4 p-2 rounded-xl bg-slate-100 border border-slate-200 text-slate-500 hover:text-slate-700 transition-colors">
               <i data-lucide="x" class="w-4 h-4"></i>
