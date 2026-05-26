@@ -1,6 +1,6 @@
 // SmartLife SPA Settings Component Module
 import { AppState, notifyStateChange } from '../state.js';
-import { showToast, compressImage } from '../ui.js';
+import { showToast } from '../ui.js';
 import { navigate, renderPage } from '../router.js';
 
 // Local states for Google Drive modal & simulation sync
@@ -84,12 +84,12 @@ export async function handleLocalProfileUpload(event) {
     try {
       const { storage, ref, uploadString, getDownloadURL } = await import('../firebase.js');
       showToast('กำลังอัพโหลดรูปภาพขึ้น Cloud...', 'info');
-      
+
       const uid = AppState.currentUser.uid;
       const imageRef = ref(storage, `profiles/${uid}_avatar.jpg`);
       await uploadString(imageRef, base64Data, 'data_url');
       const downloadURL = await getDownloadURL(imageRef);
-      
+
       AppState.currentUser.profileImage = downloadURL;
       AppState.saveProfile();
       showToast('อัพโหลดและอัปเดตรูปภาพโปรไฟล์แล้วครับ! 📸', 'success');
@@ -593,15 +593,15 @@ export async function handleUsernameChange(event) {
   try {
     const { auth, signInWithEmailAndPassword } = await import('../firebase.js');
     const email = `${oldUsername}@smartlife.app`;
-    
+
     // Verify password by attempting to sign in
     showToast('กำลังตรวจสอบความปลอดภัย...', 'info');
     await signInWithEmailAndPassword(auth, email, password);
-    
+
     // Actually updating the email in Firebase Auth requires updateEmail,
     // For simplicity, we just update the username in Firestore and inform user 
     // that they still need to login with the original username.
-    
+
     AppState.currentUser.username = newUsername;
     AppState.saveProfile();
 
@@ -627,7 +627,7 @@ export async function handlePasswordChange(event) {
     showToast('รหัสผ่านใหม่และยืนยันรหัสผ่านไม่ตรงกัน', 'error');
     return;
   }
-  
+
   if (newPass.length < 6) {
     showToast('รหัสผ่านใหม่ต้องมีความยาวอย่างน้อย 6 ตัวอักษร', 'warning');
     return;
@@ -636,18 +636,18 @@ export async function handlePasswordChange(event) {
   try {
     const { auth, signInWithEmailAndPassword, updatePassword } = await import('../firebase.js');
     const email = `${AppState.currentUser.username}@smartlife.app`;
-    
+
     // Re-authenticate user with current password
     showToast('กำลังตรวจสอบความปลอดภัย...', 'info');
     await signInWithEmailAndPassword(auth, email, current);
-    
+
     // Update password
     await updatePassword(auth.currentUser, newPass);
-    
+
     AppState.passwordModalOpen = false;
     showToast('เปลี่ยนรหัสผ่านความปลอดภัยเรียบร้อยแล้ว! 🔒', 'success');
     renderPage();
-    
+
   } catch (error) {
     console.error("Password Change Error:", error);
     if (error.code === 'auth/wrong-password' || error.code === 'auth/invalid-credential') {

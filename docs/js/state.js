@@ -2,7 +2,16 @@
 import { AudioEngine } from './audio.js';
 import { NotificationEngine } from './notification.js';
 import { showToast } from './ui.js';
-import { auth, db, doc, getDoc, setDoc, collection, getDocs, writeBatch, onAuthStateChanged } from './firebase.js';
+
+// Firebase modules loaded dynamically to prevent blocking the UI
+let firebaseModules = null;
+
+async function getFirebase() {
+  if (!firebaseModules) {
+    firebaseModules = await import('./firebase.js');
+  }
+  return firebaseModules;
+}
 
 const stateListeners = [];
 
@@ -40,47 +49,81 @@ export const AppState = {
   todoModalOpen: false,
 
   // Transition loading state
-  loading: true, // Start loading
+  loading: true,
 
   // Charts instance references cache
   charts: {},
 
   init() {
-    onAuthStateChanged(auth, async (user) => {
-      if (user) {
-        // User is signed in
-        const docRef = doc(db, "users", user.uid);
-        const docSnap = await getDoc(docRef);
-        
-        if (docSnap.exists()) {
-          this.currentUser = docSnap.data();
-          await this.loadUserData();
-        } else {
-          // This happens if auth succeeds but profile isn't fully created yet.
-          // In auth.js we setDoc before navigating, so it should exist.
-          this.currentUser = null;
-        }
-      } else {
-        // User is signed out
-        this.currentUser = null;
-        this.transactions = [];
-        this.todos = [];
-      }
-      this.loading = false;
-      notifyStateChange();
-    });
+    // Load Firebase in the background - don't block the UI
+    this._initFirebase();
 
     // Set up alert polling ticker (Every 1 second)
     setInterval(() => this.checkTodoAlarms(), 1000);
   },
 
+  async _initFirebase() {
+    try {
+      const fb = await getFirebase();
+      fb.onAuthStateChanged(fb.auth, async (user) => {
+        try {
+          if (user) {
+            const docRef = fb.doc(fb.db, "users", user.uid);
+            const docSnap = await fb.getDoc(docRef);
+
+            if (docSnap.exists()) {
+              this.currentUser = docSnap.data();
+              await this.loadUserData();
+            } else {
+              // Auto-recover missing user document (if signed up before Firestore was ready)
+              const emailPrefix = user.email ? user.email.split('@')[0] : 'user';
+              const recoveredProfile = {
+                uid: user.uid,
+                username: emailPrefix,
+                name: emailPrefix.charAt(0).toUpperCase() + emailPrefix.slice(1),
+                savingsGoal: 5000,
+                waterGoal: 2000,
+                exerciseGoal: 30,
+                calGoal: 2000,
+                burnGoal: 500,
+                onboarded: false,
+                profileImage: null,
+                createdAt: new Date().toISOString()
+              };
+
+              await fb.setDoc(docRef, recoveredProfile);
+              this.currentUser = recoveredProfile;
+              await this.loadUserData();
+            }
+          } else {
+            this.currentUser = null;
+            this.transactions = [];
+            this.todos = [];
+          }
+        } catch (err) {
+          console.error("Error loading user data from Firestore:", err);
+          this.currentUser = null;
+        } finally {
+          this.loading = false;
+          notifyStateChange();
+        }
+      });
+    } catch (error) {
+      console.error("Firebase init error:", error);
+      // Even if Firebase fails, stop loading so the user sees the auth page
+      this.loading = false;
+      notifyStateChange();
+    }
+  },
+
   async loadUserData() {
     if (!this.currentUser) return;
     const uid = this.currentUser.uid;
+    const fb = await getFirebase();
 
     // Load transactions
-    const txSnapshot = await getDocs(collection(db, `users/${uid}/transactions`));
-    const loadedTx = txSnapshot.docs.map(doc => doc.data());
+    const txSnapshot = await fb.getDocs(fb.collection(fb.db, `users/${uid}/transactions`));
+    const loadedTx = txSnapshot.docs.map(d => d.data());
     loadedTx.sort((a, b) => {
       const dateA = new Date(a.date);
       const dateB = new Date(b.date);
@@ -92,20 +135,18 @@ export const AppState = {
     this.transactions = loadedTx;
 
     // Load Todos
-    const todoSnapshot = await getDocs(collection(db, `users/${uid}/todos`));
-    this.todos = todoSnapshot.docs.map(doc => doc.data());
-    // Sort todos by date desc as well (optional, but good for UI consistency)
+    const todoSnapshot = await fb.getDocs(fb.collection(fb.db, `users/${uid}/todos`));
+    this.todos = todoSnapshot.docs.map(d => d.data());
     this.todos.sort((a, b) => new Date(b.date) - new Date(a.date));
 
     // Load Health (with auto Daily Reset logic)
     const today = this.getTodayString();
-    const healthRef = doc(db, `users/${uid}/health`, today);
-    const healthSnap = await getDoc(healthRef);
-    
+    const healthRef = fb.doc(fb.db, `users/${uid}/health`, today);
+    const healthSnap = await fb.getDoc(healthRef);
+
     if (healthSnap.exists()) {
       this.health = healthSnap.data();
     } else {
-      // Trigger Daily Reset (create new day doc)
       this.health = {
         date: today,
         water: 0,
@@ -113,28 +154,20 @@ export const AppState = {
         cal_consumed: 0,
         cal_burned: 0
       };
-      await setDoc(healthRef, this.health);
+      await fb.setDoc(healthRef, this.health);
     }
   },
 
   async saveTransactions() {
     if (!this.currentUser) return;
     const uid = this.currentUser.uid;
+    const fb = await getFirebase();
 
-    // We'll write the entire current transactions array using a Batch Write to overwrite collection.
-    // In production, this might be optimized to only update changed docs, but for this SPA migration,
-    // we sync the current state to Firestore.
-    // Note: To truly sync, we need to handle deletes properly. Since we manage array in memory,
-    // we can rewrite the collection by updating existing and writing new. For deleted, it requires
-    // deleting docs not in the array. For simplicity, we write all current. (Or update the delete function)
-    // Wait, the better way is to update specific docs in the UI handlers!
-    // But to keep the `saveTransactions` API the same, we'll iterate and setDoc for each transaction.
-    const batch = writeBatch(db);
+    const batch = fb.writeBatch(fb.db);
     this.transactions.forEach(tx => {
-      const txRef = doc(db, `users/${uid}/transactions`, tx.id);
+      const txRef = fb.doc(fb.db, `users/${uid}/transactions`, tx.id);
       batch.set(txRef, tx);
     });
-    // Fire-and-forget for UI speed
     batch.commit().catch(e => console.error("Error saving TX:", e));
     notifyStateChange();
   },
@@ -142,10 +175,11 @@ export const AppState = {
   async saveTodos() {
     if (!this.currentUser) return;
     const uid = this.currentUser.uid;
+    const fb = await getFirebase();
 
-    const batch = writeBatch(db);
+    const batch = fb.writeBatch(fb.db);
     this.todos.forEach(todo => {
-      const todoRef = doc(db, `users/${uid}/todos`, todo.id);
+      const todoRef = fb.doc(fb.db, `users/${uid}/todos`, todo.id);
       batch.set(todoRef, todo);
     });
     batch.commit().catch(e => console.error("Error saving Todos:", e));
@@ -155,19 +189,21 @@ export const AppState = {
   async saveHealth() {
     if (!this.currentUser) return;
     const uid = this.currentUser.uid;
+    const fb = await getFirebase();
     const today = this.getTodayString();
-    const healthRef = doc(db, `users/${uid}/health`, today);
-    
-    setDoc(healthRef, this.health).catch(e => console.error("Error saving health:", e));
+    const healthRef = fb.doc(fb.db, `users/${uid}/health`, today);
+
+    fb.setDoc(healthRef, this.health).catch(e => console.error("Error saving health:", e));
     notifyStateChange();
   },
 
   async saveProfile() {
     if (!this.currentUser) return;
     const uid = this.currentUser.uid;
-    const userRef = doc(db, "users", uid);
-    
-    setDoc(userRef, this.currentUser).catch(e => console.error("Error saving profile:", e));
+    const fb = await getFirebase();
+    const userRef = fb.doc(fb.db, "users", uid);
+
+    fb.setDoc(userRef, this.currentUser).catch(e => console.error("Error saving profile:", e));
     notifyStateChange();
   },
 

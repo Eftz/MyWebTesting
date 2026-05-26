@@ -27,6 +27,8 @@ export function navigate(page) {
     AppState.sidebarCollapsed = true;
   }
 
+  console.log("Navigate to:", page, "Loading:", AppState.loading);
+
   renderPage();
 
   setTimeout(() => {
