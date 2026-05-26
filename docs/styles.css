@@ -508,7 +508,7 @@ body {
 
     100% {
       opacity: 1;
-      transform: translateY(0);
+      transform: none;
     }
   }
 
@@ -714,4 +714,39 @@ body {
     font-size: 8px;
     opacity: 0.8;
     margin-left: auto;
+  }
+
+  /* Modal Overlay - respects navbar */
+  .modal-overlay-safe {
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    top: 0;
+    left: 0;
+  }
+
+  /* Desktop */
+  @media (min-width: 768px) {
+    /* When sidebar is expanded */
+    .sidebar-panel.expanded ~ main .modal-overlay-safe {
+      left: 16rem;
+    }
+    /* When sidebar is collapsed */
+    .sidebar-panel.collapsed ~ main .modal-overlay-safe {
+      left: 5rem;
+    }
+  }
+
+  /* Mobile Portrait */
+  @media (max-width: 767px) {
+    .modal-overlay-safe {
+      top: 68px;
+    }
+  }
+
+  /* Mobile Landscape */
+  @media (max-width: 767px) and (orientation: landscape) {
+    .modal-overlay-safe {
+      top: 60px !important;
+    }
   }

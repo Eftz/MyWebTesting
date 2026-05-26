@@ -51,12 +51,12 @@ export function parseGoogleDriveLink(url) {
   if (!url) return '';
   const regD = /\/file\/d\/([a-zA-Z0-9_-]+)/;
   const regId = /[?&]id=([a-zA-Z0-9_-]+)/;
-  
+
   let match = url.match(regD);
   if (match && match[1]) {
     return `https://drive.google.com/uc?export=view&id=${match[1]}`;
   }
-  
+
   match = url.match(regId);
   if (match && match[1]) {
     return `https://drive.google.com/uc?export=view&id=${match[1]}`;
@@ -157,7 +157,7 @@ export function chooseDriveSimulatedAccount(email) {
         'https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&w=150&q=80'
       ];
       const randomAvatar = avatars[Math.floor(Math.random() * avatars.length)];
-      
+
       AppState.currentUser.profileImage = randomAvatar;
       AppState.saveProfile();
       showToast('ซิงค์ข้อมูลกับ Google Drive จำลองสำเร็จ! 🌟', 'success');
@@ -271,7 +271,7 @@ export function renderSettingsComponent() {
 
       <!-- Change Password Modal overlay -->
       ${AppState.passwordModalOpen ? `
-        <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-fade-in">
+        <div class="modal-overlay-safe z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-fade-in">
           <div class="w-full max-w-md bg-white p-6 rounded-3xl border border-slate-200 shadow-2xl relative overflow-hidden animate-scale-up">
             
             <!-- Close button -->
@@ -330,7 +330,7 @@ export function renderSettingsComponent() {
 
       <!-- Change Username Modal overlay -->
       ${AppState.usernameModalOpen ? `
-        <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-fade-in">
+        <div class="modal-overlay-safe z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-fade-in">
           <div class="w-full max-w-md bg-white p-6 rounded-3xl border border-slate-200 shadow-2xl relative overflow-hidden animate-scale-up">
             
             <!-- Close button -->
@@ -379,7 +379,7 @@ export function renderSettingsComponent() {
 
       <!-- Google Drive Synchronization Modal Overlay -->
       ${isDriveModalOpen ? `
-        <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-fade-in">
+        <div class="modal-overlay-safe z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-fade-in">
           <div class="w-full max-w-md bg-white p-6 rounded-3xl border border-slate-200 shadow-2xl relative overflow-hidden animate-scale-up">
             
             <!-- Close button -->
@@ -479,9 +479,9 @@ export function renderSettingsComponent() {
                   <h4 class="text-sm font-bold text-slate-700">กำลังเชื่อมต่อ & ซิงค์ภาพจาก Drive...</h4>
                   <p class="text-[10px] text-slate-500 h-8 flex items-center justify-center">
                     ${driveSyncProgress < 30 ? 'ขั้นตอนที่ 1: กำลังยืนยันสิทธิ์บัญชี OAuth Tokens...' :
-                      driveSyncProgress < 70 ? 'ขั้นตอนที่ 2: กำลังเชื่อมต่อโฟลเดอร์ Google Drive Cloud...' :
-                      driveSyncProgress < 95 ? 'ขั้นตอนที่ 3: กำลังประมวลผลดึงไฟล์ภาพโปรไฟล์ล่าสุด...' :
-                      'ขั้นตอนที่ 4: ซิงค์เสร็จสมบูรณ์เรียบร้อยแล้ว!'}
+          driveSyncProgress < 70 ? 'ขั้นตอนที่ 2: กำลังเชื่อมต่อโฟลเดอร์ Google Drive Cloud...' :
+            driveSyncProgress < 95 ? 'ขั้นตอนที่ 3: กำลังประมวลผลดึงไฟล์ภาพโปรไฟล์ล่าสุด...' :
+              'ขั้นตอนที่ 4: ซิงค์เสร็จสมบูรณ์เรียบร้อยแล้ว!'}
                   </p>
                 </div>
 
@@ -683,7 +683,7 @@ export function handlePasswordChange(event) {
   AppState.currentUser.password = hashedNewPass;
   AppState.saveProfile();
   AppState.passwordModalOpen = false;
-  
+
   showToast('เปลี่ยนรหัสผ่านความปลอดภัยเรียบร้อยแล้ว! 🔒', 'success');
   renderPage();
 }
