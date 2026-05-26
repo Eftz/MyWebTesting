@@ -339,7 +339,7 @@ function updateSidebarDynamicStates(aside, collapseIcon, hideTextClass, centerIc
     profileLink.classList.add('flex-nowrap');
   }
 
-  const profileDetails = aside.querySelector('.profile-header-link > div');
+  const profileDetails = aside.querySelector('.profile-header-link > div:last-child');
   if (profileDetails) {
     profileDetails.className = `${hideTextClass} min-w-0`;
   }
