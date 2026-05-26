@@ -423,7 +423,7 @@ export function renderCalendarComponent() {
           </div>
 
           <!-- 6-Row Days Grid Body -->
-          <div class="calendar-grid mt-3">
+          <div class="grid grid-cols-7 gap-px bg-slate-200 border border-slate-200 rounded-2xl overflow-hidden mt-3">
             ${cells.map((cell, idx) => {
     // Find matching events for this cell's date
     const dayTodos = AppState.todos.filter(t => {
@@ -437,34 +437,34 @@ export function renderCalendarComponent() {
 
     const isToday = cell.dateStr === todayStr;
 
-    // Custom CSS classes
-    let cellClass = "calendar-cell";
-    if (cell.isOutside) cellClass += " outside-month";
-    if (isToday) cellClass += " today-cell";
+    // Custom CSS classes via Tailwind
+    let cellClass = "bg-white min-h-[100px] p-2 hover:bg-slate-50 transition-colors cursor-pointer group flex flex-col";
+    if (cell.isOutside) cellClass += " bg-slate-50/50 opacity-60";
+    if (isToday) cellClass += " ring-2 ring-[#007a7a] ring-inset bg-teal-50/30";
 
     return `
                 <div class="${cellClass}" onclick="openDayView('${cell.dateStr}')">
                   <!-- Header row within a cell -->
                   <div class="flex justify-between items-center w-full mb-1">
-                    <span class="day-number ${isToday ? 'today-number font-sans' : ''}">${cell.day}</span>
+                    <span class="${isToday ? 'bg-[#007a7a] text-white w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold font-sans' : 'text-slate-600 group-hover:text-slate-900 text-xs font-semibold font-sans'}">${cell.day}</span>
                   </div>
 
                   <!-- Events container -->
                   <div class="w-full flex-1 flex flex-col justify-start overflow-hidden pr-0.5 space-y-1">
                     ${dayTodos.slice(0, 3).map((todo, todoIdx) => {
-      const colorClass = priorityColorMap[todo.priority] || 'event-purple';
+      const colorClass = priorityColorMap[todo.priority] || 'bg-purple-100 text-purple-700 border border-purple-200';
       return `
-                        <div class="event-pill ${colorClass} ${todo.completed ? 'event-completed' : ''}" 
+                        <div class="text-[10px] font-semibold px-1.5 py-0.5 rounded flex items-center gap-1 w-full truncate cursor-pointer hover:brightness-95 ${colorClass} ${todo.completed ? 'opacity-50 line-through grayscale' : ''}" 
                              onclick="event.stopPropagation(); openDayView('${cell.dateStr}')"
                              title="${todo.task} (${todo.alertTime || 'ไม่มีเวลา'})">
                           
                           <!-- Interactive completion bullet -->
                           <div onclick="toggleCalendarTodoCompleted(event, '${todo.id}')" 
-                               class="event-dot w-2 h-2 rounded-full cursor-pointer hover:scale-150 transition-transform ${todo.completed ? 'bg-emerald-400' : ''}"
+                               class="w-2 h-2 rounded-full cursor-pointer hover:scale-150 transition-transform flex-shrink-0 ${todo.completed ? 'bg-emerald-400' : 'bg-current opacity-40'}"
                                title="${todo.completed ? 'ทำเสร็จแล้ว (คลิกเพื่อยกเลิก)' : 'ค้างอยู่ (คลิกเพื่อเสร็จสิ้น)'}"></div>
                           
-                          <span class="event-title font-sans truncate">${todo.task}</span>
-                          ${todo.alertTime ? `<span class="event-time">${todo.alertTime}</span>` : ''}
+                          <span class="font-sans truncate flex-1">${todo.task}</span>
+                          ${todo.alertTime ? `<span class="font-mono text-[8px] opacity-80 ml-auto flex-shrink-0">${todo.alertTime}</span>` : ''}
                         </div>
                       `;
     }).join('')}
