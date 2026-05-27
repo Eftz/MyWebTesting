@@ -48,18 +48,14 @@ window.goToday = function () {
   renderPage();
 };
 
-window.handleCalendarSearch = function (event) {
-  if (event.key === 'Enter' || event.type === 'click') {
-    calendarSearchQuery = document.getElementById('calendar-search-input')?.value || '';
+window.jumpToMonthYear = function (val) {
+  if (!val) return;
+  const parts = val.split('-');
+  if (parts.length === 2) {
+    currentYear = parseInt(parts[0]);
+    currentMonth = parseInt(parts[1]) - 1;
     renderPage();
   }
-};
-
-window.clearCalendarSearch = function () {
-  calendarSearchQuery = '';
-  const searchInput = document.getElementById('calendar-search-input');
-  if (searchInput) searchInput.value = '';
-  renderPage();
 };
 
 // Modal handlers
@@ -325,27 +321,12 @@ export function renderCalendarComponent() {
           <p class="text-slate-500 text-xs mt-1">มุมมองปฏิทินที่รวบรวมภารกิจเป้าหมายทั้งหมดรายเดือนอย่างพรีเมียม</p>
         </div>
 
-        <!-- Custom tabs and search input as in template -->
-        <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full lg:w-auto">
-          <!-- Custom Navigation Tabs -->
-          <div class="flex p-0.5 rounded-xl bg-slate-100 border border-slate-200 text-[11px] font-semibold text-slate-650 shrink-0">
-          <button class="px-3.5 py-1.5 rounded-lg bg-[#007a7a]/15 text-[#007a7a] font-bold border border-[#007a7a]/25">All events</button>
-          </div>
-
-          <!-- Top Right Search -->
-          <div class="relative flex-1 sm:w-60 flex gap-2">
-            <div class="relative flex-1">
-              <i data-lucide="search" class="absolute left-2.5 top-2.5 text-slate-400 w-3.5 h-3.5"></i>
-              <input type="text" id="calendar-search-input" onkeydown="handleCalendarSearch(event)" value="${calendarSearchQuery}" class="glass-input w-full pl-9 pr-7 py-1.5 rounded-xl text-xs" placeholder="ค้นหาในปฏิทิน...">
-              ${calendarSearchQuery ? `
-                <button onclick="clearCalendarSearch()" class="absolute right-2.5 top-2.5 text-slate-400 hover:text-slate-700 flex items-center justify-center">
-                  <i data-lucide="x" class="w-3.5 h-3.5"></i>
-                </button>
-              ` : ''}
-            </div>
-            <button onclick="handleCalendarSearch(event)" class="px-3 py-1.5 rounded-xl bg-[#007a7a] hover:bg-[#006363] text-white text-xs font-bold transition-all shadow-md">
-              ค้นหา
-            </button>
+        <div class="flex items-center gap-3">
+          <label class="text-xs font-bold text-slate-500 uppercase tracking-wider hidden sm:block">ไปที่เดือน:</label>
+          <div class="relative">
+            <input type="month" onchange="jumpToMonthYear(this.value)" 
+                   value="${currentYear}-${String(currentMonth + 1).padStart(2, '0')}"
+                   class="glass-input px-4 py-2 rounded-xl text-sm font-bold text-[#007a7a] cursor-pointer outline-none focus:ring-2 focus:ring-[#007a7a]/50 w-[150px]">
           </div>
         </div>
       </div>
