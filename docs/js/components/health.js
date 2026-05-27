@@ -146,7 +146,7 @@ export function renderHealthComponent() {
             <div class="grid grid-cols-2 gap-4">
               <!-- Consumed manual input -->
               <div class="space-y-1.5">
-                <label class="text-[10px] text-slate-500 font-bold">เพิ่มปริมาณบริโภc</label>
+                <label class="text-[10px] text-slate-500 font-bold">เพิ่มปริมาณบริโภค</label>
                 <div class="flex gap-1.5">
                   <input type="number" id="cal-intake-input" min="0" placeholder="Kcal" class="glass-input w-full px-2 py-1.5 rounded-lg text-xs">
                   <button onclick="addCalIntake()" class="px-2.5 py-1.5 rounded-lg bg-orange-650 hover:bg-orange-500 text-white font-bold text-xs shadow-sm">+</button>

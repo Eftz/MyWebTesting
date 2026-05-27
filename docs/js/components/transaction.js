@@ -72,7 +72,7 @@ export function renderTransactionComponent() {
           <div class="relative w-full sm:w-72 flex gap-2">
             <div class="relative flex-1">
               <i data-lucide="search" class="absolute left-2.5 top-2.5 text-slate-400 w-4 h-4"></i>
-              <input type="text" id="tx-search" onkeydown="if(event.key === 'Enter') renderPage()" value="${query}" class="glass-input w-full pl-9 pr-3 py-1.5 rounded-xl text-xs" placeholder="ค้นหาบันทึก, ประเภท, หมวดหมู่... (กด Enter)">
+              <input type="text" id="tx-search" onkeydown="if(event.key === 'Enter') renderPage()" value="${query}" class="glass-input w-full pl-9 pr-3 py-1.5 rounded-xl text-xs" placeholder="ค้นหาบันทึก,หมวดหมู่... (Enter)">
             </div>
             <button onclick="renderPage()" class="px-3 py-1.5 rounded-xl bg-[#007a7a] hover:bg-[#006363] text-white text-xs font-bold transition-all shadow-md flex items-center justify-center shrink-0">
               ค้นหา

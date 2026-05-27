@@ -37,8 +37,12 @@ export function renderOnboarding(app) {
             <input type="number" id="ob-exercise" min="0" required class="glass-input w-full px-4 py-2.5 rounded-xl text-sm" value="30">
           </div>
           <div>
-            <label class="block text-slate-650 text-xs font-semibold uppercase mb-1.5">เป้าหมายแcalอรี่อาหารต่อวัน (Kcal)</label>
+            <label class="block text-slate-650 text-xs font-semibold uppercase mb-1.5">เป้าหมายบริโภคแคลอรี่ต่อวัน (Kcal)</label>
             <input type="number" id="ob-cal" min="0" required class="glass-input w-full px-4 py-2.5 rounded-xl text-sm" value="2000">
+          </div>
+          <div class="md:col-span-2">
+            <label class="block text-slate-650 text-xs font-semibold uppercase mb-1.5">เป้าหมายเผาผลาญต่อวัน (Kcal)</label>
+            <input type="number" id="ob-burn" min="0" required class="glass-input w-full px-4 py-2.5 rounded-xl text-sm" value="500">
           </div>
         </div>
 
@@ -55,28 +59,25 @@ export function renderOnboarding(app) {
 
 export async function handleOnboardingSubmit(event) {
   event.preventDefault();
-  
+
   const name = document.getElementById('ob-name').value.trim();
   const savings = parseFloat(document.getElementById('ob-savings').value) || 0;
   const water = parseInt(document.getElementById('ob-water').value) || 0;
   const exercise = parseInt(document.getElementById('ob-exercise').value) || 0;
   const cal = parseInt(document.getElementById('ob-cal').value) || 0;
+  const burn = parseInt(document.getElementById('ob-burn').value) || 0;
 
   AppState.currentUser.name = name;
   AppState.currentUser.savingsGoal = savings;
   AppState.currentUser.waterGoal = water;
   AppState.currentUser.exerciseGoal = exercise;
   AppState.currentUser.calGoal = cal;
+  AppState.currentUser.burnGoal = burn;
   AppState.currentUser.onboarded = true;
-  
-  // Set burnGoal default if missing
-  if (!AppState.currentUser.burnGoal) {
-    AppState.currentUser.burnGoal = 500;
-  }
 
   showToast('กำลังบันทึกข้อมูล...', 'info');
   await AppState.saveProfile();
-  
+
   showToast('ตั้งเป้าหมายส่วนตัวสำเร็จ ยินดีต้อนรับครับ!', 'success');
   navigate('dashboard');
 }
