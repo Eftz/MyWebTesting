@@ -51,14 +51,20 @@ export function parseGoogleDriveLink(url) {
   const regD = /\/file\/d\/([a-zA-Z0-9_-]+)/;
   const regId = /[?&]id=([a-zA-Z0-9_-]+)/;
 
+  let fileId = null;
   let match = url.match(regD);
   if (match && match[1]) {
-    return `https://drive.google.com/uc?export=view&id=${match[1]}`;
+    fileId = match[1];
+  } else {
+    match = url.match(regId);
+    if (match && match[1]) {
+      fileId = match[1];
+    }
   }
 
-  match = url.match(regId);
-  if (match && match[1]) {
-    return `https://drive.google.com/uc?export=view&id=${match[1]}`;
+  if (fileId) {
+    // Use lh3 CDN with cache-busting timestamp to force reload on image change
+    return `https://lh3.googleusercontent.com/d/${fileId}?t=${Date.now()}`;
   }
   return url;
 }
@@ -136,10 +142,20 @@ export function handleGoogleDriveLinkSubmit(event) {
     return;
   }
 
-  AppState.currentUser.profileImage = directUrl;
-  AppState.saveProfile();
-  showToast('ซิงค์รูปโปรไฟล์จาก Google Drive สำเร็จ! ☁️', 'success');
-  closeGoogleDriveModal();
+  // Test that the image actually loads before saving
+  const testImg = new Image();
+  testImg.crossOrigin = 'anonymous';
+  testImg.referrerPolicy = 'no-referrer';
+  testImg.onload = () => {
+    AppState.currentUser.profileImage = directUrl;
+    AppState.saveProfile();
+    showToast('ซิงค์รูปโปรไฟล์จาก Google Drive สำเร็จ! ☁️', 'success');
+    closeGoogleDriveModal();
+  };
+  testImg.onerror = () => {
+    showToast('ไม่สามารถโหลดรูปภาพได้ กรุณาตรวจสอบสิทธิ์การแชร์ไฟล์ใน Drive (ต้องเป็น Anyone with the link)', 'error');
+  };
+  testImg.src = directUrl;
 }
 
 // Simulated sync step 1: Google Account Picker
@@ -198,7 +214,10 @@ export function renderSettingsComponent() {
             <div class="absolute -inset-0.5 bg-gradient-to-tr from-[#005f5f] to-[#007a7a] rounded-full blur opacity-35 group-hover:opacity-60 transition-opacity"></div>
             <div class="relative w-24 h-24 rounded-full bg-slate-50 border-2 border-[#007a7a]/30 overflow-hidden shadow-lg flex items-center justify-center">
               ${AppState.currentUser.profileImage ? `
-                <img src="${AppState.currentUser.profileImage}" class="w-full h-full object-cover">
+                <img src="${AppState.currentUser.profileImage}" referrerpolicy="no-referrer" crossorigin="anonymous" class="w-full h-full object-cover" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+                <div class="w-full h-full bg-gradient-to-tr from-[#005f5f] to-[#007a7a] flex items-center justify-center font-extrabold text-3xl text-white" style="display:none">
+                  ${AppState.currentUser.name.charAt(0).toUpperCase()}
+                </div>
               ` : `
                 <div class="w-full h-full bg-gradient-to-tr from-[#005f5f] to-[#007a7a] flex items-center justify-center font-extrabold text-3xl text-white">
                   ${AppState.currentUser.name.charAt(0).toUpperCase()}
@@ -420,12 +439,17 @@ export function renderSettingsComponent() {
 
                 <div class="relative flex items-center justify-center py-2">
                   <div class="absolute inset-0 flex items-center"><div class="w-full border-t border-slate-100"></div></div>
-                  <span class="relative px-3 text-[10px] text-slate-500 bg-white font-bold uppercase tracking-wider">หรือซิงค์เสมือนจริง</span>
+                  <span class="relative px-3 text-[10px] text-slate-500 bg-white font-bold uppercase tracking-wider">ตัวเลือกอื่นๆ</span>
                 </div>
 
-                <button type="button" onclick="startGoogleDriveSyncSimulate()" class="w-full py-3 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-[#005f5f] to-[#007a7a] hover:from-[#004d4d] hover:to-[#006363] transition-all shadow-md flex justify-center items-center gap-2 cursor-pointer">
-                  <i data-lucide="chrome" class="w-4 h-4"></i> เชื่อมต่อ Google Account & ซิงค์ข้อมูล
-                </button>
+                <div class="grid grid-cols-2 gap-2">
+                  <button type="button" onclick="startGoogleDriveSyncSimulate()" class="w-full py-2.5 rounded-xl text-xs font-bold text-slate-700 bg-slate-100 border border-slate-200 hover:bg-slate-200 transition-colors cursor-pointer flex justify-center items-center gap-1.5">
+                    <i data-lucide="zap" class="w-3.5 h-3.5"></i> ซิงค์เสมือนจริง (Demo)
+                  </button>
+                  <a href="https://drive.google.com/" target="_blank" class="w-full py-2.5 rounded-xl text-xs font-bold text-[#007a7a] bg-[#007a7a]/10 border border-[#007a7a]/20 hover:bg-[#007a7a]/20 transition-all cursor-pointer flex justify-center items-center gap-1.5 no-underline">
+                    <i data-lucide="external-link" class="w-3.5 h-3.5"></i> เปิด Google Drive จริง
+                  </a>
+                </div>
               </div>
             ` : ''}
 
@@ -447,13 +471,13 @@ export function renderSettingsComponent() {
                 </div>
 
                 <div class="space-y-2 pt-2">
-                  <button type="button" onclick="chooseDriveSimulatedAccount('${AppState.currentUser.username}@gmail.com')" class="w-full p-3 rounded-xl bg-slate-50 border border-slate-200 hover:bg-slate-100 hover:border-slate-350 transition-all flex items-center gap-3 text-left cursor-pointer">
+                  <button type="button" onclick="chooseDriveSimulatedAccount('${AppState.currentUser.email || AppState.currentUser.username + '@gmail.com'}')" class="w-full p-3 rounded-xl bg-slate-50 border border-slate-200 hover:bg-slate-100 hover:border-slate-350 transition-all flex items-center gap-3 text-left cursor-pointer">
                     <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-[#005f5f] to-[#007a7a] flex items-center justify-center text-xs font-bold text-white uppercase">
                       ${AppState.currentUser.name.charAt(0)}
                     </div>
                     <div>
                       <p class="text-xs font-bold text-slate-700">${AppState.currentUser.name}</p>
-                      <p class="text-[10px] text-slate-500">${AppState.currentUser.username}@gmail.com</p>
+                      <p class="text-[10px] text-slate-500">${AppState.currentUser.email || AppState.currentUser.username + '@gmail.com'}</p>
                     </div>
                   </button>
 

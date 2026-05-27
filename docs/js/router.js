@@ -262,7 +262,7 @@ function renderSidebarContent(aside, collapseIcon, hideTextClass, centerIconClas
         <div class="${profileHeaderClass}">
           <div onclick="navigate('settings')" class="profile-header-link flex items-center flex-nowrap gap-3 min-w-0 cursor-pointer rounded-xl px-2 py-1.5 -mx-2 transition-all hover:bg-white/10" title="ตั้งค่าโปรไฟล์">
             ${AppState.currentUser.profileImage ? `
-              <img src="${AppState.currentUser.profileImage}" class="w-10 h-10 rounded-full object-cover border border-white/20 shadow-lg shrink-0 transition-transform group-hover:scale-105">
+              <img src="${AppState.currentUser.profileImage}" referrerpolicy="no-referrer" crossorigin="anonymous" class="w-10 h-10 rounded-full object-cover border border-white/20 shadow-lg shrink-0 transition-transform group-hover:scale-105">
             ` : `
               <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-teal-500 to-[#f2994a] flex items-center justify-center font-bold text-lg shadow-lg text-white shrink-0 transition-transform group-hover:scale-105">
                 ${AppState.currentUser.name.charAt(0).toUpperCase()}
@@ -441,6 +441,8 @@ function updateSidebarDynamicStates(aside, collapseIcon, hideTextClass, centerIc
       if (!imgEl) {
         imgEl = document.createElement('img');
         imgEl.className = "w-10 h-10 rounded-full object-cover border border-white/20 shadow-lg shrink-0 transition-transform group-hover:scale-105";
+        imgEl.referrerPolicy = 'no-referrer';
+        imgEl.crossOrigin = 'anonymous';
         profileImgContainer.prepend(imgEl);
       }
       imgEl.src = AppState.currentUser.profileImage;
