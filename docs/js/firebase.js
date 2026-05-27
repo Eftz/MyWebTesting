@@ -7,7 +7,8 @@ import {
   signInWithEmailAndPassword,
   signOut,
   updatePassword,
-  updateEmail
+  updateEmail,
+  sendPasswordResetEmail
 } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-auth.js";
 import {
   getFirestore,
@@ -54,7 +55,8 @@ export {
   signInWithEmailAndPassword,
   signOut,
   updatePassword,
-  updateEmail
+  updateEmail,
+  sendPasswordResetEmail
 };
 
 // Export Firestore functions

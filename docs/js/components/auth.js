@@ -6,8 +6,10 @@ import { navigate, renderPage } from '../router.js';
 export function renderAuth(app) {
   app.className = "flex items-center justify-center min-h-screen bg-[#f2f7f7] p-4";
 
-  // Decide whether to show Sign In or Sign Up (Default is Sign In when undefined/signin)
+  // Decide whether to show Sign In, Sign Up, or Forgot Password
   const showSignUp = app.dataset.authMode === 'signup';
+  const showForgot = app.dataset.authMode === 'forgot';
+  const showSignIn = !showSignUp && !showForgot;
 
   app.innerHTML = `
     <div class="w-full max-w-md glass-panel p-8 rounded-3xl border border-slate-200 shadow-2xl relative overflow-hidden page-fade-in bg-white">
@@ -20,9 +22,29 @@ export function renderAuth(app) {
           <i data-lucide="sparkles" class="w-8 h-8 text-white"></i>
         </div>
         <h2 class="text-3xl font-extrabold tracking-tight bg-gradient-to-r from-[#005f5f] via-[#007a7a] to-[#0d9488] bg-clip-text text-transparent">SmartLife Portal</h2>
-        <p class="text-slate-500 text-sm mt-2">${showSignUp ? 'สร้างบัญชีผู้ใช้ใหม่เพื่อเริ่มต้น' : 'กรอกชื่อผู้ใช้เพื่อเข้าใช้กระดานข้อมูล'}</p>
+        <p class="text-slate-500 text-sm mt-2">${showSignUp ? 'สร้างบัญชีผู้ใช้ใหม่เพื่อเริ่มต้น' : showForgot ? 'ลืมรหัสผ่านใช่ไหม? ให้เราช่วยคุณ' : 'กรอกชื่อผู้ใช้เพื่อเข้าใช้กระดานข้อมูล'}</p>
       </div>
 
+      ${showForgot ? `
+      <form id="auth-form" onsubmit="handleForgotPasswordSubmit(event)" class="space-y-5 relative">
+        <div>
+          <label class="block text-slate-650 text-xs font-semibold uppercase tracking-wider mb-2">Email</label>
+          <div class="relative">
+            <i data-lucide="mail" class="absolute left-3.5 top-3.5 text-slate-400 w-5 h-5"></i>
+            <input type="email" id="forgot-email" required class="glass-input w-full pl-11 pr-4 py-3 rounded-xl text-sm" placeholder="กรอกอีเมลของคุณ เช่น user@gmail.com">
+          </div>
+        </div>
+        <button type="submit" class="w-full py-3.5 rounded-xl font-bold text-white bg-gradient-to-r from-[#005f5f] via-[#007a7a] to-[#0d9488] hover:from-[#004d4d] hover:to-[#007a7a] shadow-lg shadow-[#007a7a]/20 active:scale-[0.98] transition-all flex items-center justify-center gap-2 cursor-pointer">
+          <span>ส่งลิงก์รีเซ็ทรหัสผ่าน</span>
+          <i data-lucide="send" class="w-5 h-5"></i>
+        </button>
+      </form>
+      <div class="text-center mt-6 text-sm text-slate-500 relative">
+        <button onclick="toggleAuthMode('signin')" class="text-[#007a7a] hover:text-[#005f5f] font-bold underline underline-offset-4 cursor-pointer bg-transparent border-none flex items-center justify-center mx-auto gap-1">
+          <i data-lucide="arrow-left" class="w-4 h-4"></i>กลับไปหน้าเข้าสู่ระบบ
+        </button>
+      </div>
+      ` : `
       <form id="auth-form" onsubmit="handleAuthSubmit(event, ${showSignUp})" class="space-y-5 relative">
         <div>
           <label class="block text-slate-650 text-xs font-semibold uppercase tracking-wider mb-2">${showSignUp ? 'Username' : 'Email / Username'}</label>
@@ -65,9 +87,13 @@ export function renderAuth(app) {
             </button>
           </div>
         </div>
-        ` : ''}
+        ` : `
+        <div class="flex justify-end mt-1 mb-2">
+          <button type="button" onclick="toggleAuthMode('forgot')" class="text-xs text-[#007a7a] hover:text-[#005f5f] font-medium bg-transparent border-none cursor-pointer">ลืมรหัสผ่าน?</button>
+        </div>
+        `}
 
-        <button type="submit" class="w-full py-3.5 rounded-xl font-bold text-white bg-gradient-to-r from-[#005f5f] via-[#007a7a] to-[#0d9488] hover:from-[#004d4d] hover:to-[#007a7a] shadow-lg shadow-[#007a7a]/20 active:scale-[0.98] transition-all flex items-center justify-center gap-2 cursor-pointer">
+        <button type="submit" class="w-full py-3.5 rounded-xl font-bold text-white bg-gradient-to-r from-[#005f5f] via-[#007a7a] to-[#0d9488] hover:from-[#004d4d] hover:to-[#007a7a] shadow-lg shadow-[#007a7a]/20 active:scale-[0.98] transition-all flex items-center justify-center gap-2 cursor-pointer mt-4">
           <span>${showSignUp ? 'Sign Up' : 'Sign In'}</span>
           <i data-lucide="arrow-right" class="w-5 h-5"></i>
         </button>
@@ -76,22 +102,29 @@ export function renderAuth(app) {
       <div class="text-center mt-6 text-sm text-slate-500 relative">
         ${showSignUp ? `
           <span>มีบัญชีอยู่แล้ว? </span>
-          <button onclick="toggleAuthMode(false)" class="text-[#007a7a] hover:text-[#005f5f] font-bold underline underline-offset-4 cursor-pointer bg-transparent border-none">เข้าสู่ระบบ</button>
+          <button onclick="toggleAuthMode('signin')" class="text-[#007a7a] hover:text-[#005f5f] font-bold underline underline-offset-4 cursor-pointer bg-transparent border-none">เข้าสู่ระบบ</button>
         ` : `
           <span>ยังไม่มีบัญชีผู้ใช้? </span>
-          <button onclick="toggleAuthMode(true)" class="text-[#007a7a] hover:text-[#005f5f] font-bold underline underline-offset-4 cursor-pointer bg-transparent border-none">สมัครสมาชิกใหม่</button>
+          <button onclick="toggleAuthMode('signup')" class="text-[#007a7a] hover:text-[#005f5f] font-bold underline underline-offset-4 cursor-pointer bg-transparent border-none">สมัครสมาชิกใหม่</button>
         `}
       </div>
+      `}
     </div>
   `;
 
   if (window.lucide) window.lucide.createIcons();
 }
 
-export function toggleAuthMode(isSignUp) {
+export function toggleAuthMode(mode) {
   const app = document.getElementById('app');
   if (!app) return;
-  app.dataset.authMode = isSignUp ? 'signup' : 'signin';
+
+  if (typeof mode === 'boolean') {
+    app.dataset.authMode = mode ? 'signup' : 'signin';
+  } else {
+    app.dataset.authMode = mode;
+  }
+
   renderPage();
 }
 
@@ -226,7 +259,37 @@ export async function handleAuthSubmit(event, isSignUp) {
   }
 }
 
+export async function handleForgotPasswordSubmit(event) {
+  event.preventDefault();
+
+  const emailInput = document.getElementById('forgot-email').value.trim();
+
+  if (!emailInput) {
+    showToast('กรุณากรอกอีเมลของคุณ', 'error');
+    return;
+  }
+
+  const { auth, sendPasswordResetEmail } = await import('../firebase.js');
+
+  try {
+    showToast('กำลังส่งลิงก์รีเซ็ทรหัสผ่าน...', 'info');
+    await sendPasswordResetEmail(auth, emailInput);
+    showToast('ส่งลิงก์ไปยังอีเมลแล้ว กรุณาเช็คอีเมลเพื่อรีเซ็ทรหัสผ่าน');
+    toggleAuthMode('signin');
+  } catch (error) {
+    console.error("Forgot Password Error:", error);
+    if (error.code === 'auth/user-not-found') {
+      showToast('ไม่พบผู้ใช้งานนี้ในระบบ', 'error');
+    } else if (error.code === 'auth/invalid-email') {
+      showToast('รูปแบบอีเมลไม่ถูกต้อง', 'error');
+    } else {
+      showToast('เกิดข้อผิดพลาดในการส่งลิงก์', 'error');
+    }
+  }
+}
+
 // Bind to window to allow dynamic HTML template calls
 window.toggleAuthMode = toggleAuthMode;
 window.handleAuthSubmit = handleAuthSubmit;
+window.handleForgotPasswordSubmit = handleForgotPasswordSubmit;
 
