@@ -626,6 +626,9 @@ export async function handleUsernameChange(event) {
     AppState.currentUser.username = newUsername;
     AppState.saveProfile();
 
+    // Save mapping to allow login with new username
+    localStorage.setItem('smart_mapping_' + newUsername, AppState.currentUser.email || oldEmail);
+
     AppState.usernameModalOpen = false;
     showToast('เปลี่ยนชื่อสำเร็จ! (หมายเหตุ: ใช้ชื่อเดิมในการล็อกอินเข้าสู่ระบบ)', 'success');
     showToast('เปลี่ยนชื่อผู้ใช้สำหรับแสดงผลเรียบร้อยแล้ว! 🎉', 'success');

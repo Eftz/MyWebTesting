@@ -18,7 +18,9 @@ import {
   collection,
   getDocs,
   writeBatch,
-  deleteDoc
+  deleteDoc,
+  query,
+  where
 } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
 import {
   getStorage,
@@ -64,7 +66,9 @@ export {
   collection,
   getDocs,
   writeBatch,
-  deleteDoc
+  deleteDoc,
+  query,
+  where
 };
 
 // Export Storage functions

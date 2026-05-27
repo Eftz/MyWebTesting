@@ -74,6 +74,9 @@ export const AppState = {
             if (docSnap.exists()) {
               this.currentUser = docSnap.data();
               this.currentUser.email = user.email;
+              if (typeof localStorage !== 'undefined' && this.currentUser.username) {
+                localStorage.setItem('smart_mapping_' + this.currentUser.username.toLowerCase(), user.email);
+              }
               await this.loadUserData();
             } else {
               // Auto-recover missing user document (if signed up before Firestore was ready)
@@ -95,6 +98,9 @@ export const AppState = {
               await fb.setDoc(docRef, recoveredProfile);
               this.currentUser = recoveredProfile;
               this.currentUser.email = user.email;
+              if (typeof localStorage !== 'undefined' && this.currentUser.username) {
+                localStorage.setItem('smart_mapping_' + this.currentUser.username.toLowerCase(), user.email);
+              }
               await this.loadUserData();
             }
           } else {

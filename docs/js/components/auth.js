@@ -25,10 +25,10 @@ export function renderAuth(app) {
 
       <form id="auth-form" onsubmit="handleAuthSubmit(event, ${showSignUp})" class="space-y-5 relative">
         <div>
-          <label class="block text-slate-650 text-xs font-semibold uppercase tracking-wider mb-2">${showSignUp ? 'Username' : 'Email Prefix / Username'}</label>
+          <label class="block text-slate-650 text-xs font-semibold uppercase tracking-wider mb-2">${showSignUp ? 'Username' : 'Email / Username'}</label>
           <div class="relative">
             <i data-lucide="user" class="absolute left-3.5 top-3.5 text-slate-400 w-5 h-5"></i>
-            <input type="text" id="auth-username" required class="glass-input w-full pl-11 pr-4 py-3 rounded-xl text-sm" placeholder="${showSignUp ? 'เช่น somchai_12' : 'เช่น userconfig'}">
+            <input type="text" id="auth-username" required class="glass-input w-full pl-11 pr-4 py-3 rounded-xl text-sm" placeholder="${showSignUp ? 'เช่น somchai_12' : 'เช่น somchai_12 หรือ user@gmail.com'}">
           </div>
         </div>
 
@@ -107,7 +107,7 @@ export async function handleAuthSubmit(event, isSignUp) {
   }
 
   // Dynamically import Firebase logic
-  const { auth, db, createUserWithEmailAndPassword, signInWithEmailAndPassword, doc, setDoc } = await import('../firebase.js');
+  const { auth, db, createUserWithEmailAndPassword, signInWithEmailAndPassword, doc, setDoc, collection, query, where, getDocs } = await import('../firebase.js');
 
   if (isSignUp) {
     const emailPrefix = document.getElementById('auth-email-prefix').value.trim().toLowerCase();
@@ -134,6 +134,7 @@ export async function handleAuthSubmit(event, isSignUp) {
       const newUserProfile = {
         uid: user.uid,
         username: username,
+        email: email,
         name: username.charAt(0).toUpperCase() + username.slice(1),
         savingsGoal: 5000,
         waterGoal: 2000,
@@ -147,6 +148,9 @@ export async function handleAuthSubmit(event, isSignUp) {
 
       // Save to Firestore
       await setDoc(doc(db, "users", user.uid), newUserProfile);
+
+      // Save local mapping for future logins on this device
+      localStorage.setItem('smart_mapping_' + username, email);
 
       // We don't need to manually navigate here, because state.js will listen to onAuthStateChanged
       // However, we can update AppState just in case
@@ -164,11 +168,43 @@ export async function handleAuthSubmit(event, isSignUp) {
       }
     }
   } else {
-    let emailToTry = usernameInput.includes('@') ? usernameInput : `${usernameInput}@gmail.com`;
+    let emailToTry = usernameInput;
+
+    if (!usernameInput.includes('@')) {
+      // It's a username or email prefix. 
+      // 1. Try local cache first (bypasses Firestore security rules if cached)
+      const cachedEmail = localStorage.getItem('smart_mapping_' + usernameInput);
+
+      if (cachedEmail) {
+        emailToTry = cachedEmail;
+      } else {
+        // 2. Query Firestore to find the associated email.
+        try {
+          const usersRef = collection(db, "users");
+          const q = query(usersRef, where("username", "==", usernameInput));
+          const querySnapshot = await getDocs(q);
+
+          if (!querySnapshot.empty) {
+            const userData = querySnapshot.docs[0].data();
+            if (userData.email) {
+              emailToTry = userData.email;
+              // Cache it for next time
+              localStorage.setItem('smart_mapping_' + usernameInput, userData.email);
+            }
+          }
+        } catch (err) {
+          console.warn("Could not query username", err);
+        }
+      }
+    }
 
     try {
       showToast('กำลังเข้าสู่ระบบ...', 'info');
       await signInWithEmailAndPassword(auth, emailToTry, password);
+      // Cache successful login mapping
+      if (!usernameInput.includes('@')) {
+        localStorage.setItem('smart_mapping_' + usernameInput, emailToTry);
+      }
       showToast('เข้าสู่ระบบสำเร็จ');
       // Navigation is handled by state.js auth observer, or we can force it:
       navigate('dashboard');
