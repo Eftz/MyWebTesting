@@ -64,7 +64,7 @@ export function renderDashboardComponent() {
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         
         <!-- Grid Box 1: Transactions Wallet -->
-        <div onclick="navigate('transaction')" class="glass-card rounded-3xl p-6 border border-slate-200 hover:border-[#007a7a]/50 cursor-pointer flex flex-col justify-between h-48 relative overflow-hidden group">
+        <div onclick="navigate('transaction')" class="glass-card rounded-3xl p-6 border border-slate-200 hover:border-[#007a7a]/50 cursor-pointer flex flex-col justify-between h-full min-h-[12rem] relative overflow-hidden group">
           <div class="absolute -right-8 -top-8 w-24 h-24 rounded-full bg-[#007a7a]/5 group-hover:bg-[#007a7a]/10 blur-xl transition-all"></div>
           
           <div class="flex justify-between items-start">
@@ -76,17 +76,17 @@ export function renderDashboardComponent() {
           
           <div class="mt-4">
             <p class="text-xs text-slate-500">เงินคงเหลือสำหรับใช้สอย</p>
-            <h3 class="text-2xl font-bold text-slate-800 mt-1">฿${availableBalance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</h3>
+            <h3 class="text-2xl font-bold text-slate-800 mt-1 break-all">฿${availableBalance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</h3>
           </div>
           
-          <div class="mt-2 text-xs flex justify-between items-center text-slate-500">
-            <span>สะสมเงินออมแล้ว</span>
-            <span class="font-semibold text-[#007a7a]">฿${totalSavings.toLocaleString()}</span>
+          <div class="mt-2 text-xs flex justify-between items-start text-slate-500 gap-2">
+            <span class="shrink-0">สะสมเงินออมแล้ว</span>
+            <span class="font-semibold text-[#007a7a] break-all text-right">฿${totalSavings.toLocaleString()}</span>
           </div>
         </div>
 
         <!-- Grid Box 2: Water Hydration -->
-        <div onclick="navigate('health')" class="glass-card rounded-3xl p-6 border border-slate-200 hover:border-cyan-500/50 cursor-pointer flex flex-col justify-between h-48 relative overflow-hidden group">
+        <div onclick="navigate('health')" class="glass-card rounded-3xl p-6 border border-slate-200 hover:border-cyan-500/50 cursor-pointer flex flex-col justify-between h-full min-h-[12rem] relative overflow-hidden group">
           <div class="absolute -right-8 -top-8 w-24 h-24 rounded-full bg-cyan-600/5 group-hover:bg-cyan-600/10 blur-xl transition-all"></div>
           
           <div class="flex justify-between items-start">
@@ -98,17 +98,17 @@ export function renderDashboardComponent() {
           
           <div class="mt-4">
             <p class="text-xs text-slate-500">ดื่มสะสมวันนี้</p>
-            <h3 class="text-2xl font-bold text-slate-800 mt-1">${AppState.health.water} / ${AppState.currentUser.waterGoal} ml</h3>
+            <h3 class="text-2xl font-bold text-slate-800 mt-1 break-all">${AppState.health.water} / ${AppState.currentUser.waterGoal} ml</h3>
           </div>
           
-          <div class="mt-2 text-xs flex justify-between items-center text-slate-500">
-            <span>คืบหน้า</span>
-            <span class="font-semibold text-cyan-700">${Math.min(100, Math.round((AppState.health.water / AppState.currentUser.waterGoal) * 100))}%</span>
+          <div class="mt-2 text-xs flex justify-between items-start text-slate-500 gap-2">
+            <span class="shrink-0">คืบหน้า</span>
+            <span class="font-semibold text-cyan-700 break-all text-right">${Math.min(100, Math.round((AppState.health.water / AppState.currentUser.waterGoal) * 100))}%</span>
           </div>
         </div>
 
         <!-- Grid Box 3: Exercise Tracker -->
-        <div onclick="navigate('health')" class="glass-card rounded-3xl p-6 border border-slate-200 hover:border-emerald-500/50 cursor-pointer flex flex-col justify-between h-48 relative overflow-hidden group">
+        <div onclick="navigate('health')" class="glass-card rounded-3xl p-6 border border-slate-200 hover:border-emerald-500/50 cursor-pointer flex flex-col justify-between h-full min-h-[12rem] relative overflow-hidden group">
           <div class="absolute -right-8 -top-8 w-24 h-24 rounded-full bg-emerald-600/5 group-hover:bg-emerald-600/10 blur-xl transition-all"></div>
           
           <div class="flex justify-between items-start">
@@ -120,17 +120,17 @@ export function renderDashboardComponent() {
           
           <div class="mt-4">
             <p class="text-xs text-slate-500">ระยะเวลารวม</p>
-            <h3 class="text-2xl font-bold text-slate-800 mt-1">${AppState.health.exercise} / ${AppState.currentUser.exerciseGoal} นาที</h3>
+            <h3 class="text-2xl font-bold text-slate-800 mt-1 break-all">${AppState.health.exercise} / ${AppState.currentUser.exerciseGoal} นาที</h3>
           </div>
           
-          <div class="mt-2 text-xs flex justify-between items-center text-slate-500">
-            <span>คืบหน้า</span>
-            <span class="font-semibold text-emerald-700">${Math.min(100, Math.round((AppState.health.exercise / AppState.currentUser.exerciseGoal) * 100))}%</span>
+          <div class="mt-2 text-xs flex justify-between items-start text-slate-500 gap-2">
+            <span class="shrink-0">คืบหน้า</span>
+            <span class="font-semibold text-emerald-700 break-all text-right">${Math.min(100, Math.round((AppState.health.exercise / AppState.currentUser.exerciseGoal) * 100))}%</span>
           </div>
         </div>
 
         <!-- Grid Box 4: Todo Checklist tasks -->
-        <div onclick="navigate('todo')" class="glass-card rounded-3xl p-6 border border-slate-200 hover:border-[#f2994a]/50 cursor-pointer flex flex-col justify-between h-48 relative overflow-hidden group">
+        <div onclick="navigate('todo')" class="glass-card rounded-3xl p-6 border border-slate-200 hover:border-[#f2994a]/50 cursor-pointer flex flex-col justify-between h-full min-h-[12rem] relative overflow-hidden group">
           <div class="absolute -right-8 -top-8 w-24 h-24 rounded-full bg-[#f2994a]/5 group-hover:bg-[#f2994a]/10 blur-xl transition-all"></div>
           
           <div class="flex justify-between items-start">
@@ -142,12 +142,12 @@ export function renderDashboardComponent() {
           
           <div class="mt-4">
             <p class="text-xs text-slate-500">งานที่ค้าง</p>
-            <h3 class="text-2xl font-bold text-slate-800 mt-1">${pendingTodos} รายการ</h3>
+            <h3 class="text-2xl font-bold text-slate-800 mt-1 break-all">${pendingTodos} รายการ</h3>
           </div>
           
-          <div class="mt-2 text-xs flex justify-between items-center text-slate-500">
-            <span>เสร็จสิ้นทั้งหมด</span>
-            <span class="font-semibold text-amber-700">${AppState.todos.length - pendingTodos} / ${AppState.todos.length}</span>
+          <div class="mt-2 text-xs flex justify-between items-start text-slate-500 gap-2">
+            <span class="shrink-0">เสร็จสิ้นทั้งหมด</span>
+            <span class="font-semibold text-amber-700 break-all text-right">${AppState.todos.length - pendingTodos} / ${AppState.todos.length}</span>
           </div>
         </div>
 
