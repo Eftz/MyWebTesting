@@ -293,17 +293,21 @@ body {
       display: none !important;
     }
 
-    /* Turn nav into a horizontal flex container */
+    /* Turn nav into a horizontal flex container and force it to the right */
     .sidebar-panel nav,
     .sidebar-panel.collapsed nav,
     .sidebar-panel.expanded nav {
       display: flex !important;
       flex-direction: row !important;
-      gap: 12px;
-      margin-top: 0 !important;
-      width: 100%;
-      justify-content: center;
-      transform: none !important;
+      gap: 12px !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      position: absolute !important;
+      right: 56px !important;
+      /* Place it right before the logout button */
+      top: 50% !important;
+      transform: translateY(-50%) !important;
+      width: auto !important;
       opacity: 1 !important;
       pointer-events: auto !important;
     }
@@ -735,17 +739,19 @@ body {
 
   /* Desktop */
   @media (min-width: 768px) {
+
     /* Hide water summary when sidebar is collapsed on desktop */
     .sidebar-panel.collapsed .water-summary-container {
       display: none !important;
     }
 
     /* When sidebar is expanded */
-    .sidebar-panel.expanded ~ main .modal-overlay-safe {
+    .sidebar-panel.expanded~main .modal-overlay-safe {
       left: 16rem;
     }
+
     /* When sidebar is collapsed */
-    .sidebar-panel.collapsed ~ main .modal-overlay-safe {
+    .sidebar-panel.collapsed~main .modal-overlay-safe {
       left: 5rem;
     }
   }
@@ -774,7 +780,7 @@ body {
     overflow: hidden;
     border: 5px solid #cffafe;
     margin: 0 auto;
-    box-shadow: inset 0px 4px 10px rgba(0,0,0,0.05);
+    box-shadow: inset 0px 4px 10px rgba(0, 0, 0, 0.05);
   }
 
   .water-fill {
@@ -798,6 +804,11 @@ body {
   }
 
   @keyframes wave-animation {
-    0% { transform: translateX(0); }
-    100% { transform: translateX(-50%); }
+    0% {
+      transform: translateX(0);
+    }
+
+    100% {
+      transform: translateX(-50%);
+    }
   }
