@@ -5,10 +5,10 @@ import { navigate, renderPage } from '../router.js';
 
 export function renderAuth(app) {
   app.className = "flex items-center justify-center min-h-screen bg-[#f2f7f7] p-4";
-  
+
   // Decide whether to show Sign In or Sign Up (Default is Sign In when undefined/signin)
   const showSignUp = app.dataset.authMode === 'signup';
-  
+
   app.innerHTML = `
     <div class="w-full max-w-md glass-panel p-8 rounded-3xl border border-slate-200 shadow-2xl relative overflow-hidden page-fade-in bg-white">
       <!-- Cyber background decoration -->
@@ -25,12 +25,23 @@ export function renderAuth(app) {
 
       <form id="auth-form" onsubmit="handleAuthSubmit(event, ${showSignUp})" class="space-y-5 relative">
         <div>
-          <label class="block text-slate-650 text-xs font-semibold uppercase tracking-wider mb-2">Username</label>
+          <label class="block text-slate-650 text-xs font-semibold uppercase tracking-wider mb-2">${showSignUp ? 'Username' : 'Email Prefix / Username'}</label>
           <div class="relative">
             <i data-lucide="user" class="absolute left-3.5 top-3.5 text-slate-400 w-5 h-5"></i>
-            <input type="text" id="auth-username" required class="glass-input w-full pl-11 pr-4 py-3 rounded-xl text-sm" placeholder="เช่น somchai_12">
+            <input type="text" id="auth-username" required class="glass-input w-full pl-11 pr-4 py-3 rounded-xl text-sm" placeholder="${showSignUp ? 'เช่น somchai_12' : 'เช่น userconfig'}">
           </div>
         </div>
+
+        ${showSignUp ? `
+        <div>
+          <label class="block text-slate-650 text-xs font-semibold uppercase tracking-wider mb-2">Email</label>
+          <div class="relative flex items-center">
+            <i data-lucide="mail" class="absolute left-3.5 top-3.5 text-slate-400 w-5 h-5"></i>
+            <input type="text" id="auth-email-prefix" required class="glass-input w-full pl-11 pr-24 py-3 rounded-xl text-sm" placeholder="userconfig">
+            <span class="absolute right-3.5 text-slate-500 text-sm font-medium pointer-events-none">@gmail.com</span>
+          </div>
+        </div>
+        ` : ''}
 
         <div>
           <label class="block text-slate-650 text-xs font-semibold uppercase tracking-wider mb-2">Password</label>
@@ -86,27 +97,33 @@ export function toggleAuthMode(isSignUp) {
 
 export async function handleAuthSubmit(event, isSignUp) {
   event.preventDefault();
-  
-  const username = document.getElementById('auth-username').value.trim().toLowerCase();
+
+  const usernameInput = document.getElementById('auth-username').value.trim().toLowerCase();
   const password = document.getElementById('auth-password').value;
 
-  if (!username || !password) {
+  if (!usernameInput || !password) {
     showToast('กรุณากรอกข้อมูลให้ครบถ้วน', 'error');
     return;
   }
-  
-  // Create a fake email for Firebase Auth based on the username
-  const email = `${username}@smartlife.app`;
 
   // Dynamically import Firebase logic
   const { auth, db, createUserWithEmailAndPassword, signInWithEmailAndPassword, doc, setDoc } = await import('../firebase.js');
 
   if (isSignUp) {
+    const emailPrefix = document.getElementById('auth-email-prefix').value.trim().toLowerCase();
+    if (!emailPrefix) {
+      showToast('กรุณากรอกข้อมูลให้ครบถ้วน', 'error');
+      return;
+    }
+
     const confirm = document.getElementById('auth-confirm').value;
     if (password !== confirm) {
       showToast('รหัสผ่านไม่ตรงกัน', 'error');
       return;
     }
+
+    const email = `${emailPrefix}@gmail.com`;
+    const username = usernameInput;
 
     try {
       showToast('กำลังสร้างบัญชี...', 'info');
@@ -130,7 +147,7 @@ export async function handleAuthSubmit(event, isSignUp) {
 
       // Save to Firestore
       await setDoc(doc(db, "users", user.uid), newUserProfile);
-      
+
       // We don't need to manually navigate here, because state.js will listen to onAuthStateChanged
       // However, we can update AppState just in case
       AppState.currentUser = newUserProfile;
@@ -147,13 +164,26 @@ export async function handleAuthSubmit(event, isSignUp) {
       }
     }
   } else {
+    let emailToTry = usernameInput.includes('@') ? usernameInput : `${usernameInput}@gmail.com`;
+
     try {
       showToast('กำลังเข้าสู่ระบบ...', 'info');
-      await signInWithEmailAndPassword(auth, email, password);
+      await signInWithEmailAndPassword(auth, emailToTry, password);
       showToast('เข้าสู่ระบบสำเร็จ');
       // Navigation is handled by state.js auth observer, or we can force it:
       navigate('dashboard');
     } catch (error) {
+      if (!usernameInput.includes('@')) {
+        try {
+          await signInWithEmailAndPassword(auth, `${usernameInput}@smartlife.app`, password);
+          showToast('เข้าสู่ระบบสำเร็จ');
+          navigate('dashboard');
+          return;
+        } catch (e2) {
+          console.error("SignIn Fallback Error:", e2);
+        }
+      }
+
       console.error("SignIn Error:", error);
       showToast('ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง', 'error');
     }
