@@ -76,7 +76,9 @@ app.get('/check-todos', async (req, res) => {
 
         try {
           await admin.messaging().send(message);
-          console.log(`Successfully sent push for Todo ${doc.id}`);
+          if (notificationsSent % 10 === 0) {
+            console.log(`Sent ${notificationsSent} notifications so far...`);
+          }
           await doc.ref.update({ notified: true });
           notificationsSent++;
         } catch (error) {
