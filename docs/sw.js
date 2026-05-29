@@ -34,3 +34,38 @@ self.addEventListener('notificationclick', (event) => {
     })
   );
 });
+
+// ==========================================
+// Firebase Cloud Messaging (FCM) Background
+// ==========================================
+// นำเข้า Firebase SDK สำหรับ Service Worker
+importScripts('https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js');
+importScripts('https://www.gstatic.com/firebasejs/10.8.1/firebase-messaging-compat.js');
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDcKULD1hSoq1ZigJ1HKZISSO98LZcKhIQ",
+  authDomain: "webtumeng.firebaseapp.com",
+  projectId: "webtumeng",
+  storageBucket: "webtumeng.firebasestorage.app",
+  messagingSenderId: "259650513500",
+  appId: "1:259650513500:web:653093bf536c2789409499",
+  measurementId: "G-69DKY2QRJH"
+};
+
+// เริ่มต้นใช้งาน Firebase ใน Background ถ้ามี config
+if (firebaseConfig.apiKey) {
+  firebase.initializeApp(firebaseConfig);
+  const messaging = firebase.messaging();
+
+  messaging.onBackgroundMessage((payload) => {
+    console.log('[firebase-messaging-sw.js] ได้รับข้อความขณะเว็บปิดอยู่ ', payload);
+    // สร้างแจ้งเตือนจากข้อมูลที่ได้รับ
+    const notificationTitle = payload.notification?.title || 'แจ้งเตือนใหม่ (SmartLife)';
+    const notificationOptions = {
+      body: payload.notification?.body || '',
+      icon: payload.notification?.image || 'https://cdn-icons-png.flaticon.com/512/10003/10003295.png'
+    };
+
+    self.registration.showNotification(notificationTitle, notificationOptions);
+  });
+}

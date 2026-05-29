@@ -1,0 +1,17 @@
+{
+  "name": "SmartLife Dashboard",
+  "short_name": "SmartLife",
+  "description": "Manage your money, health, and tasks.",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#f2f7f7",
+  "theme_color": "#007a7a",
+  "icons": [
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/10003/10003295.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "gcm_sender_id": "103953800507"
+}

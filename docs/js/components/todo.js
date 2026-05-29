@@ -373,13 +373,21 @@ export function handleTodoSubmit(event) {
   const alertTime = document.getElementById('todo-alert-time').value;
   const priority = document.getElementById('todo-priority').value || 'medium';
 
+  // คำนวณ time_ms เพื่อให้ Backend นำไปใช้เปรียบเทียบเวลาได้ง่ายๆ
+  let time_ms = 0;
+  if (date && alertTime) {
+    const [yyyy, mm, dd] = date.split('-');
+    const [HH, MM] = alertTime.split(':');
+    time_ms = new Date(yyyy, mm - 1, dd, HH, MM, 0, 0).getTime();
+  }
+
   if (idField) {
     const index = AppState.todos.findIndex(t => t.id === idField);
     if (index !== -1) {
       const oldAlert = AppState.todos[index].alertTime;
       AppState.todos[index] = {
         ...AppState.todos[index],
-        task, date, alertTime, priority,
+        task, date, alertTime, priority, time_ms,
         notified: oldAlert !== alertTime ? false : AppState.todos[index].notified
       };
       showToast('แก้ไขภารกิจเสร็จสิ้น');
@@ -387,7 +395,7 @@ export function handleTodoSubmit(event) {
   } else {
     AppState.todos.unshift({
       id: String(Date.now()),
-      task, date, alertTime, priority,
+      task, date, alertTime, priority, time_ms,
       completed: false, notified: false
     });
     showToast('เพิ่มเป้าหมายงานสำเร็จ');
