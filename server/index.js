@@ -40,7 +40,7 @@ app.get('/check-todos', async (req, res) => {
     // ใช้ collectionGroup เพื่อดึง todos ของ users ทุกคน
     const todosRef = db.collectionGroup('todos');
     const q = todosRef.where('notified', '==', false);
-    
+
     const snapshot = await q.get();
 
     if (snapshot.empty) {
@@ -52,18 +52,18 @@ app.get('/check-todos', async (req, res) => {
     // ลูปส่ง Push ให้กับทุก Todo ที่ถึงเวลา
     for (const doc of snapshot.docs) {
       const todo = doc.data();
-      
+
       // เช็คเวลา (ทำแบบ in-memory เพราะ Firestore อาจไม่ได้ทำ index)
       if (todo.time_ms && todo.time_ms > currentTimeMs) continue;
-      
+
       // ดึง User ID จาก Path ของ Document: users/{userId}/todos/{todoId}
       const userId = doc.ref.parent.parent.id;
-      
+
       // ดึง FCM Token ของผู้ใช้คนนั้น
       // หมายเหตุ: โค้ดฝั่งแอปปัจจุบันเซฟ fcmToken ลงใน users/{email} ซึ่งเราต้องไปปรับให้ตรงกัน
       // เพื่อความชัวร์ เราจะสมมติว่า id ตรงนี้คือ email (หรือถ้าไม่ใช่ก็ค้นหาจาก users collection)
       const userDoc = await db.collection('users').doc(userId).get();
-      
+
       let fcmToken = null;
       if (userDoc.exists) {
         fcmToken = userDoc.data().fcmToken;
@@ -71,9 +71,9 @@ app.get('/check-todos', async (req, res) => {
         // ลองหาแบบ Email ถ้าเซฟไว้แบบ email
         const usersSnapshot = await db.collection('users').get();
         usersSnapshot.forEach(uDoc => {
-           if (uDoc.data().uid === userId && uDoc.data().fcmToken) {
-              fcmToken = uDoc.data().fcmToken;
-           }
+          if (uDoc.data().uid === userId && uDoc.data().fcmToken) {
+            fcmToken = uDoc.data().fcmToken;
+          }
         });
       }
 
@@ -89,7 +89,7 @@ app.get('/check-todos', async (req, res) => {
         try {
           await admin.messaging().send(message);
           console.log(`Successfully sent push for Todo ${doc.id}`);
-          
+
           // อัปเดตสถานะใน DB ว่าแจ้งเตือนแล้ว จะได้ไม่แจ้งซ้ำ
           await doc.ref.update({ notified: true });
           notificationsSent++;
@@ -108,6 +108,10 @@ app.get('/check-todos', async (req, res) => {
 });
 
 const PORT = process.env.PORT || 3000;
+app.get('/', (req, res) => {
+  res.send('SmartLife Push Server is running 🚀');
+});
+
 app.listen(PORT, () => {
   console.log(`SmartLife Push Server running on port ${PORT}`);
 });
