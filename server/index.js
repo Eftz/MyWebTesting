@@ -71,8 +71,23 @@ app.get('/check-todos', async (req, res) => {
             title: `ถึงเวลา: ${todo.task}`,
             body: todo.energy || 'ได้เวลาทำภารกิจแล้ว!',
           },
+          android: {
+            priority: "high",
+            notification: {
+              sound: "default"
+            }
+          },
+          apns: {
+            payload: {
+              aps: {
+                sound: "default",
+                contentAvailable: true
+              }
+            }
+          },
           token: fcmToken
         };
+
 
         try {
           await admin.messaging().send(message);
