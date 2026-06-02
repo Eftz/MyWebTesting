@@ -121,9 +121,11 @@ export function renderTransactionComponent() {
                   <div onclick="toggleTxSelection('${t.id}')" class="absolute inset-0 cursor-pointer z-0"></div>
                 ` : ''}
 
+                ${AppState.txEditMode ? `
                 <div class="shopee-checkbox-container shrink-0 z-10">
                   <input type="checkbox" ${isSelected ? 'checked' : ''} onchange="toggleTxSelection('${t.id}')" class="w-4 h-4 rounded border-slate-350 bg-white accent-[#007a7a] text-[#007a7a] focus:ring-[#007a7a] cursor-pointer">
                 </div>
+                ` : ''}
 
                 <div class="shrink-0 p-2 rounded-lg bg-slate-100 text-slate-500 z-10 pointer-events-none">
                   <i data-lucide="${t.type === 'income' ? 'trending-up' : t.type === 'savings' ? 'piggy-bank' : 'trending-down'}" class="w-4 h-4"></i>
@@ -160,13 +162,7 @@ export function renderTransactionComponent() {
 
                 </div>
 
-                ${!AppState.txEditMode ? `
-                  <div class="shopee-actions shrink-0 z-10 relative">
-                    <button onclick="editTx('${t.id}')" class="p-1.5 rounded-lg bg-[#007a7a]/10 text-[#007a7a] hover:bg-[#007a7a]/20 transition-colors" title="แก้ไขรายการ">
-                      <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
-                    </button>
-                  </div>
-                ` : ''}
+
 
               </div>
             `;
