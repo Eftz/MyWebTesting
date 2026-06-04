@@ -44,6 +44,12 @@ export const AppState = {
   selectedTxIds: [],
   selectedTodoIds: [],
 
+  // Network / Family features
+  friends: [],
+  friendRequests: [],
+  familyTodos: [],
+  calendarMode: 'personal', // 'personal' or 'family'
+
   // Modal states for popup forms
   txModalOpen: false,
   todoModalOpen: false,
@@ -107,6 +113,9 @@ export const AppState = {
             this.currentUser = null;
             this.transactions = [];
             this.todos = [];
+            this.friends = [];
+            this.friendRequests = [];
+            this.familyTodos = [];
           }
         } catch (err) {
           console.error("Error loading user data from Firestore:", err);
@@ -163,6 +172,175 @@ export const AppState = {
         cal_burned: 0
       };
       await fb.setDoc(healthRef, this.health);
+    }
+
+    await this.loadNetwork();
+  },
+
+  async loadNetwork() {
+    if (!this.currentUser) return;
+    const uid = this.currentUser.uid;
+    const fb = await getFirebase();
+
+    try {
+      // Load friends
+      const friendsSnap = await fb.getDocs(fb.collection(fb.db, `users/${uid}/friends`));
+      this.friends = friendsSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+
+      // Load friend requests (where toUid == my uid)
+      const requestsQuery = fb.query(
+        fb.collection(fb.db, 'friendRequests'),
+        fb.where('toUid', '==', uid),
+        fb.where('status', '==', 'pending')
+      );
+      const reqSnap = await fb.getDocs(requestsQuery);
+      this.friendRequests = reqSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+
+      await this.loadFamilyTodos();
+    } catch (e) {
+      console.error("Error loading network data:", e);
+    }
+  },
+
+  async loadFamilyTodos() {
+    if (!this.currentUser) return;
+    const fb = await getFirebase();
+    this.familyTodos = [];
+
+    // Filter only those marked as 'family'
+    const familyMembers = this.friends.filter(f => f.role === 'family');
+
+    for (const member of familyMembers) {
+      try {
+        const todoSnap = await fb.getDocs(fb.collection(fb.db, `users/${member.id}/todos`));
+        const todos = todoSnap.docs.map(d => {
+          const data = d.data();
+          // Inject family member metadata so UI knows whose it is
+          data.familyMemberId = member.id;
+          data.familyMemberName = member.username || member.name;
+          data.isFamilyTodo = true;
+          return data;
+        });
+        this.familyTodos.push(...todos);
+      } catch (e) {
+        console.error("Error loading todos for family member", member.id, e);
+      }
+    }
+
+    this.familyTodos.sort((a, b) => new Date(b.date) - new Date(a.date));
+    notifyStateChange();
+  },
+
+  async sendFriendRequest(targetUsername) {
+    if (!this.currentUser) return;
+    if (targetUsername.toLowerCase() === this.currentUser.username.toLowerCase()) {
+      showToast('ไม่สามารถส่งคำเชิญให้ตัวเองได้', 'warning');
+      return false;
+    }
+
+    const fb = await getFirebase();
+    try {
+      // Find user by username
+      const usersQuery = fb.query(fb.collection(fb.db, 'users'), fb.where('username', '==', targetUsername.toLowerCase()));
+      const userSnap = await fb.getDocs(usersQuery);
+
+      if (userSnap.empty) {
+        showToast('ไม่พบบัญชีผู้ใช้นี้', 'error');
+        return false;
+      }
+
+      const targetUser = userSnap.docs[0].data();
+      const targetUid = targetUser.uid;
+
+      // Check if already friends
+      if (this.friends.find(f => f.id === targetUid)) {
+        showToast('ผู้ใช้นี้เป็นเพื่อนของคุณอยู่แล้ว', 'warning');
+        return false;
+      }
+
+      // Create request doc
+      const requestId = `${this.currentUser.uid}_${targetUid}`;
+      const reqRef = fb.doc(fb.db, 'friendRequests', requestId);
+      await fb.setDoc(reqRef, {
+        fromUid: this.currentUser.uid,
+        fromUsername: this.currentUser.username,
+        toUid: targetUid,
+        toUsername: targetUser.username,
+        status: 'pending',
+        timestamp: new Date().toISOString()
+      });
+
+      showToast('ส่งคำเชิญเรียบร้อยแล้ว!', 'success');
+      return true;
+    } catch (e) {
+      console.error("Error sending request:", e);
+      showToast('เกิดข้อผิดพลาดในการส่งคำเชิญ', 'error');
+      return false;
+    }
+  },
+
+  async acceptFriendRequest(requestId, friendUid, friendUsername) {
+    if (!this.currentUser) return;
+    const fb = await getFirebase();
+    const uid = this.currentUser.uid;
+
+    try {
+      // Update request status
+      const reqRef = fb.doc(fb.db, 'friendRequests', requestId);
+      await fb.updateDoc(reqRef, { status: 'accepted' });
+
+      // Add to my friends (default role: friend)
+      const myFriendRef = fb.doc(fb.db, `users/${uid}/friends`, friendUid);
+      await fb.setDoc(myFriendRef, {
+        uid: friendUid,
+        username: friendUsername,
+        role: 'friend',
+        timestamp: new Date().toISOString()
+      });
+
+      // Add me to their friends
+      const theirFriendRef = fb.doc(fb.db, `users/${friendUid}/friends`, uid);
+      await fb.setDoc(theirFriendRef, {
+        uid: uid,
+        username: this.currentUser.username,
+        role: 'friend',
+        timestamp: new Date().toISOString()
+      });
+
+      showToast('ยอมรับคำเชิญเป็นเพื่อนแล้ว!', 'success');
+      await this.loadNetwork();
+      return true;
+    } catch (e) {
+      console.error("Error accepting request:", e);
+      return false;
+    }
+  },
+
+  async rejectFriendRequest(requestId) {
+    const fb = await getFirebase();
+    try {
+      const reqRef = fb.doc(fb.db, 'friendRequests', requestId);
+      await fb.updateDoc(reqRef, { status: 'rejected' });
+      showToast('ปฏิเสธคำเชิญแล้ว');
+      await this.loadNetwork();
+      return true;
+    } catch (e) {
+      console.error("Error rejecting request:", e);
+      return false;
+    }
+  },
+
+  async updateFriendRole(friendUid, newRole) {
+    if (!this.currentUser) return;
+    const fb = await getFirebase();
+    try {
+      const myFriendRef = fb.doc(fb.db, `users/${this.currentUser.uid}/friends`, friendUid);
+      await fb.updateDoc(myFriendRef, { role: newRole });
+
+      showToast(newRole === 'family' ? 'ตั้งค่าให้เป็นครอบครัวแล้ว' : 'เปลี่ยนสถานะเป็นเพื่อนปกติแล้ว', 'success');
+      await this.loadNetwork();
+    } catch (e) {
+      console.error("Error updating role:", e);
     }
   },
 

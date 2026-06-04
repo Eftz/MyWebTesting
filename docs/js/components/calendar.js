@@ -7,6 +7,7 @@ import { renderPage } from '../router.js';
 let currentYear = new Date().getFullYear();
 let currentMonth = new Date().getMonth(); // 0-indexed (0 = Jan, 11 = Dec)
 let calendarSearchQuery = '';
+let calendarMode = 'personal'; // 'personal' or 'family'
 
 // Calendar Add/Edit Modal local state
 let isModalOpen = false;
@@ -56,6 +57,12 @@ window.jumpToMonthYear = function (val) {
     currentMonth = parseInt(parts[1]) - 1;
     renderPage();
   }
+};
+
+// Mode handlers
+window.toggleCalendarMode = function (mode) {
+  calendarMode = mode;
+  renderPage();
 };
 
 // Modal handlers
@@ -147,9 +154,14 @@ window.deleteCalendarTodo = function (id) {
   }
 };
 
-window.toggleCalendarTodoCompleted = function (event, id) {
+window.toggleCalendarTodoCompleted = function (event, id, isFamilyTodo = false) {
   // Prevent click bubbling up to the cell or event modal
   event.stopPropagation();
+  
+  if (isFamilyTodo) {
+    showToast('ไม่สามารถแก้ไขภารกิจของคนในครอบครัวได้', 'warning');
+    return;
+  }
 
   const index = AppState.todos.findIndex(t => t.id === id);
   if (index !== -1) {
@@ -316,13 +328,23 @@ export function renderCalendarComponent() {
           <!-- Title & Breadcrumb -->
           <h1 class="text-2xl font-bold text-slate-800 flex items-center gap-2">
             <i data-lucide="calendar" class="text-[#007a7a]"></i>
-            <span>ปฏิทินแผนงานสะสม (Calendar Schedule)</span>
+            <span>ปฏิทินแผนงาน (Calendar)</span>
           </h1>
-          <p class="text-slate-500 text-xs mt-1">มุมมองปฏิทินที่รวบรวมภารกิจเป้าหมายทั้งหมดรายเดือนอย่างพรีเมียม</p>
+          <p class="text-slate-500 text-xs mt-1">มุมมองปฏิทินที่รวบรวมภารกิจเป้าหมายทั้งหมดรายเดือน</p>
         </div>
 
         <div class="flex items-center gap-3">
-          <label class="text-xs font-bold text-slate-500 uppercase tracking-wider hidden sm:block">ไปที่เดือน:</label>
+          <!-- Mode Toggle -->
+          <div class="flex bg-slate-100 p-1 rounded-xl border border-slate-200">
+            <button onclick="toggleCalendarMode('personal')" class="px-4 py-1.5 rounded-lg text-xs font-bold transition-all ${calendarMode === 'personal' ? 'bg-white text-[#007a7a] shadow-sm' : 'text-slate-500 hover:text-slate-700'}">
+              <i data-lucide="user" class="w-3.5 h-3.5 inline-block mr-1 mb-0.5"></i> ของฉัน
+            </button>
+            <button onclick="toggleCalendarMode('family')" class="px-4 py-1.5 rounded-lg text-xs font-bold transition-all ${calendarMode === 'family' ? 'bg-white text-purple-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'}">
+              <i data-lucide="users" class="w-3.5 h-3.5 inline-block mr-1 mb-0.5"></i> ครอบครัว
+            </button>
+          </div>
+
+          <label class="text-xs font-bold text-slate-500 uppercase tracking-wider hidden sm:block ml-2">ไปที่เดือน:</label>
           <div class="relative">
             <input type="month" onchange="jumpToMonthYear(this.value)" 
                    value="${currentYear}-${String(currentMonth + 1).padStart(2, '0')}"
@@ -406,8 +428,11 @@ export function renderCalendarComponent() {
           <!-- 6-Row Days Grid Body -->
           <div class="grid grid-cols-7 gap-px bg-slate-200 border border-slate-200 rounded-2xl overflow-hidden mt-3">
             ${cells.map((cell, idx) => {
+    // Select data source based on mode
+    const sourceTodos = calendarMode === 'personal' ? AppState.todos : [...AppState.todos, ...(AppState.familyTodos || [])];
+
     // Find matching events for this cell's date
-    const dayTodos = AppState.todos.filter(t => {
+    const dayTodos = sourceTodos.filter(t => {
       const matchesDate = t.date === cell.dateStr;
       const matchesSearch = query ? t.task.toLowerCase().includes(query) : true;
       return matchesDate && matchesSearch;
@@ -432,20 +457,27 @@ export function renderCalendarComponent() {
 
                   <!-- Events container -->
                   <div class="w-full flex-1 flex flex-col justify-start overflow-hidden pr-0.5 space-y-1">
-                    ${dayTodos.slice(0, 3).map((todo, todoIdx) => {
-      const colorClass = priorityColorMap[todo.priority] || 'bg-purple-100 text-purple-700 border border-purple-200';
+                      ${dayTodos.slice(0, 3).map((todo, todoIdx) => {
+      const colorClass = todo.isFamilyTodo 
+        ? 'bg-purple-100 text-purple-800 border border-purple-200' 
+        : (priorityColorMap[todo.priority] || 'bg-slate-100 text-slate-700 border border-slate-200');
+      
       return `
-                        <div class="text-[10px] font-semibold px-1.5 py-0.5 rounded flex items-center gap-1 w-full truncate cursor-pointer hover:brightness-95 ${colorClass} ${todo.completed ? 'opacity-50 line-through grayscale' : ''}" 
+                        <div class="text-[10px] font-semibold px-1.5 py-0.5 rounded flex flex-col w-full truncate cursor-pointer hover:brightness-95 ${colorClass} ${todo.completed ? 'opacity-50 line-through grayscale' : ''}" 
                              onclick="event.stopPropagation(); openDayView('${cell.dateStr}')"
-                             title="${todo.task} (${todo.alertTime || 'ไม่มีเวลา'})">
+                             title="${todo.task} (${todo.alertTime || 'ไม่มีเวลา'})${todo.isFamilyTodo ? ` - ของ ${todo.familyMemberName}` : ''}">
                           
-                          <!-- Interactive completion bullet -->
-                          <div onclick="toggleCalendarTodoCompleted(event, '${todo.id}')" 
-                               class="w-2 h-2 rounded-full cursor-pointer hover:scale-150 transition-transform flex-shrink-0 ${todo.completed ? 'bg-emerald-400' : 'bg-current opacity-40'}"
-                               title="${todo.completed ? 'ทำเสร็จแล้ว (คลิกเพื่อยกเลิก)' : 'ค้างอยู่ (คลิกเพื่อเสร็จสิ้น)'}"></div>
+                          <div class="flex items-center gap-1 w-full">
+                            <!-- Interactive completion bullet -->
+                            <div onclick="toggleCalendarTodoCompleted(event, '${todo.id}', ${todo.isFamilyTodo || false})" 
+                                 class="w-2 h-2 rounded-full cursor-pointer hover:scale-150 transition-transform flex-shrink-0 ${todo.completed ? 'bg-emerald-400' : 'bg-current opacity-40'}"
+                                 title="${todo.completed ? 'ทำเสร็จแล้ว' : 'ค้างอยู่'}"></div>
+                            
+                            <span class="font-sans truncate flex-1">${todo.task}</span>
+                            ${todo.alertTime ? `<span class="font-mono text-[8px] opacity-80 ml-auto flex-shrink-0">${todo.alertTime}</span>` : ''}
+                          </div>
                           
-                          <span class="font-sans truncate flex-1">${todo.task}</span>
-                          ${todo.alertTime ? `<span class="font-mono text-[8px] opacity-80 ml-auto flex-shrink-0">${todo.alertTime}</span>` : ''}
+                          ${todo.isFamilyTodo ? `<div class="text-[8px] opacity-70 mt-0.5 ml-3 font-bold truncate">👤 ${todo.familyMemberName}</div>` : ''}
                         </div>
                       `;
     }).join('')}
@@ -560,7 +592,8 @@ export function renderCalendarComponent() {
             <!-- Events List -->
             <div class="space-y-3 max-h-[300px] overflow-y-auto pr-1 mb-6 custom-scroll">
               ${(() => {
-        const dayTodos = AppState.todos.filter(t => t.date === selectedDayDate);
+        const sourceTodos = calendarMode === 'personal' ? AppState.todos : [...AppState.todos, ...(AppState.familyTodos || [])];
+        const dayTodos = sourceTodos.filter(t => t.date === selectedDayDate);
         if (dayTodos.length === 0) {
           return `
                     <div class="text-center py-12 text-slate-500 text-xs italic">
@@ -576,12 +609,12 @@ export function renderCalendarComponent() {
         return dayTodos.map((todo) => {
           const colorClass = priorityColorMap[todo.priority] || 'event-purple';
           return `
-                    <div class="flex items-center gap-3 p-3 rounded-xl bg-slate-50 border border-slate-200 hover:bg-slate-100 transition-all cursor-pointer group"
-                         onclick="editDayViewTodo('${todo.id}')">
+                    <div class="flex items-center gap-3 p-3 rounded-xl bg-slate-50 border border-slate-200 ${todo.isFamilyTodo ? 'opacity-80' : 'hover:bg-slate-100 cursor-pointer'} transition-all group"
+                         ${!todo.isFamilyTodo ? `onclick="editDayViewTodo('${todo.id}')"` : ''}>
                       
                       <!-- Completion bullet -->
-                      <button type="button" onclick="toggleCalendarTodoCompleted(event, '${todo.id}')" 
-                              class="shrink-0 w-5 h-5 rounded-full border ${todo.completed ? 'border-emerald-500 bg-emerald-500/20 text-emerald-400' : 'border-slate-300 bg-white'} flex items-center justify-center text-[10px] font-bold hover:scale-110 transition-transform">
+                      <button type="button" onclick="toggleCalendarTodoCompleted(event, '${todo.id}', ${todo.isFamilyTodo || false})" 
+                              class="shrink-0 w-5 h-5 rounded-full border ${todo.completed ? 'border-emerald-500 bg-emerald-500/20 text-emerald-400' : 'border-slate-300 bg-white'} flex items-center justify-center text-[10px] font-bold ${todo.isFamilyTodo ? 'cursor-not-allowed' : 'hover:scale-110'} transition-transform">
                         ${todo.completed ? '✓' : ''}
                       </button>
 
@@ -599,6 +632,8 @@ export function renderCalendarComponent() {
                           ` : `
                             <span class="text-[8px] px-1.5 py-0.5 rounded bg-amber-50 border border-amber-250 text-amber-600 font-bold shrink-0">ปานกลาง</span>
                           `}
+                          
+                          ${todo.isFamilyTodo ? `<span class="text-[8px] px-1.5 py-0.5 rounded bg-purple-50 border border-purple-200 text-purple-600 font-bold shrink-0 flex items-center gap-1"><i data-lucide="user" class="w-2.5 h-2.5"></i> ${todo.familyMemberName}</span>` : ''}
                         </div>
                         ${todo.alertTime ? `
                           <span class="text-[9px] text-slate-500 font-mono flex items-center gap-1 mt-0.5">
@@ -609,7 +644,7 @@ export function renderCalendarComponent() {
 
                       <!-- Edit indicator icon -->
                       <div class="text-slate-500 group-hover:text-[#007a7a] transition-colors">
-                        <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                        ${todo.isFamilyTodo ? `<i data-lucide="lock" class="w-4 h-4 opacity-50" title="ดูได้อย่างเดียว"></i>` : `<i data-lucide="chevron-right" class="w-4 h-4"></i>`}
                       </div>
                     </div>
                   `;

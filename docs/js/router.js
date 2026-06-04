@@ -10,6 +10,7 @@ import { renderTransactionComponent } from './components/transaction.js';
 import { renderTodoComponent } from './components/todo.js';
 import { renderHealthComponent } from './components/health.js';
 import { renderSettingsComponent } from './components/settings.js';
+import { renderNetworkComponent } from './components/network.js';
 import { renderCalendarComponent } from './components/calendar.js';
 
 export function navigate(page) {
@@ -204,6 +205,8 @@ function renderActiveComponent() {
       return renderHealthComponent();
     case 'settings':
       return renderSettingsComponent();
+    case 'network':
+      return renderNetworkComponent();
     case 'calendar':
       return renderCalendarComponent();
     default:
@@ -304,6 +307,11 @@ function renderSidebarContent(aside, collapseIcon, hideTextClass, centerIconClas
             <button onclick="navigate('health')" class="sidebar-link w-full flex items-center ${gapClass} px-4 py-3 rounded-xl border text-sm font-medium transition-all ${AppState.activePage === 'health' ? 'bg-white/20 shadow-md border-white/30 text-white' : 'border-transparent text-teal-100 hover:bg-white/10'} ${centerIconClass}" title="Healthy Basement">
               <i data-lucide="heart" class="w-5 h-5 shrink-0"></i>
               <span class="${hideTextClass}">Healthy Basement</span>
+            </button>
+            
+            <button onclick="navigate('network')" class="sidebar-link w-full flex items-center ${gapClass} px-4 py-3 rounded-xl border text-sm font-medium transition-all ${AppState.activePage === 'network' ? 'bg-white/20 shadow-md border-white/30 text-white' : 'border-transparent text-teal-100 hover:bg-white/10'} ${centerIconClass}" title="Friends & Family">
+              <i data-lucide="users" class="w-5 h-5 shrink-0"></i>
+              <span class="${hideTextClass}">Friends & Family</span>
             </button>
             
             <button onclick="navigate('calendar')" class="sidebar-link w-full flex items-center ${gapClass} px-4 py-3 rounded-xl border text-sm font-medium transition-all ${AppState.activePage === 'calendar' ? 'bg-white/20 shadow-md border-white/30 text-white' : 'border-transparent text-teal-100 hover:bg-white/10'} ${centerIconClass}" title="Calendar">
