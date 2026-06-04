@@ -16,7 +16,7 @@ import { renderCalendarComponent } from './components/calendar.js';
 export function navigate(page) {
   AppState.loading = true;
   AppState.activePage = page;
-  
+
   if (typeof localStorage !== 'undefined') {
     localStorage.setItem('smart_active_page', page);
   }
@@ -60,21 +60,36 @@ export function renderPage() {
   const app = document.getElementById('app');
   if (!app) return;
 
-  // 0. Transition Loading State
-  if (AppState.loading) {
-    app.className = "min-h-screen flex items-center justify-center bg-[#f2f7f7]";
+  // 0. Transition Loading State (Full Skeleton for Initial Boot)
+  if (AppState.loading && !AppState.currentUser) {
+    app.className = "min-h-screen flex flex-col md:flex-row bg-[#f2f7f7]";
     app.innerHTML = `
-      <div class="flex flex-col items-center gap-4 animate-scale-up">
-        <!-- Premium Loading Spinner -->
-        <div class="relative w-16 h-16">
-          <div class="absolute inset-0 rounded-full border-4 border-[#007a7a]/20"></div>
-          <div class="absolute inset-0 rounded-full border-4 border-[#007a7a] border-t-transparent animate-spin"></div>
+      <!-- Sidebar Skeleton -->
+      <aside class="fixed md:sticky top-0 left-0 right-0 md:h-screen z-40 w-full md:w-64 bg-[#007a7a] p-5 flex flex-col shrink-0 border-r border-white/10 hidden md:flex">
+        <div class="flex items-center gap-3 mb-10">
+          <div class="w-12 h-12 rounded-full bg-white/20 animate-pulse"></div>
+          <div class="flex-1 space-y-2">
+            <div class="h-4 bg-white/20 rounded w-3/4 animate-pulse"></div>
+            <div class="h-3 bg-white/10 rounded w-1/2 animate-pulse"></div>
+          </div>
         </div>
-        <p class="text-slate-500 text-xs font-bold tracking-widest uppercase animate-pulse">กำลังโหลดข้อมูล...</p>
-      </div>
+        <div class="space-y-4">
+          <div class="h-10 bg-white/10 rounded-xl w-full animate-pulse"></div>
+          <div class="h-10 bg-white/10 rounded-xl w-full animate-pulse"></div>
+          <div class="h-10 bg-white/10 rounded-xl w-full animate-pulse"></div>
+          <div class="h-10 bg-white/10 rounded-xl w-full animate-pulse"></div>
+        </div>
+      </aside>
+
+      <!-- Main Content Skeleton -->
+      <main class="flex-1 p-6 md:p-10 flex flex-col min-h-screen">
+        ${renderMainContentSkeleton()}
+      </main>
     `;
     return;
   }
+
+
 
   // Save focus and cursor selection position to prevent search input losing focus on re-render
   const activeId = document.activeElement?.id;
@@ -100,8 +115,8 @@ export function renderPage() {
     : (AppState.sidebarCollapsed ? 'chevrons-right' : 'chevrons-left');
 
   const asideClasses = AppState.sidebarCollapsed
-    ? "fixed md:sticky top-0 left-0 right-0 md:h-screen z-40 w-full md:w-20 sidebar-panel collapsed p-3.5 md:p-3 flex flex-col md:justify-between shrink-0 transition-all duration-300 h-[68px] max-h-[68px] md:max-h-none md:h-screen overflow-hidden shadow-md md:shadow-none"
-    : "fixed md:sticky top-0 left-0 right-0 md:h-screen z-40 w-full md:w-64 sidebar-panel expanded p-3.5 md:p-5 flex flex-col md:justify-between shrink-0 transition-all duration-300 h-auto max-h-[85vh] md:max-h-none md:h-screen overflow-y-auto md:overflow-visible shadow-xl md:shadow-none";
+    ? "fixed md:sticky top-0 left-0 right-0 md:h-screen z-40 w-full md:w-20 sidebar-panel collapsed p-3.5 md:p-3 flex flex-col md:justify-between shrink-0 transition-all duration-300 h-[68px] max-h-[68px] md:max-h-none md:h-screen overflow-hidden shadow-md md:shadow-none bg-[#007a7a]"
+    : "fixed md:sticky top-0 left-0 right-0 md:h-screen z-40 w-full md:w-64 sidebar-panel expanded p-3.5 md:p-5 flex flex-col md:justify-between shrink-0 transition-all duration-300 h-auto max-h-[85vh] md:max-h-none md:h-screen overflow-y-auto md:overflow-visible shadow-xl md:shadow-none bg-[#007a7a]";
 
   const hideTextClass = AppState.sidebarCollapsed ? "block md:hidden" : "";
   const centerIconClass = AppState.sidebarCollapsed ? "md:justify-center" : "";
@@ -198,6 +213,10 @@ export function toggleSidebar() {
 }
 
 function renderActiveComponent() {
+  if (AppState.loading) {
+    return renderMainContentSkeleton();
+  }
+
   switch (AppState.activePage) {
     case 'dashboard':
       return renderDashboardComponent();
@@ -216,6 +235,145 @@ function renderActiveComponent() {
     default:
       return renderDashboardComponent();
   }
+}
+
+function renderMainContentSkeleton() {
+  const page = AppState.activePage;
+
+  if (page === 'calendar') {
+    return `
+      <!-- Calendar Skeleton -->
+      <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 mb-8">
+        <div>
+          <div class="h-8 w-40 bg-slate-200 rounded animate-pulse mb-2"></div>
+          <div class="h-4 w-32 bg-slate-200 rounded animate-pulse"></div>
+        </div>
+        <div class="flex items-center gap-2 bg-white p-1 rounded-xl shadow-sm border border-slate-100">
+          <div class="h-8 w-20 bg-slate-100 rounded animate-pulse"></div>
+          <div class="h-8 w-20 bg-slate-100 rounded animate-pulse"></div>
+        </div>
+      </div>
+      <div class="flex flex-col lg:flex-row gap-6">
+        <div class="flex-[3] flex flex-col gap-6">
+          <div class="h-[88px] bg-white rounded-3xl shadow-sm border border-slate-100 animate-pulse"></div>
+          <div class="grid grid-cols-7 gap-px bg-slate-200 border border-slate-200 rounded-2xl overflow-hidden mt-3">
+            ${Array.from({ length: 35 }).map(() => `<div class="h-24 bg-white animate-pulse"></div>`).join('')}
+          </div>
+        </div>
+        <div class="flex-1 w-full lg:w-[320px] shrink-0 flex flex-col gap-6">
+          <div class="h-[500px] bg-white rounded-3xl shadow-sm border border-slate-100 animate-pulse"></div>
+        </div>
+      </div>
+    `;
+  }
+
+  if (page === 'transaction') {
+    return `
+      <!-- Transaction Skeleton -->
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+        <div class="h-10 w-64 bg-slate-200 rounded animate-pulse"></div>
+        <div class="flex gap-2">
+          <div class="h-10 w-32 bg-slate-200 rounded-xl animate-pulse"></div>
+          <div class="h-10 w-32 bg-slate-200 rounded-xl animate-pulse"></div>
+        </div>
+      </div>
+      <div class="glass-panel p-6 rounded-2xl border border-slate-200 w-full bg-white shadow-sm">
+        <div class="flex justify-between items-center mb-6">
+          <div class="h-6 w-48 bg-slate-200 rounded animate-pulse"></div>
+          <div class="h-9 w-64 bg-slate-200 rounded-xl animate-pulse"></div>
+        </div>
+        <div class="h-8 w-full bg-slate-100 rounded mb-3 animate-pulse"></div>
+        ${Array.from({ length: 5 }).map(() => `<div class="h-16 w-full bg-slate-50 border border-slate-100 rounded-xl mb-2 animate-pulse"></div>`).join('')}
+      </div>
+    `;
+  }
+
+  if (page === 'todo') {
+    return `
+      <!-- Todo Skeleton -->
+      <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
+        <div class="h-10 w-80 bg-slate-200 rounded animate-pulse"></div>
+        <div class="flex gap-2">
+          <div class="h-10 w-32 bg-slate-200 rounded-xl animate-pulse"></div>
+          <div class="h-10 w-32 bg-slate-200 rounded-xl animate-pulse"></div>
+        </div>
+      </div>
+      <div class="h-16 w-full bg-white border border-slate-200 rounded-xl shadow-sm mb-6 animate-pulse"></div>
+      <div class="glass-panel p-6 rounded-2xl border border-slate-200 w-full bg-white shadow-sm">
+        <div class="flex justify-between items-center mb-6">
+          <div class="h-6 w-48 bg-slate-200 rounded animate-pulse"></div>
+          <div class="h-9 w-64 bg-slate-200 rounded-xl animate-pulse"></div>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="space-y-2">
+            <div class="h-6 w-32 bg-slate-200 rounded mb-3 animate-pulse"></div>
+            ${Array.from({ length: 3 }).map(() => `<div class="h-16 w-full bg-slate-50 border border-slate-100 rounded-xl animate-pulse"></div>`).join('')}
+          </div>
+          <div class="space-y-2">
+            <div class="h-6 w-32 bg-slate-200 rounded mb-3 animate-pulse"></div>
+            ${Array.from({ length: 5 }).map(() => `<div class="h-16 w-full bg-slate-50 border border-slate-100 rounded-xl animate-pulse"></div>`).join('')}
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  if (page === 'health') {
+    return `
+      <!-- Health Skeleton -->
+      <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 mb-8">
+        <div class="h-10 w-64 bg-slate-200 rounded animate-pulse"></div>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="h-[450px] bg-white rounded-3xl shadow-sm border border-slate-200 animate-pulse"></div>
+        <div class="h-[450px] bg-white rounded-3xl shadow-sm border border-slate-200 animate-pulse"></div>
+        <div class="h-[450px] bg-white rounded-3xl shadow-sm border border-slate-200 animate-pulse"></div>
+      </div>
+    `;
+  }
+
+  if (page === 'network') {
+    return `
+      <!-- Network Skeleton -->
+      <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 mb-8">
+        <div class="h-10 w-80 bg-slate-200 rounded animate-pulse"></div>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="h-[300px] bg-white rounded-2xl shadow-sm border border-slate-200 animate-pulse"></div>
+        <div class="h-[300px] bg-white rounded-2xl shadow-sm border border-slate-200 animate-pulse"></div>
+      </div>
+    `;
+  }
+
+  // Default Dashboard & others Skeleton
+  return `
+    <!-- Dashboard Skeleton -->
+    <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 mb-8">
+      <div>
+        <div class="h-8 w-64 bg-slate-200 rounded animate-pulse mb-2"></div>
+        <div class="h-4 w-48 bg-slate-200 rounded animate-pulse"></div>
+      </div>
+      <div class="h-10 w-32 bg-slate-200 rounded-xl animate-pulse"></div>
+    </div>
+
+    <!-- Stat Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+      <div class="h-28 rounded-2xl bg-white shadow-sm border border-slate-100 animate-pulse"></div>
+      <div class="h-28 rounded-2xl bg-white shadow-sm border border-slate-100 animate-pulse"></div>
+      <div class="h-28 rounded-2xl bg-white shadow-sm border border-slate-100 animate-pulse"></div>
+      <div class="h-28 rounded-2xl bg-white shadow-sm border border-slate-100 animate-pulse"></div>
+    </div>
+    
+    <!-- Analysis Banner -->
+    <div class="h-[60px] bg-white rounded-t-2xl shadow-sm border border-slate-100 animate-pulse mb-1"></div>
+
+    <!-- Charts -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+      <div class="h-[300px] rounded-3xl bg-white shadow-sm border border-slate-100 animate-pulse"></div>
+      <div class="h-[300px] rounded-3xl bg-white shadow-sm border border-slate-100 animate-pulse"></div>
+      <div class="h-[300px] rounded-3xl bg-white shadow-sm border border-slate-100 animate-pulse"></div>
+    </div>
+  `;
 }
 
 // Expose navigation to global window so dynamic HTML templates work natively
