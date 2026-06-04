@@ -286,27 +286,27 @@ function renderSidebarContent(aside, collapseIcon, hideTextClass, centerIconClas
         <div class="flex flex-col justify-between flex-1 md:w-auto">
           <!-- Sidebar Navigation Menu -->
           <nav class="space-y-2 mt-4 md:mt-0">
-            <button onclick="navigate('dashboard')" class="sidebar-link w-full flex items-center ${gapClass} px-4 py-3 rounded-xl border border-transparent text-sm font-medium transition-all ${AppState.activePage === 'dashboard' ? 'active' : ''} ${centerIconClass}" title="Dashboard">
+            <button onclick="navigate('dashboard')" class="sidebar-link w-full flex items-center ${gapClass} px-4 py-3 rounded-xl border text-sm font-medium transition-all ${AppState.activePage === 'dashboard' ? 'bg-white/20 shadow-md border-white/30 text-white' : 'border-transparent text-teal-100 hover:bg-white/10'} ${centerIconClass}" title="Dashboard">
               <i data-lucide="layout-dashboard" class="w-5 h-5 shrink-0"></i>
               <span class="${hideTextClass}">Dashboard</span>
             </button>
             
-            <button onclick="navigate('transaction')" class="sidebar-link w-full flex items-center ${gapClass} px-4 py-3 rounded-xl border border-transparent text-sm font-medium transition-all ${AppState.activePage === 'transaction' ? 'active' : ''} ${centerIconClass}" title="Transaction">
+            <button onclick="navigate('transaction')" class="sidebar-link w-full flex items-center ${gapClass} px-4 py-3 rounded-xl border text-sm font-medium transition-all ${AppState.activePage === 'transaction' ? 'bg-white/20 shadow-md border-white/30 text-white' : 'border-transparent text-teal-100 hover:bg-white/10'} ${centerIconClass}" title="Transaction">
               <i data-lucide="wallet" class="w-5 h-5 shrink-0"></i>
               <span class="${hideTextClass}">Transaction</span>
             </button>
             
-            <button onclick="navigate('todo')" class="sidebar-link w-full flex items-center ${gapClass} px-4 py-3 rounded-xl border border-transparent text-sm font-medium transition-all ${AppState.activePage === 'todo' ? 'active' : ''} ${centerIconClass}" title="Do the < list >">
+            <button onclick="navigate('todo')" class="sidebar-link w-full flex items-center ${gapClass} px-4 py-3 rounded-xl border text-sm font-medium transition-all ${AppState.activePage === 'todo' ? 'bg-white/20 shadow-md border-white/30 text-white' : 'border-transparent text-teal-100 hover:bg-white/10'} ${centerIconClass}" title="Do the < list >">
               <i data-lucide="check-square" class="w-5 h-5 shrink-0"></i>
               <span class="${hideTextClass}">Do the &lt; list &gt;</span>
             </button>
             
-            <button onclick="navigate('health')" class="sidebar-link w-full flex items-center ${gapClass} px-4 py-3 rounded-xl border border-transparent text-sm font-medium transition-all ${AppState.activePage === 'health' ? 'active' : ''} ${centerIconClass}" title="Healthy Basement">
+            <button onclick="navigate('health')" class="sidebar-link w-full flex items-center ${gapClass} px-4 py-3 rounded-xl border text-sm font-medium transition-all ${AppState.activePage === 'health' ? 'bg-white/20 shadow-md border-white/30 text-white' : 'border-transparent text-teal-100 hover:bg-white/10'} ${centerIconClass}" title="Healthy Basement">
               <i data-lucide="heart" class="w-5 h-5 shrink-0"></i>
               <span class="${hideTextClass}">Healthy Basement</span>
             </button>
             
-            <button onclick="navigate('calendar')" class="sidebar-link w-full flex items-center ${gapClass} px-4 py-3 rounded-xl border border-transparent text-sm font-medium transition-all ${AppState.activePage === 'calendar' ? 'active' : ''} ${centerIconClass}" title="Calendar">
+            <button onclick="navigate('calendar')" class="sidebar-link w-full flex items-center ${gapClass} px-4 py-3 rounded-xl border text-sm font-medium transition-all ${AppState.activePage === 'calendar' ? 'bg-white/20 shadow-md border-white/30 text-white' : 'border-transparent text-teal-100 hover:bg-white/10'} ${centerIconClass}" title="Calendar">
               <i data-lucide="calendar" class="w-5 h-5 shrink-0"></i>
               <span class="${hideTextClass}">Calendar</span>
             </button>
@@ -367,7 +367,7 @@ function updateSidebarDynamicStates(aside, collapseIcon, hideTextClass, centerIc
     if (!profileLink.classList.contains('flex-nowrap')) {
       profileLink.classList.add('flex-nowrap');
     }
-    
+
     // Toggle active state for profile link
     if (AppState.activePage === 'settings') {
       profileLink.classList.add('bg-white/20', 'shadow-md', '!border-white/30');
@@ -396,13 +396,15 @@ function updateSidebarDynamicStates(aside, collapseIcon, hideTextClass, centerIc
 
     // Update active highlight
     if (page === AppState.activePage) {
-      link.classList.add('active');
+      link.classList.add('bg-white/20', 'shadow-md', 'border-white/30', 'text-white');
+      link.classList.remove('border-transparent', 'text-teal-100', 'hover:bg-white/10');
     } else {
-      link.classList.remove('active');
+      link.classList.remove('bg-white/20', 'shadow-md', 'border-white/30', 'text-white');
+      link.classList.add('border-transparent', 'text-teal-100', 'hover:bg-white/10');
     }
 
-    // Update gap and alignment classes
-    link.className = `sidebar-link w-full flex items-center ${gapClass} px-4 py-3 rounded-xl border border-transparent text-sm font-medium transition-all ${page === AppState.activePage ? 'active' : ''} ${centerIconClass}`;
+    // Update gap and alignment classes without destroying the dynamic Tailwind classes
+    link.className = `sidebar-link w-full flex items-center ${gapClass} px-4 py-3 rounded-xl border text-sm font-medium transition-all ${page === AppState.activePage ? 'bg-white/20 shadow-md border-white/30 text-white' : 'border-transparent text-teal-100 hover:bg-white/10'} ${centerIconClass}`;
   });
 
   // 5. Update water summary container visibility on desktop
