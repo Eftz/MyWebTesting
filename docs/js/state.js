@@ -187,14 +187,29 @@ export const AppState = {
       const friendsSnap = await fb.getDocs(fb.collection(fb.db, `users/${uid}/friends`));
       this.friends = friendsSnap.docs.map(d => ({ id: d.id, ...d.data() }));
 
-      // Load friend requests (where toUid == my uid)
+      // Listen for friend requests in real-time
+      if (this._unsubscribeRequests) this._unsubscribeRequests();
+      
       const requestsQuery = fb.query(
         fb.collection(fb.db, 'friendRequests'),
         fb.where('toUid', '==', uid),
         fb.where('status', '==', 'pending')
       );
-      const reqSnap = await fb.getDocs(requestsQuery);
-      this.friendRequests = reqSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+      
+      this._unsubscribeRequests = fb.onSnapshot(requestsQuery, (snap) => {
+        this.friendRequests = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        notifyStateChange();
+        
+        // Show notification for new requests
+        snap.docChanges().forEach(change => {
+          if (change.type === 'added') {
+            const data = change.doc.data();
+            // Optional: Import and show toast or system notification
+            import('./ui.js').then(ui => ui.showToast(`คุณมีคำเชิญเป็นเพื่อนใหม่จาก @${data.fromUsername}`));
+            import('./audio.js').then(audio => audio.AudioEngine.playChime());
+          }
+        });
+      });
 
       await this.loadFamilyTodos();
     } catch (e) {
@@ -341,6 +356,32 @@ export const AppState = {
       await this.loadNetwork();
     } catch (e) {
       console.error("Error updating role:", e);
+    }
+  },
+
+  async removeFriend(friendUid) {
+    if (!this.currentUser) return;
+    const fb = await getFirebase();
+    const myUid = this.currentUser.uid;
+    
+    try {
+      // Delete from my friends list
+      const myFriendRef = fb.doc(fb.db, `users/${myUid}/friends`, friendUid);
+      await fb.deleteDoc(myFriendRef);
+
+      // Delete me from their friends list
+      const theirFriendRef = fb.doc(fb.db, `users/${friendUid}/friends`, myUid);
+      await fb.deleteDoc(theirFriendRef);
+      
+      showToast('ลบเพื่อนสำเร็จแล้ว', 'info');
+      
+      // Reload network state to update UI
+      await this.loadNetwork();
+      return true;
+    } catch (e) {
+      console.error("Error removing friend:", e);
+      showToast('เกิดข้อผิดพลาดในการลบเพื่อน', 'error');
+      return false;
     }
   },
 

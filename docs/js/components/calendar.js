@@ -429,7 +429,7 @@ export function renderCalendarComponent() {
           <div class="grid grid-cols-7 gap-px bg-slate-200 border border-slate-200 rounded-2xl overflow-hidden mt-3">
             ${cells.map((cell, idx) => {
     // Select data source based on mode
-    const sourceTodos = calendarMode === 'personal' ? AppState.todos : [...AppState.todos, ...(AppState.familyTodos || [])];
+    const sourceTodos = calendarMode === 'personal' ? AppState.todos : (AppState.familyTodos || []);
 
     // Find matching events for this cell's date
     const dayTodos = sourceTodos.filter(t => {
@@ -592,7 +592,7 @@ export function renderCalendarComponent() {
             <!-- Events List -->
             <div class="space-y-3 max-h-[300px] overflow-y-auto pr-1 mb-6 custom-scroll">
               ${(() => {
-        const sourceTodos = calendarMode === 'personal' ? AppState.todos : [...AppState.todos, ...(AppState.familyTodos || [])];
+        const sourceTodos = calendarMode === 'personal' ? AppState.todos : (AppState.familyTodos || []);
         const dayTodos = sourceTodos.filter(t => t.date === selectedDayDate);
         if (dayTodos.length === 0) {
           return `

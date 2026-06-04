@@ -1,33 +1,66 @@
 // SmartLife SPA Network Component Module
 import { AppState } from '../state.js';
 
-window.handleSendFriendRequest = async function(event) {
+let searchResult = null;
+
+window.handleSearchFriend = async function (event) {
   event.preventDefault();
   const username = document.getElementById('friend-username-input').value.trim();
-  if (username) {
-    const success = await AppState.sendFriendRequest(username);
+  if (!username) return;
+
+  if (AppState.currentUser && username.toLowerCase() === AppState.currentUser.username.toLowerCase()) {
+    import('../ui.js').then(ui => ui.showToast('ไม่สามารถส่งคำเชิญให้ตัวเองได้', 'warning'));
+    return;
+  }
+
+  const fb = await import('../firebase.js');
+  const usersQuery = fb.query(fb.collection(fb.db, 'users'), fb.where('username', '==', username.toLowerCase()));
+  const userSnap = await fb.getDocs(usersQuery);
+
+  if (userSnap.empty) {
+    import('../ui.js').then(ui => ui.showToast('ไม่พบบัญชีผู้ใช้นี้', 'error'));
+    searchResult = null;
+  } else {
+    searchResult = userSnap.docs[0].data();
+  }
+
+  import('../router.js').then(m => m.renderPage());
+};
+
+window.handleSendFriendRequest = async function () {
+  if (searchResult) {
+    const success = await AppState.sendFriendRequest(searchResult.username);
     if (success) {
-      document.getElementById('friend-username-input').value = '';
+      searchResult = null;
+      import('../router.js').then(m => m.renderPage());
     }
   }
 };
 
-window.acceptRequest = function(reqId, uid, username) {
+window.acceptRequest = function (reqId, uid, username) {
   AppState.acceptFriendRequest(reqId, uid, username).then(() => {
     import('../router.js').then(m => m.renderPage());
   });
 };
 
-window.rejectRequest = function(reqId) {
+window.rejectRequest = function (reqId) {
   AppState.rejectFriendRequest(reqId).then(() => {
     import('../router.js').then(m => m.renderPage());
   });
 };
 
-window.changeFriendRole = function(uid, role) {
+window.changeFriendRole = function (uid, role) {
   AppState.updateFriendRole(uid, role).then(() => {
     import('../router.js').then(m => m.renderPage());
   });
+};
+
+window.handleRemoveFriend = function (uid, username) {
+  if (confirm(`คุณต้องการลบ @${username} ออกจากรายชื่อเพื่อนใช่หรือไม่?\n*เมื่อลบแล้วต่างฝ่ายจะไม่สามารถเห็นกันและกันได้อีก`)) {
+    AppState.removeFriend(uid).then(() => {
+      import('../router.js').then(m => m.renderPage());
+    });
+  }
 };
 
 export function renderNetworkComponent() {
@@ -50,14 +83,31 @@ export function renderNetworkComponent() {
         <!-- Add Friend Card -->
         <div class="glass-panel p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col">
           <h3 class="text-lg font-bold text-slate-800 flex items-center gap-2 mb-4">
-            <i data-lucide="user-plus" class="w-5 h-5 text-[#007a7a]"></i> เพิ่มเพื่อนใหม่
+            <i data-lucide="search" class="w-5 h-5 text-[#007a7a]"></i> ค้นหาเพื่อนใหม่
           </h3>
-          <form onsubmit="handleSendFriendRequest(event)" class="flex gap-2">
-            <input type="text" id="friend-username-input" required placeholder="ค้นหาด้วย Username..." class="glass-input flex-1 px-4 py-2.5 rounded-xl text-sm font-medium outline-none focus:ring-2 focus:ring-[#007a7a]/50 border border-slate-200">
-            <button type="submit" class="px-5 py-2.5 rounded-xl text-sm font-bold text-white bg-[#007a7a] hover:bg-[#006363] transition-all shadow-md shrink-0 flex items-center gap-1">
-              <i data-lucide="send" class="w-4 h-4"></i> ส่งคำเชิญ
+          <form onsubmit="handleSearchFriend(event)" class="flex flex-col sm:flex-row gap-2">
+            <input type="text" id="friend-username-input" required placeholder="ค้นหาด้วย Username..." value="${searchResult ? searchResult.username : ''}" class="glass-input flex-1 px-4 py-2.5 rounded-xl text-sm font-medium outline-none focus:ring-2 focus:ring-[#007a7a]/50 border border-slate-200">
+            <button type="submit" class="w-full sm:w-auto px-5 py-2.5 rounded-xl text-sm font-bold text-white bg-slate-800 hover:bg-slate-700 transition-all shadow-md shrink-0 flex items-center justify-center gap-1">
+              <i data-lucide="search" class="w-4 h-4"></i> ค้นหา
             </button>
           </form>
+
+          ${searchResult ? `
+            <div class="mt-4 p-4 rounded-xl border border-teal-100 bg-teal-50/50 flex flex-col sm:flex-row items-center justify-between gap-4 animate-fade-in">
+              <div class="flex items-center gap-3">
+                <div class="w-12 h-12 rounded-full bg-gradient-to-tr from-[#007a7a] to-teal-400 flex items-center justify-center font-bold text-white shadow-sm text-lg">
+                  ${searchResult.username.charAt(0).toUpperCase()}
+                </div>
+                <div>
+                  <p class="font-bold text-slate-800">${searchResult.name || searchResult.username}</p>
+                  <p class="text-xs text-slate-500">@${searchResult.username}</p>
+                </div>
+              </div>
+              <button onclick="handleSendFriendRequest()" class="w-full sm:w-auto px-4 py-2 rounded-lg text-sm font-bold text-white bg-[#007a7a] hover:bg-[#006363] transition-all shadow-md flex items-center justify-center gap-1">
+                <i data-lucide="user-plus" class="w-4 h-4"></i> ส่งคำเชิญ
+              </button>
+            </div>
+          ` : ''}
 
           <div class="mt-6 border-t border-slate-200 pt-4">
             <h3 class="text-sm font-bold text-slate-700 mb-3 flex items-center gap-2">
@@ -109,18 +159,22 @@ export function renderNetworkComponent() {
                     </div>
                     <div class="min-w-0">
                       <p class="text-sm font-bold text-slate-800 truncate">@${friend.username}</p>
-                      ${friend.role === 'family' 
-                        ? `<span class="inline-flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded-md bg-purple-50 text-purple-600 font-bold border border-purple-200 mt-0.5"><i data-lucide="home" class="w-3 h-3"></i> ครอบครัว (ดูปฏิทินได้)</span>` 
-                        : `<span class="inline-flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded-md bg-slate-100 text-slate-500 font-bold border border-slate-200 mt-0.5"><i data-lucide="user" class="w-3 h-3"></i> เพื่อนทั่วไป</span>`
-                      }
+                      ${friend.role === 'family'
+      ? `<span class="inline-flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded-md bg-purple-50 text-purple-600 font-bold border border-purple-200 mt-0.5"><i data-lucide="home" class="w-3 h-3"></i> ครอบครัว (ดูปฏิทินได้)</span>`
+      : `<span class="inline-flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded-md bg-slate-100 text-slate-500 font-bold border border-slate-200 mt-0.5"><i data-lucide="user" class="w-3 h-3"></i> เพื่อนทั่วไป</span>`
+    }
                     </div>
                   </div>
                   
-                  <div class="shrink-0 flex flex-col items-end">
+                  <div class="shrink-0 flex items-center gap-2">
                     <select onchange="changeFriendRole('${friend.id}', this.value)" class="bg-slate-50 border border-slate-200 rounded-lg px-2 py-1.5 text-xs font-semibold text-slate-700 focus:outline-none focus:border-[#007a7a] cursor-pointer">
                       <option value="friend" ${friend.role === 'friend' ? 'selected' : ''}>เพื่อนปกติ</option>
                       <option value="family" ${friend.role === 'family' ? 'selected' : ''}>ครอบครัว</option>
                     </select>
+                    
+                    <button onclick="handleRemoveFriend('${friend.id}', '${friend.username}')" class="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors" title="ลบเพื่อน">
+                      <i data-lucide="trash-2" class="w-4 h-4"></i>
+                    </button>
                   </div>
                 </div>
               `).join('')}

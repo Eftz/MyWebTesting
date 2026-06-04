@@ -21,7 +21,8 @@ import {
   writeBatch,
   deleteDoc,
   query,
-  where
+  where,
+  onSnapshot
 } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
 import {
   getStorage,
@@ -70,7 +71,8 @@ export {
   writeBatch,
   deleteDoc,
   query,
-  where
+  where,
+  onSnapshot
 };
 
 // Export Storage functions
