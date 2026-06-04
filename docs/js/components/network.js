@@ -73,7 +73,7 @@ export function renderNetworkComponent() {
         <div>
           <h1 class="text-2xl font-bold text-slate-800 flex items-center gap-2">
             <i data-lucide="users" class="text-[#007a7a]"></i>
-            <span>จัดการเพื่อนและครอบครัว (Network)</span>
+            <span>จัดการเพื่อนและครอบครัว (Friends & Family)</span>
           </h1>
           <p class="text-slate-500 text-xs mt-1">เพิ่มเพื่อนและกำหนดสิทธิ์ให้ครอบครัวเข้าถึงปฏิทินของคุณได้</p>
         </div>
@@ -95,9 +95,13 @@ export function renderNetworkComponent() {
           ${searchResult ? `
             <div class="mt-4 p-4 rounded-xl border border-teal-100 bg-teal-50/50 flex flex-col sm:flex-row items-center justify-between gap-4 animate-fade-in">
               <div class="flex items-center gap-3">
-                <div class="w-12 h-12 rounded-full bg-gradient-to-tr from-[#007a7a] to-teal-400 flex items-center justify-center font-bold text-white shadow-sm text-lg">
-                  ${searchResult.username.charAt(0).toUpperCase()}
-                </div>
+                ${searchResult.profileImage ? `
+                  <img src="${searchResult.profileImage}" alt="Profile" class="w-12 h-12 rounded-full object-cover shadow-sm border border-slate-200">
+                ` : `
+                  <div class="w-12 h-12 rounded-full bg-gradient-to-tr from-[#007a7a] to-teal-400 flex items-center justify-center font-bold text-white shadow-sm text-lg">
+                    ${searchResult.username ? searchResult.username.charAt(0).toUpperCase() : '?'}
+                  </div>
+                `}
                 <div>
                   <p class="font-bold text-slate-800">${searchResult.name || searchResult.username}</p>
                   <p class="text-xs text-slate-500">@${searchResult.username}</p>
@@ -154,9 +158,13 @@ export function renderNetworkComponent() {
               ${friends.map(friend => `
                 <div class="p-3 bg-white rounded-xl border border-slate-200 shadow-sm flex items-center justify-between gap-3 hover:border-[#007a7a]/30 transition-colors">
                   <div class="flex items-center gap-3 min-w-0">
-                    <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-teal-500 to-[#f2994a] flex items-center justify-center font-bold text-white shrink-0 shadow-sm">
-                      ${friend.username ? friend.username.charAt(0).toUpperCase() : '?'}
-                    </div>
+                    ${friend.profileImage ? `
+                      <img src="${friend.profileImage}" alt="Profile" class="w-10 h-10 rounded-full object-cover shadow-sm border border-slate-200 shrink-0">
+                    ` : `
+                      <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-teal-500 to-[#f2994a] flex items-center justify-center font-bold text-white shrink-0 shadow-sm">
+                        ${friend.username ? friend.username.charAt(0).toUpperCase() : '?'}
+                      </div>
+                    `}
                     <div class="min-w-0">
                       <p class="text-sm font-bold text-slate-800 truncate">@${friend.username}</p>
                       ${friend.role === 'family'

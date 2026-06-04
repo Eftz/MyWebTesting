@@ -183,23 +183,43 @@ export const AppState = {
     const fb = await getFirebase();
 
     try {
-      // Load friends
-      const friendsSnap = await fb.getDocs(fb.collection(fb.db, `users/${uid}/friends`));
-      this.friends = friendsSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+      // Listen for friends list in real-time
+      if (this._unsubscribeFriends) this._unsubscribeFriends();
+
+      this._unsubscribeFriends = fb.onSnapshot(fb.collection(fb.db, `users/${uid}/friends`), async (snap) => {
+        const friendsData = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+
+        // Fetch latest profile info (image, name) for each friend
+        for (let f of friendsData) {
+          try {
+            const userDoc = await fb.getDoc(fb.doc(fb.db, 'users', f.uid || f.id));
+            if (userDoc.exists()) {
+              f.profileImage = userDoc.data().profileImage || null;
+              f.name = userDoc.data().name || f.username;
+            }
+          } catch (err) {
+            console.error("Error fetching friend profile:", err);
+          }
+        }
+
+        this.friends = friendsData;
+        notifyStateChange();
+        this.loadFamilyTodos(); // Reload family todos when friends change
+      });
 
       // Listen for friend requests in real-time
       if (this._unsubscribeRequests) this._unsubscribeRequests();
-      
+
       const requestsQuery = fb.query(
         fb.collection(fb.db, 'friendRequests'),
         fb.where('toUid', '==', uid),
         fb.where('status', '==', 'pending')
       );
-      
+
       this._unsubscribeRequests = fb.onSnapshot(requestsQuery, (snap) => {
         this.friendRequests = snap.docs.map(d => ({ id: d.id, ...d.data() }));
         notifyStateChange();
-        
+
         // Show notification for new requests
         snap.docChanges().forEach(change => {
           if (change.type === 'added') {
@@ -363,7 +383,7 @@ export const AppState = {
     if (!this.currentUser) return;
     const fb = await getFirebase();
     const myUid = this.currentUser.uid;
-    
+
     try {
       // Delete from my friends list
       const myFriendRef = fb.doc(fb.db, `users/${myUid}/friends`, friendUid);
@@ -372,9 +392,9 @@ export const AppState = {
       // Delete me from their friends list
       const theirFriendRef = fb.doc(fb.db, `users/${friendUid}/friends`, myUid);
       await fb.deleteDoc(theirFriendRef);
-      
+
       showToast('ลบเพื่อนสำเร็จแล้ว', 'info');
-      
+
       // Reload network state to update UI
       await this.loadNetwork();
       return true;
