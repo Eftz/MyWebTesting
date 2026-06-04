@@ -200,8 +200,8 @@ export function renderSettingsComponent() {
   return `
     <div class="space-y-6 max-w-xl">
       <div>
-        <h1 class="text-2xl font-bold text-slate-800 flex items-center gap-2">
-          <i data-lucide="settings" class="text-[#007a7a]"></i>
+        <h1 class="text-2xl font-bold text-slate-800 flex items-center gap-3">
+          <img src="smartlifePNG.png" alt="SmartLife Logo" class="w-8 h-8 object-contain">
           <span>ตั้งค่าข้อมูลทั่วไป (Settings Panel)</span>
         </h1>
         <p class="text-slate-500 text-xs mt-1">แก้ไขข้อมูลส่วนตัว รหัสผ่าน และปรับเป้าหมายรายวันของคุณได้ตลอดเวลา</p>

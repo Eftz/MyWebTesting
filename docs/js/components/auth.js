@@ -18,8 +18,8 @@ export function renderAuth(app) {
       <div class="absolute -bottom-24 -right-24 w-48 h-48 rounded-full bg-[#007a7a]/5 blur-3xl"></div>
 
       <div class="text-center mb-8 relative">
-        <div class="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-tr from-[#005f5f] to-[#007a7a] shadow-xl shadow-[#007a7a]/15 mb-4">
-          <i data-lucide="sparkles" class="w-8 h-8 text-white"></i>
+        <div class="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-white shadow-xl shadow-[#007a7a]/15 mb-4 p-2 border border-slate-100">
+          <img src="smartlifePNG.png" alt="SmartLife Logo" class="w-full h-full object-contain drop-shadow-sm">
         </div>
         <h2 class="text-3xl font-extrabold tracking-tight bg-gradient-to-r from-[#005f5f] via-[#007a7a] to-[#0d9488] bg-clip-text text-transparent">SmartLife Portal</h2>
         <p class="text-slate-500 text-sm mt-2">${showSignUp ? 'สร้างบัญชีผู้ใช้ใหม่เพื่อเริ่มต้น' : showForgot ? 'ลืมรหัสผ่านใช่ไหม? ให้เราช่วยคุณ' : 'กรอกชื่อผู้ใช้เพื่อเข้าใช้กระดานข้อมูล'}</p>
