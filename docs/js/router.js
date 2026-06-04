@@ -60,33 +60,46 @@ export function renderPage() {
   const app = document.getElementById('app');
   if (!app) return;
 
-  // 0. Transition Loading State (Full Skeleton for Initial Boot)
-  if (AppState.loading && !AppState.currentUser) {
-    app.className = "min-h-screen flex flex-col md:flex-row bg-[#f2f7f7]";
-    app.innerHTML = `
-      <!-- Sidebar Skeleton -->
-      <aside class="fixed md:sticky top-0 left-0 right-0 md:h-screen z-40 w-full md:w-64 bg-[#007a7a] p-5 flex flex-col shrink-0 border-r border-white/10 hidden md:flex">
-        <div class="flex items-center gap-3 mb-10">
-          <div class="w-12 h-12 rounded-full bg-white/20 animate-pulse"></div>
-          <div class="flex-1 space-y-2">
-            <div class="h-4 bg-white/20 rounded w-3/4 animate-pulse"></div>
-            <div class="h-3 bg-white/10 rounded w-1/2 animate-pulse"></div>
+  // 0. Transition Loading State
+  if (AppState.loading) {
+    if (!AppState.currentUser) {
+      // Show old spinner for login/signup pages or initial boot
+      app.className = "min-h-screen bg-slate-50 flex items-center justify-center";
+      app.innerHTML = `
+        <div class="flex flex-col items-center gap-4">
+          <div class="w-12 h-12 border-4 border-[#007a7a] border-t-transparent rounded-full animate-spin"></div>
+          <p class="text-slate-500 font-medium animate-pulse">กำลังเตรียมพร้อม...</p>
+        </div>
+      `;
+      return;
+    } else {
+      // Show App Shell Skeleton for authenticated pages
+      app.className = "min-h-screen flex flex-col md:flex-row bg-[#f2f7f7]";
+      app.innerHTML = `
+        <!-- Sidebar Skeleton -->
+        <aside class="fixed md:sticky top-0 left-0 right-0 md:h-screen z-40 w-full md:w-64 bg-[#007a7a] p-5 flex flex-col shrink-0 border-r border-white/10 hidden md:flex">
+          <div class="flex items-center gap-3 mb-10">
+            <div class="w-12 h-12 rounded-full bg-white/20 animate-pulse"></div>
+            <div class="flex-1 space-y-2">
+              <div class="h-4 bg-white/20 rounded w-3/4 animate-pulse"></div>
+              <div class="h-3 bg-white/10 rounded w-1/2 animate-pulse"></div>
+            </div>
           </div>
-        </div>
-        <div class="space-y-4">
-          <div class="h-10 bg-white/10 rounded-xl w-full animate-pulse"></div>
-          <div class="h-10 bg-white/10 rounded-xl w-full animate-pulse"></div>
-          <div class="h-10 bg-white/10 rounded-xl w-full animate-pulse"></div>
-          <div class="h-10 bg-white/10 rounded-xl w-full animate-pulse"></div>
-        </div>
-      </aside>
+          <div class="space-y-4">
+            <div class="h-10 bg-white/10 rounded-xl w-full animate-pulse"></div>
+            <div class="h-10 bg-white/10 rounded-xl w-full animate-pulse"></div>
+            <div class="h-10 bg-white/10 rounded-xl w-full animate-pulse"></div>
+            <div class="h-10 bg-white/10 rounded-xl w-full animate-pulse"></div>
+          </div>
+        </aside>
 
-      <!-- Main Content Skeleton -->
-      <main class="flex-1 p-6 md:p-10 flex flex-col min-h-screen">
-        ${renderMainContentSkeleton()}
-      </main>
-    `;
-    return;
+        <!-- Main Content Skeleton -->
+        <main class="flex-1 p-6 md:p-10 flex flex-col min-h-screen">
+          ${renderMainContentSkeleton()}
+        </main>
+      `;
+      return;
+    }
   }
 
 

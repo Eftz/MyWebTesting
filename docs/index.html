@@ -47,56 +47,12 @@
 </head>
 
 <body class="antialiased min-h-screen text-slate-800 bg-[#f2f7f7]">
-  <!-- Core SPA Mounting Point -->
-  <div id="app" class="min-h-screen flex flex-col md:flex-row bg-[#f2f7f7]">
-    <!-- Initial Skeleton UI (Replaced dynamically by JS) -->
-    <!-- Sidebar Skeleton -->
-    <aside
-      class="fixed md:sticky top-0 left-0 right-0 md:h-screen z-40 w-full md:w-64 bg-[#007a7a] p-5 flex flex-col shrink-0 border-r border-white/10 hidden md:flex">
-      <div class="flex items-center gap-3 mb-10">
-        <div class="w-12 h-12 rounded-full bg-white/20 animate-pulse"></div>
-        <div class="flex-1 space-y-2">
-          <div class="h-4 bg-white/20 rounded w-3/4 animate-pulse"></div>
-          <div class="h-3 bg-white/10 rounded w-1/2 animate-pulse"></div>
-        </div>
-      </div>
-      <div class="space-y-4">
-        <div class="h-10 bg-white/10 rounded-xl w-full animate-pulse"></div>
-        <div class="h-10 bg-white/10 rounded-xl w-full animate-pulse"></div>
-        <div class="h-10 bg-white/10 rounded-xl w-full animate-pulse"></div>
-        <div class="h-10 bg-white/10 rounded-xl w-full animate-pulse"></div>
-      </div>
-    </aside>
-
-    <!-- Main Content Skeleton -->
-    <main class="flex-1 p-6 md:p-10 flex flex-col min-h-screen">
-      <!-- Dashboard Skeleton -->
-      <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 mb-8">
-        <div>
-          <div class="h-8 w-64 bg-slate-200 rounded animate-pulse mb-2"></div>
-          <div class="h-4 w-48 bg-slate-200 rounded animate-pulse"></div>
-        </div>
-        <div class="h-10 w-32 bg-slate-200 rounded-xl animate-pulse"></div>
-      </div>
-
-      <!-- Stat Cards -->
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        <div class="h-28 rounded-2xl bg-white shadow-sm border border-slate-100 animate-pulse"></div>
-        <div class="h-28 rounded-2xl bg-white shadow-sm border border-slate-100 animate-pulse"></div>
-        <div class="h-28 rounded-2xl bg-white shadow-sm border border-slate-100 animate-pulse"></div>
-        <div class="h-28 rounded-2xl bg-white shadow-sm border border-slate-100 animate-pulse"></div>
-      </div>
-
-      <!-- Analysis Banner -->
-      <div class="h-[60px] bg-white rounded-t-2xl shadow-sm border border-slate-100 animate-pulse mb-1"></div>
-
-      <!-- Charts -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <div class="h-[300px] rounded-3xl bg-white shadow-sm border border-slate-100 animate-pulse"></div>
-        <div class="h-[300px] rounded-3xl bg-white shadow-sm border border-slate-100 animate-pulse"></div>
-        <div class="h-[300px] rounded-3xl bg-white shadow-sm border border-slate-100 animate-pulse"></div>
-      </div>
-    </main>
+  <div id="app" class="min-h-screen bg-slate-50 flex items-center justify-center">
+    <!-- Initial Loading Spinner -->
+    <div class="flex flex-col items-center gap-4">
+      <div class="w-12 h-12 border-4 border-[#007a7a] border-t-transparent rounded-full animate-spin"></div>
+      <p class="text-slate-500 font-medium animate-pulse">กำลังโหลดข้อมูล...</p>
+    </div>
   </div>
 
   <!-- Notification Toast Container -->
