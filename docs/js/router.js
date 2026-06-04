@@ -260,7 +260,7 @@ function renderSidebarContent(aside, collapseIcon, hideTextClass, centerIconClas
       <div>
         <!-- Profile Header -->
         <div class="${profileHeaderClass}">
-          <div onclick="navigate('settings')" class="profile-header-link flex items-center flex-nowrap gap-3 min-w-0 cursor-pointer rounded-xl px-2 py-1.5 -mx-2 transition-all hover:bg-white/10" title="ตั้งค่าโปรไฟล์">
+          <div onclick="navigate('settings')" class="profile-header-link flex items-center flex-nowrap gap-3 min-w-0 cursor-pointer rounded-xl px-2 py-1.5 -mx-2 transition-all hover:bg-white/10 border border-transparent ${AppState.activePage === 'settings' ? 'bg-white/20 shadow-md !border-white/30' : ''}" title="ตั้งค่าโปรไฟล์">
             ${AppState.currentUser.profileImage ? `
               <img src="${AppState.currentUser.profileImage}" referrerpolicy="no-referrer" crossorigin="anonymous" class="w-10 h-10 rounded-full object-cover border border-white/20 shadow-lg shrink-0 transition-transform group-hover:scale-105">
             ` : `
@@ -361,10 +361,19 @@ function updateSidebarDynamicStates(aside, collapseIcon, hideTextClass, centerIc
     profileHeader.className = profileHeaderClass;
   }
 
-  // 3. Update visibility of text spans
+  // 3. Update visibility of text spans and profile highlight
   const profileLink = aside.querySelector('.profile-header-link');
-  if (profileLink && !profileLink.classList.contains('flex-nowrap')) {
-    profileLink.classList.add('flex-nowrap');
+  if (profileLink) {
+    if (!profileLink.classList.contains('flex-nowrap')) {
+      profileLink.classList.add('flex-nowrap');
+    }
+    
+    // Toggle active state for profile link
+    if (AppState.activePage === 'settings') {
+      profileLink.classList.add('bg-white/20', 'shadow-md', '!border-white/30');
+    } else {
+      profileLink.classList.remove('bg-white/20', 'shadow-md', '!border-white/30');
+    }
   }
 
   const profileDetails = aside.querySelector('.profile-header-link > div:last-child');
