@@ -25,7 +25,7 @@ export function notifyStateChange() {
 
 export const AppState = {
   currentUser: null,
-  activePage: 'dashboard',
+  activePage: (typeof localStorage !== 'undefined' && localStorage.getItem('smart_active_page')) || 'dashboard',
   sidebarCollapsed: typeof window !== 'undefined' ? window.innerWidth < 768 : false,
   lastMobileState: typeof window !== 'undefined' ? window.innerWidth < 768 : false,
   transactions: [],

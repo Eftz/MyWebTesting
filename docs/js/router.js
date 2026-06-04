@@ -16,6 +16,10 @@ import { renderCalendarComponent } from './components/calendar.js';
 export function navigate(page) {
   AppState.loading = true;
   AppState.activePage = page;
+  
+  if (typeof localStorage !== 'undefined') {
+    localStorage.setItem('smart_active_page', page);
+  }
 
   // Reset bulk selection modes when switching pages
   AppState.txEditMode = false;
